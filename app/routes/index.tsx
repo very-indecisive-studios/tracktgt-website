@@ -1,18 +1,46 @@
-import { useMantineTheme } from "@mantine/core";
-import { Button, Header, Image, Text, Title } from "@mantine/core";
+import { Button, Header, Image, Text, Title, useMantineTheme, createStyles, Autocomplete } from "@mantine/core";
 import { ArrowRight } from "tabler-icons-react";
-import styles from "~/styles/index.css";
 
-export function links() {
-	return [{ rel: "stylesheet", href: styles }];
-}
+const useStyles = createStyles((theme, _params, getRef) => ({
+	header: {
+		position: "fixed",
+		width: "100%"
+	},
+	headerContainer: {
+		display: "flex",
+		width: "100%",
+		flexDirection: "row",
+		alignItems: "center"
+	},
+	headerButtons: {
+		display: "grid",
+		gridAutoFlow: "column",
+		gridColumnGap: "12px",
+		marginLeft: "auto"
+	},
+	hero: {
+		position: "relative",
+		width: "100vw",
+		height: "100vh",
+		bottom: "0px",
+	},
+	heroContent: {
+		position: "absolute",
+		width: "100vw",
+		bottom: "96px",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center"
+	}
+}));
 
 function Hero() {
 	const theme = useMantineTheme();
+	const { classes } = useStyles();
 
 	return (
-		<div className="index-hero">
-			<div className="index-hero-content">
+		<div className={classes.hero}>
+			<div className={classes.heroContent}>
 				<Title order={1} align="center">Never miss what you want to watch</Title>
 				<Button mt={16} rightIcon={<ArrowRight size={18} />}>Get Started</Button>
 			</div>
@@ -21,14 +49,16 @@ function Hero() {
 }
 
 export default function Index() {
+	const { classes } = useStyles();
+
 	return (
 		<>
-			<div className="index-header">
+			<div className={classes.header}>
 				<Header height={72} py="md" px="xl">
-					<div className="index-header-container">
+					<div className={classes.headerContainer}>
 						<Image height={32} src="/logo.svg">tracktgt</Image>
 					
-						<div className="index-header-buttons">
+						<div className={classes.headerButtons}>
 							<Button variant="outline">Sign Up</Button>
 							<Button>Login</Button>
 						</div>
