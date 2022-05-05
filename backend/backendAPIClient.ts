@@ -212,13 +212,18 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<SearchGamesResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    user_RegisterUser(): Promise<BackendAPIResponse<void>> {
+    user_RegisterUser(command: RegisterUserCommand): Promise<BackendAPIResponse<Unit>> {
         let url_ = this.baseUrl + "/api/user/register";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_: RequestInit = {
+            body: content_,
             method: "POST",
             headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -229,12 +234,15 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         });
     }
 
-    protected processUser_RegisterUser(response: Response): Promise<BackendAPIResponse<void>> {
+    protected processUser_RegisterUser(response: Response): Promise<BackendAPIResponse<Unit>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return new BackendAPIResponse(status, _headers, null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
@@ -262,7 +270,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<BackendAPIResponse<void>>(new BackendAPIResponse(status, _headers, null as any));
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 }
 
@@ -575,6 +583,50 @@ export interface ISearchGameResult {
     id?: number;
     title?: string;
     platforms?: string[];
+}
+
+export class RegisterUserCommand implements IRegisterUserCommand {
+    remoteUserId?: string;
+    email?: string;
+    userName?: string;
+
+    constructor(data?: IRegisterUserCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.remoteUserId = _data["remoteUserId"];
+            this.email = _data["email"];
+            this.userName = _data["userName"];
+        }
+    }
+
+    static fromJS(data: any): RegisterUserCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegisterUserCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["remoteUserId"] = this.remoteUserId;
+        data["email"] = this.email;
+        data["userName"] = this.userName;
+        return data;
+    }
+}
+
+export interface IRegisterUserCommand {
+    remoteUserId?: string;
+    email?: string;
+    userName?: string;
 }
 
 export class BackendAPIResponse<TResult> {

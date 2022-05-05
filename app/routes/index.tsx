@@ -1,5 +1,8 @@
 import { Button, Header, Image, Text, Title, useMantineTheme, createStyles, Autocomplete } from "@mantine/core";
+import { LoaderFunction, redirect } from "@remix-run/node";
+import { Link } from "@remix-run/react";
 import { ArrowRight } from "tabler-icons-react";
+import { getUserId } from "~/utils/session.server";
 
 const useStyles = createStyles((theme, _params, getRef) => ({
 	header: {
@@ -23,6 +26,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 		width: "100vw",
 		height: "100vh",
 		bottom: "0px",
+		zIndex: -100
 	},
 	heroContent: {
 		position: "absolute",
@@ -33,6 +37,16 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 		alignItems: "center"
 	}
 }));
+
+export const loader: LoaderFunction = async ({ request }) => {
+    // Redirect to home if user is signed in.
+    const userId = await getUserId(request);
+    if (userId) {
+        return redirect("/home")
+    }
+
+    return null;
+}
 
 function Hero() {
 	const theme = useMantineTheme();
@@ -59,8 +73,8 @@ export default function Index() {
 						<Image height={32} src="/logo.svg">tracktgt</Image>
 					
 						<div className={classes.headerButtons}>
-							<Button variant="outline">Sign Up</Button>
-							<Button>Login</Button>
+							<Button component={Link} to="/login" variant="outline">Login</Button>
+							<Button component={Link} to="/signup">Sign Up</Button>
 						</div>
 					</div>
 				</Header>
