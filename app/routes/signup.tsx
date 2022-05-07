@@ -1,10 +1,10 @@
-import { Button, Container, Text, TextInput, Title } from "@mantine/core";
+import { Button, Center, Container, createStyles, PasswordInput, Text, TextInput, Title } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useTransition } from "@remix-run/react";
 import { createUserSession, getUserId } from "~/utils/session.server";
-import { AuthResult, register } from "auth";
+import { register } from "auth";
 import { z } from "zod";
-import { backendAPIClientInstance, BackendAPIException, RegisterUserCommand } from "backend";
+import { backendAPIClientInstance, BackendAPIException, CheckUserExistQuery, RegisterUserCommand } from "backend";
 
 interface ActionData {
     userName?: string;
@@ -28,7 +28,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const action: ActionFunction = async ({ request }) => {
     let formData = Object.fromEntries(await request.formData());
-
+    
+    // Validate form.
     const formDataSchema = z
         .object({
             userName: z.string(),
@@ -48,12 +49,40 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     const { email, password, userName } = parsedFormData.data;
+
+    // Validate user name and email with server.
+    try {
+        const backendResult = await backendAPIClientInstance.user_CheckUserExist(new CheckUserExistQuery({
+            email: email,
+            userName: userName,
+        }));
+
+        if (backendResult.status !== 200) {
+            return ({ formError: backendResult.result ?? "Error occured while registering." });
+        }
+        
+        const { isUserNameTaken, isEmailTaken } =  backendResult.result;
+        
+        if (isUserNameTaken || isEmailTaken) {
+            return {
+                userName: isUserNameTaken ? "Username taken." : null,
+                email: isEmailTaken ? "Email taken." : null
+            }
+        }
+    } catch(err) {
+        const backendError = err as BackendAPIException
+
+        return ({ formError: backendError.result ?? "Error occured while registering." });
+    }
+    
+    // Register with Firebase.
     const authResult = await register(email, password);
     
-    if (authResult.error || !authResult.userId) {
+    if (!authResult.userId || authResult.error) {
         return ({ formError: authResult.error ?? "Error occured while registering." });
     } 
-
+    
+    // Register with server.
     try {
         const backendResult = await backendAPIClientInstance.user_RegisterUser(new RegisterUserCommand({
             remoteUserId: authResult.userId,
@@ -74,22 +103,33 @@ export const action: ActionFunction = async ({ request }) => {
     }
 }
 
+const useStyles = createStyles((theme, _params, getRef) => ({
+    signUpContainer: {
+        width: "100vw",
+        height: "100vh"
+    }
+}));
+
 export default function SignUp() {
     const actionData = useActionData<ActionData>()
+    const transition = useTransition()
+    const { classes } = useStyles();
 
     return (
         <>
-            <Container size={"xs"}>
-                <Title mb={24} order={1}>Create a tracktgt account</Title>
-                <Form method="post">
-                    <TextInput name="userName" label="Username" type="text" error={actionData?.userName}/>
-                    <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
-                    <TextInput mt={16} name="password" label="Password" type="password" error={actionData?.password} />
-                    <TextInput mt={16} name="confirmPassword" label="Confirm Password" type="password" error={actionData?.confirmPassword} />
-                    <Button type="submit" mt={16}>Sign up</Button>
-                </Form>
-                <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
-            </Container>
+            <Center className={classes.signUpContainer}>
+                <Container size={"xs"}>
+                    <Title mb={24} order={1}>Create a tracktgt account</Title>
+                    <Form method="post">
+                        <TextInput name="userName" label="Username" type="text" error={actionData?.userName}/>
+                        <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
+                        <PasswordInput mt={16} name="password" label="Password" error={actionData?.password} />
+                        <PasswordInput mt={16} name="confirmPassword" label="Confirm Password" error={actionData?.confirmPassword} />
+                        <Button mt={16} type="submit" loading={transition.state === "submitting"}>Sign up</Button>
+                    </Form>
+                    <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
+                </Container>
+            </Center>
         </>
     );
 }
