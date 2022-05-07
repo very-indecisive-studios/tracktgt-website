@@ -273,17 +273,17 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    user_CheckUserExist(query: CheckUserExistQuery): Promise<BackendAPIResponse<CheckUserExistResult>> {
-        let url_ = this.baseUrl + "/api/user/checkuserexist";
+    user_CheckUserExist(userName: string | null | undefined, email: string | null | undefined): Promise<BackendAPIResponse<CheckUserExistResult>> {
+        let url_ = this.baseUrl + "/api/user/checkuserexist?";
+        if (userName !== undefined && userName !== null)
+            url_ += "UserName=" + encodeURIComponent("" + userName) + "&";
+        if (email !== undefined && email !== null)
+            url_ += "Email=" + encodeURIComponent("" + email) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(query);
-
         let options_: RequestInit = {
-            body: content_,
             method: "GET",
             headers: {
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
         };
@@ -500,9 +500,9 @@ export enum GameOwnership {
 
 export class GetGameResult implements IGetGameResult {
     id?: number;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
+    coverImageURL?: string | undefined;
+    title?: string | undefined;
+    summary?: string | undefined;
     rating?: number;
     platforms?: string[];
     companies?: string[];
@@ -566,9 +566,9 @@ export class GetGameResult implements IGetGameResult {
 
 export interface IGetGameResult {
     id?: number;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
+    coverImageURL?: string | undefined;
+    title?: string | undefined;
+    summary?: string | undefined;
     rating?: number;
     platforms?: string[];
     companies?: string[];
@@ -752,46 +752,6 @@ export class CheckUserExistResult implements ICheckUserExistResult {
 export interface ICheckUserExistResult {
     isUserNameTaken?: boolean;
     isEmailTaken?: boolean;
-}
-
-export class CheckUserExistQuery implements ICheckUserExistQuery {
-    userName?: string;
-    email?: string;
-
-    constructor(data?: ICheckUserExistQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userName = _data["userName"];
-            this.email = _data["email"];
-        }
-    }
-
-    static fromJS(data: any): CheckUserExistQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new CheckUserExistQuery();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userName"] = this.userName;
-        data["email"] = this.email;
-        return data;
-    }
-}
-
-export interface ICheckUserExistQuery {
-    userName?: string;
-    email?: string;
 }
 
 export class BackendAPIResponse<TResult> {

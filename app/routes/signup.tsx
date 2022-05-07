@@ -52,10 +52,10 @@ export const action: ActionFunction = async ({ request }) => {
 
     // Validate user name and email with server.
     try {
-        const backendResult = await backendAPIClientInstance.user_CheckUserExist(new CheckUserExistQuery({
-            email: email,
-            userName: userName,
-        }));
+        const backendResult = await backendAPIClientInstance.user_CheckUserExist(
+            userName,
+            email,
+        );
 
         if (backendResult.status !== 200) {
             return ({ formError: backendResult.result ?? "Error occured while registering." });
@@ -70,6 +70,7 @@ export const action: ActionFunction = async ({ request }) => {
             }
         }
     } catch(err) {
+        console.log(err);
         const backendError = err as BackendAPIException
 
         return ({ formError: backendError.result ?? "Error occured while registering." });
