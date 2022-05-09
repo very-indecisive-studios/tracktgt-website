@@ -19,8 +19,8 @@ const appTheme: MantineThemeOverride = {
   headings: {
     fontFamily: "Poppins"
   },
-  colorScheme: 'light',
-  primaryColor: 'orange',
+  colorScheme: 'dark',
+  primaryColor: 'indigo',
 };
 
 export const meta: MetaFunction = () => ({
