@@ -23,14 +23,14 @@ const useStyles = createStyles((theme, _params, getRef) => ({
 	},
 	hero: {
 		position: "relative",
-		width: "100vw",
+		width: "100%",
 		height: "100vh",
 		bottom: "0px",
 		zIndex: -100
 	},
 	heroContent: {
 		position: "absolute",
-		width: "100vw",
+		width: "100%",
 		bottom: "96px",
 		display: "flex",
 		flexDirection: "column",
@@ -55,7 +55,7 @@ function Hero() {
 	return (
 		<div className={classes.hero}>
 			<div className={classes.heroContent}>
-				<Title order={1} align="center">Never miss what you want to watch</Title>
+				<Title order={1} align="center">An all-in-one tracker for your media</Title>
 				<Button mt={16} rightIcon={<ArrowRight size={18} />}>Get Started</Button>
 			</div>
 		</div>
