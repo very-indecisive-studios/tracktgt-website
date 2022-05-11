@@ -44,7 +44,7 @@ export default function SearchBar() {
             <TextInput 
                 name="title" 
                 placeholder={"Search"}  
-                icon={<Search size={24} />}
+                icon={<Search size={20} />}
                 rightSection={<SearchBarType type={type} />}
                 rightSectionWidth={100}/>
         </Form>
