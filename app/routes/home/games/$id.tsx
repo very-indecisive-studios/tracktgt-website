@@ -1,10 +1,11 @@
-﻿import { Container, Title, Image, Group, Stack, Chip, Text, Button, ThemeIcon } from "@mantine/core";
+﻿import { Chip, Container, Group, Image, Skeleton, Stack, Text, ThemeIcon, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { backendAPIClientInstance, BackendAPIException, GetGameResult } from "backend";
+import { backendAPIClientInstance, GetGameResult } from "backend";
 import { Star } from "tabler-icons-react";
+import { useEffect, useRef, useState } from "react";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({params}) => {
     const id: number = parseInt(params.id ?? "0");
 
     const backendResult = await backendAPIClientInstance.game_GetGame(id);
@@ -16,11 +17,18 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export default function Game() {
     const game = useLoaderData<GetGameResult>();
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
+    const imageRef = useRef<HTMLImageElement>(null);
+    useEffect(() => {
+        setIsImageLoaded(true);
+    }, [imageRef.current?.complete])
     
     return (
         <Container py={16}>
-            <Group align={"end"}>
-                <Image src={game.coverImageURL} width={200} height={300} radius={"md"} />
+            <Group align={"end"} noWrap>
+                <Image imageRef={imageRef} onLoad={() => setIsImageLoaded(true)} src={game.coverImageURL} width={200} height={300}
+                       radius={"md"} hidden={!isImageLoaded}/>
+                { !isImageLoaded && <Skeleton width={200} height={300} radius={"md"}/>}
                 <Stack ml={12}>
                     <Title order={1}>{game.title}</Title>
                     <Title order={4}>{game.companies?.join(", ")}</Title>
@@ -31,9 +39,11 @@ export default function Game() {
                         <Text size={"sm"}>{game.rating === 0 ? "No rating" : `${game.rating?.toFixed(0)}%`}</Text>
                     </Group>
                     <Group>
-                        {game.platforms?.map(platform => (<Chip checked={false} size={"sm"} key={platform}>{platform}</Chip>))}
+                        {game.platforms?.map(platform => (
+                            <Chip checked={false} size={"sm"} key={platform}>{platform}</Chip>))}
                     </Group>
                 </Stack>
+
             </Group>
             <Text mt={32}>{game.summary}</Text>
         </Container>
