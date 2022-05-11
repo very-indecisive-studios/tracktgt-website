@@ -621,6 +621,7 @@ export interface ISearchGamesResult {
 export class SearchGamesItemResult implements ISearchGamesItemResult {
     remoteId?: number;
     title?: string;
+    coverImageURL?: string;
     platforms?: string[];
 
     constructor(data?: ISearchGamesItemResult) {
@@ -636,6 +637,7 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
         if (_data) {
             this.remoteId = _data["remoteId"];
             this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
             if (Array.isArray(_data["platforms"])) {
                 this.platforms = [] as any;
                 for (let item of _data["platforms"])
@@ -655,6 +657,7 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
         data = typeof data === 'object' ? data : {};
         data["remoteId"] = this.remoteId;
         data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
         if (Array.isArray(this.platforms)) {
             data["platforms"] = [];
             for (let item of this.platforms)
@@ -667,6 +670,7 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
 export interface ISearchGamesItemResult {
     remoteId?: number;
     title?: string;
+    coverImageURL?: string;
     platforms?: string[];
 }
 

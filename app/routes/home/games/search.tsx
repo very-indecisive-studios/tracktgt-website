@@ -1,43 +1,39 @@
-﻿import { Group, Title, Text, Container, Stack, Card, Button, Chip } from "@mantine/core";
+﻿import { Group, Title, Image, Container, Stack, Card, Chip } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import {
     backendAPIClientInstance,
-    BackendAPIException,
     SearchGamesResult
 } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 
 export const loader: LoaderFunction = async ({request}) => {
-    try {
-        const url = new URL(request.url);
-        const title = url.searchParams.get("title");
+    const url = new URL(request.url);
+    const title = url.searchParams.get("title");
 
-        const backendResult = await backendAPIClientInstance.game_SearchGames(title);
+    const backendResult = await backendAPIClientInstance.game_SearchGames(title);
 
-        if (backendResult.status === 200) {
-            return json(backendResult.result);
-        }
-    } catch (err) {
-        const backendError = err as BackendAPIException
-
-        return ({formError: backendError.result ?? "Error occured while registering."});
+    if (backendResult.status === 200) {
+        return json(backendResult.result);
     }
 }
 
 interface SearchResultItemProps {
     id: number;
     title: string;
-    coverImageURL: string;
+    coverImageURL: string | undefined;
     platforms: string[];
 }
 
 function SearchResultItem({id, title, coverImageURL, platforms}: SearchResultItemProps) {
+    console.log(coverImageURL);
+    
     return (
         <div style={{width: "100%", margin: 'auto'}}>
             <Link to={`/home/games/${id}`} style={{textDecoration: "none"}}>
-                <Card shadow="xs" p="xl">
-                    <Group>
-                        <Stack>
+                <Card shadow="xs" p="lg">
+                    <Group align={"end"}>
+                        <Image src={coverImageURL} width={100} height={150} radius={"md"}/>
+                        <Stack ml={8}>
                             <Title order={3}>{title}</Title>
                             <Group>
                                 {platforms.map(platform => (<Chip size={"sm"} key={platform}>{platform}</Chip>))}
@@ -55,7 +51,6 @@ export default function Search() {
     const [searchParams, _] = useSearchParams();
     const title = searchParams.get("title");
 
-
     return (
         <Container py={16}>
             <Title mb={32} order={2}>Search results for "{title}"</Title>
@@ -64,7 +59,7 @@ export default function Search() {
                     <SearchResultItem key={g.remoteId ?? 0}
                                       id={g.remoteId ?? 0}
                                       title={g.title ?? ""} 
-                                      coverImageURL={""}
+                                      coverImageURL={g.coverImageURL}
                                       platforms={g.platforms ?? []}
                     />
                 ))}
