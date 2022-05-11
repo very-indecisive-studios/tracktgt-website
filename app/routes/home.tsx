@@ -69,7 +69,7 @@ export default function Home() {
                                     />
                                 </Grid.Col>
                                 <Grid.Col span={2}>
-                                    <Image fit={"contain"} height={32} width={64} src="/logo_icon.svg">tracktgt</Image>
+                                    <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
                                 </Grid.Col>
                                 <Grid.Col span={4}>
                                 </Grid.Col>
