@@ -421,7 +421,7 @@ export interface IProblemDetails {
 
 export class AddTrackedGameCommand implements IAddTrackedGameCommand {
     remoteUserId?: string;
-    gameId?: number;
+    remoteGameId?: number;
     hoursPlayed?: number;
     platform?: string;
     format?: GameFormat;
@@ -440,7 +440,7 @@ export class AddTrackedGameCommand implements IAddTrackedGameCommand {
     init(_data?: any) {
         if (_data) {
             this.remoteUserId = _data["remoteUserId"];
-            this.gameId = _data["gameId"];
+            this.remoteGameId = _data["remoteGameId"];
             this.hoursPlayed = _data["hoursPlayed"];
             this.platform = _data["platform"];
             this.format = _data["format"];
@@ -459,7 +459,7 @@ export class AddTrackedGameCommand implements IAddTrackedGameCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["remoteUserId"] = this.remoteUserId;
-        data["gameId"] = this.gameId;
+        data["remoteGameId"] = this.remoteGameId;
         data["hoursPlayed"] = this.hoursPlayed;
         data["platform"] = this.platform;
         data["format"] = this.format;
@@ -471,7 +471,7 @@ export class AddTrackedGameCommand implements IAddTrackedGameCommand {
 
 export interface IAddTrackedGameCommand {
     remoteUserId?: string;
-    gameId?: number;
+    remoteGameId?: number;
     hoursPlayed?: number;
     platform?: string;
     format?: GameFormat;
@@ -482,7 +482,6 @@ export interface IAddTrackedGameCommand {
 export enum GameFormat {
     Digital = 0,
     Physical = 1,
-    Subscription = 2,
 }
 
 export enum GameStatus {
@@ -496,16 +495,17 @@ export enum GameOwnership {
     Owned = 0,
     Loan = 1,
     Wishlist = 2,
+    Subscription = 3,
 }
 
 export class GetGameResult implements IGetGameResult {
-    id?: number;
-    coverImageURL?: string | undefined;
-    title?: string | undefined;
-    summary?: string | undefined;
+    remoteId?: number;
+    coverImageURL?: string;
+    title?: string;
+    summary?: string;
     rating?: number;
-    platforms?: string[];
-    companies?: string[];
+    platforms?: string[] | undefined;
+    companies?: string[] | undefined;
 
     constructor(data?: IGetGameResult) {
         if (data) {
@@ -518,7 +518,7 @@ export class GetGameResult implements IGetGameResult {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
+            this.remoteId = _data["remoteId"];
             this.coverImageURL = _data["coverImageURL"];
             this.title = _data["title"];
             this.summary = _data["summary"];
@@ -545,7 +545,7 @@ export class GetGameResult implements IGetGameResult {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data["remoteId"] = this.remoteId;
         data["coverImageURL"] = this.coverImageURL;
         data["title"] = this.title;
         data["summary"] = this.summary;
@@ -565,17 +565,17 @@ export class GetGameResult implements IGetGameResult {
 }
 
 export interface IGetGameResult {
-    id?: number;
-    coverImageURL?: string | undefined;
-    title?: string | undefined;
-    summary?: string | undefined;
+    remoteId?: number;
+    coverImageURL?: string;
+    title?: string;
+    summary?: string;
     rating?: number;
-    platforms?: string[];
-    companies?: string[];
+    platforms?: string[] | undefined;
+    companies?: string[] | undefined;
 }
 
 export class SearchGamesResult implements ISearchGamesResult {
-    games?: SearchGameResult[];
+    games?: SearchGamesItemResult[];
 
     constructor(data?: ISearchGamesResult) {
         if (data) {
@@ -591,7 +591,7 @@ export class SearchGamesResult implements ISearchGamesResult {
             if (Array.isArray(_data["games"])) {
                 this.games = [] as any;
                 for (let item of _data["games"])
-                    this.games!.push(SearchGameResult.fromJS(item));
+                    this.games!.push(SearchGamesItemResult.fromJS(item));
             }
         }
     }
@@ -615,15 +615,16 @@ export class SearchGamesResult implements ISearchGamesResult {
 }
 
 export interface ISearchGamesResult {
-    games?: SearchGameResult[];
+    games?: SearchGamesItemResult[];
 }
 
-export class SearchGameResult implements ISearchGameResult {
-    id?: number;
+export class SearchGamesItemResult implements ISearchGamesItemResult {
+    remoteId?: number;
     title?: string;
+    coverImageURL?: string;
     platforms?: string[];
 
-    constructor(data?: ISearchGameResult) {
+    constructor(data?: ISearchGamesItemResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -634,8 +635,9 @@ export class SearchGameResult implements ISearchGameResult {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
+            this.remoteId = _data["remoteId"];
             this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
             if (Array.isArray(_data["platforms"])) {
                 this.platforms = [] as any;
                 for (let item of _data["platforms"])
@@ -644,17 +646,18 @@ export class SearchGameResult implements ISearchGameResult {
         }
     }
 
-    static fromJS(data: any): SearchGameResult {
+    static fromJS(data: any): SearchGamesItemResult {
         data = typeof data === 'object' ? data : {};
-        let result = new SearchGameResult();
+        let result = new SearchGamesItemResult();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data["remoteId"] = this.remoteId;
         data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
         if (Array.isArray(this.platforms)) {
             data["platforms"] = [];
             for (let item of this.platforms)
@@ -664,9 +667,10 @@ export class SearchGameResult implements ISearchGameResult {
     }
 }
 
-export interface ISearchGameResult {
-    id?: number;
+export interface ISearchGamesItemResult {
+    remoteId?: number;
     title?: string;
+    coverImageURL?: string;
     platforms?: string[];
 }
 
