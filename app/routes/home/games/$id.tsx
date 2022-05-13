@@ -9,7 +9,8 @@
     Stack,
     Text,
     ThemeIcon,
-    Title
+    Title,
+    useMantineTheme
 } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -84,16 +85,26 @@ export function GameHeader({ coverImageURL, title, rating, platforms, companies,
                     {isTracked ? "Edit tracking" : "Add to list"}
                 </Button>
             </Stack>
-            <Stack>
-                <Title order={1}>{title}</Title>
-                <Title order={4}>{companies?.join(", ")}</Title>
+            <Stack spacing={"xs"}>
+                <Title order={1}>
+                    {title}
+                </Title>
+                <Title order={4} sx={(theme) => ({
+                    color: theme.colors.gray[6],
+                })}>
+                    {companies?.join(", ")}
+                </Title>
+                
                 <Group>
                     <ThemeIcon color={"yellow"}>
                         <Star size={16}/>
                     </ThemeIcon>
-                    <Text size={"sm"}>{rating === 0 ? "No rating" : `${rating?.toFixed(0)}%`}</Text>
+                    <Text sx={(theme) => ({ color: theme.colors.gray[6] })} size={"sm"}>
+                        {rating === 0 ? "No rating" : `${rating?.toFixed(0)}%`}
+                    </Text>
                 </Group>
-                <Group>
+                
+                <Group mt={16}>
                     {platforms?.map(platform => (
                         <Chip checked={false} size={"sm"} key={platform}>{platform}</Chip>))}
                 </Group>
@@ -105,7 +116,7 @@ export function GameHeader({ coverImageURL, title, rating, platforms, companies,
 export default function Game() {
     const data = useLoaderData<LoaderData>();
     const [isModalOpened, setIsModalOpened] = useState(false);
-
+    
     const toggleModal = () => {
         setIsModalOpened(value => !value);
     }
@@ -138,8 +149,11 @@ export default function Game() {
                     {gameHeader}
                 </Group>
             </MediaQuery>
-
-            <Text mt={32}>{data.game.summary}</Text>
+            
+            <Stack mt={48}>
+                <Title order={2}>Summary</Title>
+                <Text sx={(theme) => ({ color: theme.colors.gray[6] })}>{data.game.summary}</Text>
+            </Stack>
         </Container>
     );
 }
