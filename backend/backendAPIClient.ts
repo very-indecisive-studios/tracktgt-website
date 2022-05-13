@@ -29,7 +29,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7061";
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
     game_AddTrackedGame(addTrackedGameCommand: AddTrackedGameCommand): Promise<BackendAPIResponse<Unit>> {
@@ -605,7 +605,6 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 }
 
-/** Represents a void type, since Void is not a valid return type in C#. */
 export class Unit implements IUnit {
 
     constructor(data?: IUnit) {
@@ -633,7 +632,6 @@ export class Unit implements IUnit {
     }
 }
 
-/** Represents a void type, since Void is not a valid return type in C#. */
 export interface IUnit {
 }
 
