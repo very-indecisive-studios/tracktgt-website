@@ -93,6 +93,276 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
+    game_RemoveTrackedGame(removeTrackedGameCommand: RemoveTrackedGameCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/game/track/remove";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(removeTrackedGameCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_RemoveTrackedGame(_response);
+        });
+    }
+
+    protected processGame_RemoveTrackedGame(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_UpdateTrackedGame(updateTrackedGameCommand: UpdateTrackedGameCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/game/track/update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updateTrackedGameCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_UpdateTrackedGame(_response);
+        });
+    }
+
+    protected processGame_UpdateTrackedGame(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_GetTrackedGames(userRemoteId: string | null | undefined, gameStatus: TrackedGameStatus | null | undefined, sortByHoursPlayed: boolean | undefined, sortByPlatform: boolean | undefined, sortByFormat: boolean | undefined, sortByOwnership: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetTrackedGamesItemResult>> {
+        let url_ = this.baseUrl + "/api/game/track/get?";
+        if (userRemoteId !== undefined && userRemoteId !== null)
+            url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (gameStatus !== undefined && gameStatus !== null)
+            url_ += "GameStatus=" + encodeURIComponent("" + gameStatus) + "&";
+        if (sortByHoursPlayed === null)
+            throw new Error("The parameter 'sortByHoursPlayed' cannot be null.");
+        else if (sortByHoursPlayed !== undefined)
+            url_ += "SortByHoursPlayed=" + encodeURIComponent("" + sortByHoursPlayed) + "&";
+        if (sortByPlatform === null)
+            throw new Error("The parameter 'sortByPlatform' cannot be null.");
+        else if (sortByPlatform !== undefined)
+            url_ += "SortByPlatform=" + encodeURIComponent("" + sortByPlatform) + "&";
+        if (sortByFormat === null)
+            throw new Error("The parameter 'sortByFormat' cannot be null.");
+        else if (sortByFormat !== undefined)
+            url_ += "SortByFormat=" + encodeURIComponent("" + sortByFormat) + "&";
+        if (sortByOwnership === null)
+            throw new Error("The parameter 'sortByOwnership' cannot be null.");
+        else if (sortByOwnership !== undefined)
+            url_ += "SortByOwnership=" + encodeURIComponent("" + sortByOwnership) + "&";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "Page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_GetTrackedGames(_response);
+        });
+    }
+
+    protected processGame_GetTrackedGames(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetTrackedGamesItemResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedListResultOfGetTrackedGamesItemResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetTrackedGamesItemResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_GetTrackedGame(userRemoteId: string | null, gameRemoteId: number): Promise<BackendAPIResponse<GetTrackedGameResult>> {
+        let url_ = this.baseUrl + "/api/game/track/get/{userRemoteId}/{gameRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        if (gameRemoteId === undefined || gameRemoteId === null)
+            throw new Error("The parameter 'gameRemoteId' must be defined.");
+        url_ = url_.replace("{gameRemoteId}", encodeURIComponent("" + gameRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_GetTrackedGame(_response);
+        });
+    }
+
+    protected processGame_GetTrackedGame(response: Response): Promise<BackendAPIResponse<GetTrackedGameResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTrackedGameResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetTrackedGameResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     game_GetGame(id: number): Promise<BackendAPIResponse<GetGameResult>> {
         let url_ = this.baseUrl + "/api/game/{id}";
         if (id === undefined || id === null)
@@ -420,13 +690,13 @@ export interface IProblemDetails {
 }
 
 export class AddTrackedGameCommand implements IAddTrackedGameCommand {
-    remoteUserId?: string;
-    remoteGameId?: number;
+    userRemoteId?: string;
+    gameRemoteId?: number;
     hoursPlayed?: number;
     platform?: string;
-    format?: GameFormat;
-    status?: GameStatus;
-    ownership?: GameOwnership;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
 
     constructor(data?: IAddTrackedGameCommand) {
         if (data) {
@@ -439,8 +709,8 @@ export class AddTrackedGameCommand implements IAddTrackedGameCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.remoteUserId = _data["remoteUserId"];
-            this.remoteGameId = _data["remoteGameId"];
+            this.userRemoteId = _data["userRemoteId"];
+            this.gameRemoteId = _data["gameRemoteId"];
             this.hoursPlayed = _data["hoursPlayed"];
             this.platform = _data["platform"];
             this.format = _data["format"];
@@ -458,8 +728,8 @@ export class AddTrackedGameCommand implements IAddTrackedGameCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["remoteUserId"] = this.remoteUserId;
-        data["remoteGameId"] = this.remoteGameId;
+        data["userRemoteId"] = this.userRemoteId;
+        data["gameRemoteId"] = this.gameRemoteId;
         data["hoursPlayed"] = this.hoursPlayed;
         data["platform"] = this.platform;
         data["format"] = this.format;
@@ -470,32 +740,320 @@ export class AddTrackedGameCommand implements IAddTrackedGameCommand {
 }
 
 export interface IAddTrackedGameCommand {
-    remoteUserId?: string;
-    remoteGameId?: number;
+    userRemoteId?: string;
+    gameRemoteId?: number;
     hoursPlayed?: number;
     platform?: string;
-    format?: GameFormat;
-    status?: GameStatus;
-    ownership?: GameOwnership;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
 }
 
-export enum GameFormat {
+export enum TrackedGameFormat {
     Digital = 0,
     Physical = 1,
 }
 
-export enum GameStatus {
-    Current = 0,
+export enum TrackedGameStatus {
+    Completed = 0,
     Playing = 1,
     Paused = 2,
     Planning = 3,
 }
 
-export enum GameOwnership {
+export enum TrackedGameOwnership {
     Owned = 0,
     Loan = 1,
     Wishlist = 2,
     Subscription = 3,
+}
+
+export class RemoveTrackedGameCommand implements IRemoveTrackedGameCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+
+    constructor(data?: IRemoveTrackedGameCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.gameRemoteId = _data["gameRemoteId"];
+        }
+    }
+
+    static fromJS(data: any): RemoveTrackedGameCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RemoveTrackedGameCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["gameRemoteId"] = this.gameRemoteId;
+        return data;
+    }
+}
+
+export interface IRemoveTrackedGameCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+}
+
+export class UpdateTrackedGameCommand implements IUpdateTrackedGameCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+    hoursPlayed?: number;
+    platform?: string;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
+
+    constructor(data?: IUpdateTrackedGameCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.gameRemoteId = _data["gameRemoteId"];
+            this.hoursPlayed = _data["hoursPlayed"];
+            this.platform = _data["platform"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): UpdateTrackedGameCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateTrackedGameCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["gameRemoteId"] = this.gameRemoteId;
+        data["hoursPlayed"] = this.hoursPlayed;
+        data["platform"] = this.platform;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IUpdateTrackedGameCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+    hoursPlayed?: number;
+    platform?: string;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
+}
+
+export class PagedListResultOfGetTrackedGamesItemResult implements IPagedListResultOfGetTrackedGamesItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetTrackedGamesItemResult[];
+
+    constructor(data?: IPagedListResultOfGetTrackedGamesItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.page = _data["page"];
+            this.totalPages = _data["totalPages"];
+            this.pageSize = _data["pageSize"];
+            this.currentPageSize = _data["currentPageSize"];
+            this.currentStartIndex = _data["currentStartIndex"];
+            this.currentEndIndex = _data["currentEndIndex"];
+            this.totalCount = _data["totalCount"];
+            this.hasPrevious = _data["hasPrevious"];
+            this.hasNext = _data["hasNext"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetTrackedGamesItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedListResultOfGetTrackedGamesItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedListResultOfGetTrackedGamesItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["totalPages"] = this.totalPages;
+        data["pageSize"] = this.pageSize;
+        data["currentPageSize"] = this.currentPageSize;
+        data["currentStartIndex"] = this.currentStartIndex;
+        data["currentEndIndex"] = this.currentEndIndex;
+        data["totalCount"] = this.totalCount;
+        data["hasPrevious"] = this.hasPrevious;
+        data["hasNext"] = this.hasNext;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPagedListResultOfGetTrackedGamesItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetTrackedGamesItemResult[];
+}
+
+export class GetTrackedGamesItemResult implements IGetTrackedGamesItemResult {
+    gameRemoteId?: number;
+    hoursPlayed?: number;
+    platform?: string;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
+
+    constructor(data?: IGetTrackedGamesItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.gameRemoteId = _data["gameRemoteId"];
+            this.hoursPlayed = _data["hoursPlayed"];
+            this.platform = _data["platform"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): GetTrackedGamesItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTrackedGamesItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["gameRemoteId"] = this.gameRemoteId;
+        data["hoursPlayed"] = this.hoursPlayed;
+        data["platform"] = this.platform;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IGetTrackedGamesItemResult {
+    gameRemoteId?: number;
+    hoursPlayed?: number;
+    platform?: string;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
+}
+
+export class GetTrackedGameResult implements IGetTrackedGameResult {
+    hoursPlayed?: number;
+    platform?: string;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
+
+    constructor(data?: IGetTrackedGameResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.hoursPlayed = _data["hoursPlayed"];
+            this.platform = _data["platform"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): GetTrackedGameResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetTrackedGameResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["hoursPlayed"] = this.hoursPlayed;
+        data["platform"] = this.platform;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IGetTrackedGameResult {
+    hoursPlayed?: number;
+    platform?: string;
+    format?: TrackedGameFormat;
+    status?: TrackedGameStatus;
+    ownership?: TrackedGameOwnership;
 }
 
 export class GetGameResult implements IGetGameResult {
@@ -621,7 +1179,6 @@ export interface ISearchGamesResult {
 export class SearchGamesItemResult implements ISearchGamesItemResult {
     remoteId?: number;
     title?: string;
-    coverImageURL?: string;
     platforms?: string[];
 
     constructor(data?: ISearchGamesItemResult) {
@@ -637,7 +1194,6 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
         if (_data) {
             this.remoteId = _data["remoteId"];
             this.title = _data["title"];
-            this.coverImageURL = _data["coverImageURL"];
             if (Array.isArray(_data["platforms"])) {
                 this.platforms = [] as any;
                 for (let item of _data["platforms"])
@@ -657,7 +1213,6 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
         data = typeof data === 'object' ? data : {};
         data["remoteId"] = this.remoteId;
         data["title"] = this.title;
-        data["coverImageURL"] = this.coverImageURL;
         if (Array.isArray(this.platforms)) {
             data["platforms"] = [];
             for (let item of this.platforms)
@@ -670,7 +1225,6 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
 export interface ISearchGamesItemResult {
     remoteId?: number;
     title?: string;
-    coverImageURL?: string;
     platforms?: string[];
 }
 

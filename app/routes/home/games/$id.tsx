@@ -1,18 +1,56 @@
-﻿import { Chip, Container, Grid, Group, Image, MediaQuery, Skeleton, Stack, Text, ThemeIcon, Title } from "@mantine/core";
+﻿import {
+    Button,
+    Chip,
+    Container,
+    Group,
+    Image,
+    MediaQuery,
+    Skeleton,
+    Stack,
+    Text,
+    ThemeIcon,
+    Title
+} from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { backendAPIClientInstance, GetGameResult } from "backend";
-import { Star } from "tabler-icons-react";
+import {
+    backendAPIClientInstance, BackendAPIException,
+    GetGameResult, GetTrackedGameResult,
+} from "backend";
+import { Edit, Plus, Star } from "tabler-icons-react";
 import { useEffect, useRef, useState } from "react";
+import TrackGameEditorModal from "~/components/TrackGameEditorModal";
+import { requireUserId } from "~/utils/session.server";
 
-export const loader: LoaderFunction = async ({params}) => {
-    const id: number = parseInt(params.id ?? "0");
+interface LoaderData {
+    game: GetGameResult;
+    trackedGame: GetTrackedGameResult | null
+}
 
-    const backendResult = await backendAPIClientInstance.game_GetGame(id);
+export const loader: LoaderFunction = async ({params, request}) => {
+    const gameId: number = parseInt(params.id ?? "0");
 
-    if (backendResult.status === 200) {
-        return json(backendResult.result);
+    const getGameBackendAPIResponse = await backendAPIClientInstance.game_GetGame(gameId);
+    const game = getGameBackendAPIResponse.result;
+
+    const userId = await requireUserId(request);
+    let trackedGame: GetTrackedGameResult | null = null;
+    try {
+        const getTrackedGameBackendAPIResponse = await backendAPIClientInstance.game_GetTrackedGame(userId, gameId);
+        
+        trackedGame = getTrackedGameBackendAPIResponse.result;
+    } catch(err) {
+        const backendError = err as BackendAPIException
+        
+        if (backendError.status != 404) {
+            throw backendError;
+        }
     }
+
+    return json<LoaderData>({
+        game: game,
+        trackedGame: trackedGame
+    });
 }
 
 interface GameHeaderProps {
@@ -21,9 +59,11 @@ interface GameHeaderProps {
     rating: number | undefined;
     platforms: string[] | undefined;
     companies: string[] | undefined;
+    isTracked: boolean;
+    onButtonClick: () => void;
 }
 
-export function GameHeader({coverImageURL, title, rating, platforms, companies}: GameHeaderProps) {
+export function GameHeader({ coverImageURL, title, rating, platforms, companies, isTracked, onButtonClick }: GameHeaderProps) {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const imageRef = useRef<HTMLImageElement>(null);
     useEffect(() => {
@@ -32,10 +72,18 @@ export function GameHeader({coverImageURL, title, rating, platforms, companies}:
 
     return (
         <>
-            <Image mr={12} imageRef={imageRef} onLoad={() => setIsImageLoaded(true)} src={coverImageURL} width={200}
-                   height={300}
-                   radius={"md"} hidden={!isImageLoaded}/>
-            {!isImageLoaded && <Skeleton width={200} height={300} radius={"md"}/>}
+            <Stack mr={12}>
+                <Image imageRef={imageRef} onLoad={() => setIsImageLoaded(true)} src={coverImageURL} width={200}
+                       height={300}
+                       radius={"md"} hidden={!isImageLoaded}/>
+                {!isImageLoaded && <Skeleton width={200} height={300} radius={"md"}/>}
+
+                <Button color={isTracked ? "orange" : "indigo"} 
+                        onClick={onButtonClick} 
+                        leftIcon={isTracked ? <Edit size={20}/> : <Plus size={20}/>}>
+                    {isTracked ? "Edit tracking" : "Add to list"}
+                </Button>
+            </Stack>
             <Stack>
                 <Title order={1}>{title}</Title>
                 <Title order={4}>{companies?.join(", ")}</Title>
@@ -55,25 +103,43 @@ export function GameHeader({coverImageURL, title, rating, platforms, companies}:
 }
 
 export default function Game() {
-    const game = useLoaderData<GetGameResult>();
+    const data = useLoaderData<LoaderData>();
+    const [isModalOpened, setIsModalOpened] = useState(false);
+
+    const toggleModal = () => {
+        setIsModalOpened(value => !value);
+    }
+
+    const gameHeader = <GameHeader coverImageURL={data.game.coverImageURL}
+                                   title={data.game.title}
+                                   rating={data.game.rating}
+                                   platforms={data.game.platforms}
+                                   companies={data.game.companies}
+                                   isTracked={!!data.trackedGame}
+                                   onButtonClick={toggleModal}/>
 
     return (
         <Container py={16}>
+            <TrackGameEditorModal opened={isModalOpened} 
+                                  onModalClosed={toggleModal} 
+                                  gameRemoteId={data.game.remoteId ?? 0}
+                                  platforms={data.game.platforms ?? []}
+                                  trackedGame={data.trackedGame}
+            />
+
             <MediaQuery styles={{display: "none"}} largerThan={"sm"}>
                 <Stack>
-                    <GameHeader coverImageURL={game.coverImageURL} title={game.title} rating={game.rating}
-                                platforms={game.platforms} companies={game.companies}/>
+                    {gameHeader}
                 </Stack>
             </MediaQuery>
-            
+
             <MediaQuery styles={{display: "none"}} smallerThan={"sm"}>
                 <Group align={"end"} noWrap>
-                    <GameHeader coverImageURL={game.coverImageURL} title={game.title} rating={game.rating}
-                                platforms={game.platforms} companies={game.companies}/>
+                    {gameHeader}
                 </Group>
             </MediaQuery>
-            
-            <Text mt={32}>{game.summary}</Text>
+
+            <Text mt={32}>{data.game.summary}</Text>
         </Container>
     );
 }
