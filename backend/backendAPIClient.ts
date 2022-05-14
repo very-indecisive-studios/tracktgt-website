@@ -215,12 +215,16 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    game_GetAllGameTrackings(userRemoteId: string | null | undefined, gameStatus: GameTrackingStatus | null | undefined, sortByHoursPlayed: boolean | undefined, sortByPlatform: boolean | undefined, sortByFormat: boolean | undefined, sortByOwnership: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllGameTrackingsItemResult>> {
+    game_GetAllGameTrackings(userRemoteId: string | null | undefined, gameStatus: GameTrackingStatus | null | undefined, sortByRecentlyModified: boolean | undefined, sortByHoursPlayed: boolean | undefined, sortByPlatform: boolean | undefined, sortByFormat: boolean | undefined, sortByOwnership: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllGameTrackingsItemResult>> {
         let url_ = this.baseUrl + "/api/game/track?";
         if (userRemoteId !== undefined && userRemoteId !== null)
             url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
         if (gameStatus !== undefined && gameStatus !== null)
             url_ += "GameStatus=" + encodeURIComponent("" + gameStatus) + "&";
+        if (sortByRecentlyModified === null)
+            throw new Error("The parameter 'sortByRecentlyModified' cannot be null.");
+        else if (sortByRecentlyModified !== undefined)
+            url_ += "SortByRecentlyModified=" + encodeURIComponent("" + sortByRecentlyModified) + "&";
         if (sortByHoursPlayed === null)
             throw new Error("The parameter 'sortByHoursPlayed' cannot be null.");
         else if (sortByHoursPlayed !== undefined)
@@ -954,6 +958,7 @@ export interface IPagedListResultOfGetAllGameTrackingsItemResult {
 export class GetAllGameTrackingsItemResult implements IGetAllGameTrackingsItemResult {
     gameRemoteId?: number;
     title?: string;
+    coverImageURL?: string;
     hoursPlayed?: number;
     platform?: string;
     format?: GameTrackingFormat;
@@ -973,6 +978,7 @@ export class GetAllGameTrackingsItemResult implements IGetAllGameTrackingsItemRe
         if (_data) {
             this.gameRemoteId = _data["gameRemoteId"];
             this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
             this.hoursPlayed = _data["hoursPlayed"];
             this.platform = _data["platform"];
             this.format = _data["format"];
@@ -992,6 +998,7 @@ export class GetAllGameTrackingsItemResult implements IGetAllGameTrackingsItemRe
         data = typeof data === 'object' ? data : {};
         data["gameRemoteId"] = this.gameRemoteId;
         data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
         data["hoursPlayed"] = this.hoursPlayed;
         data["platform"] = this.platform;
         data["format"] = this.format;
@@ -1004,6 +1011,7 @@ export class GetAllGameTrackingsItemResult implements IGetAllGameTrackingsItemRe
 export interface IGetAllGameTrackingsItemResult {
     gameRemoteId?: number;
     title?: string;
+    coverImageURL?: string;
     hoursPlayed?: number;
     platform?: string;
     format?: GameTrackingFormat;
