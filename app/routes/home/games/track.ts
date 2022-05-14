@@ -1,8 +1,9 @@
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import {
-    AddTrackedGameCommand,
     backendAPIClientInstance,
-    BackendAPIException, RemoveTrackedGameCommand,
+    AddTrackedGameCommand,
+    RemoveTrackedGameCommand,
+    UpdateTrackedGameCommand,
     TrackedGameFormat,
     TrackedGameOwnership,
     TrackedGameStatus
@@ -11,7 +12,7 @@ import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
 import { requireUserId } from "~/utils/session.server";
 
-export const handleDelete = async (request: Request) => {
+const handleDelete = async (request: Request) => {
     const userId = await requireUserId(request);
 
     let formData = Object.fromEntries(await request.formData())
@@ -37,11 +38,7 @@ export const handleDelete = async (request: Request) => {
     return redirect(`/home/games/${parsedFormData.data.gameRemoteId}`);
 }
 
-export const handlePost = async (request: Request) => {
-    const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
-
+const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
     const gameStatusesLength = Object.keys(TrackedGameStatus)
         .filter((s) => isNaN(Number(s)))
         .length;
@@ -65,38 +62,65 @@ export const handlePost = async (request: Request) => {
             format: z.preprocess(preProcessToNumber, z.number().min(0).max(gameFormatsLength - 1)),
             ownership: z.preprocess(preProcessToNumber, z.number().min(0).max(gameOwnershipsLength - 1))
         });
+    
+    return formDataSchema.safeParse(formData);
+}
 
-    const parsedFormData = formDataSchema.safeParse(formData);
+const handlePost = async (request: Request) => {
+    const userId = await requireUserId(request);
+
+    let formData = Object.fromEntries(await request.formData())
+
+    const parsedFormData = parseAndValidateFormData(formData);
 
     if (!parsedFormData.success) {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
 
-    try {
-        await backendAPIClientInstance.game_AddTrackedGame(new AddTrackedGameCommand({
-            gameRemoteId: parsedFormData.data.gameRemoteId,
-            userRemoteId: userId,
-            hoursPlayed: parsedFormData.data.hoursPlayed,
-            platform: parsedFormData.data.platform,
-            ownership: parsedFormData.data.ownership,
-            format: parsedFormData.data.format,
-            status: parsedFormData.data.status,
-        }));
-    } catch(err) {
-        const backendError = err as BackendAPIException
-
-        throw backendError;
-    }
+    await backendAPIClientInstance.game_AddTrackedGame(new AddTrackedGameCommand({
+        gameRemoteId: parsedFormData.data.gameRemoteId,
+        userRemoteId: userId,
+        hoursPlayed: parsedFormData.data.hoursPlayed,
+        platform: parsedFormData.data.platform,
+        ownership: parsedFormData.data.ownership,
+        format: parsedFormData.data.format,
+        status: parsedFormData.data.status,
+    }));
 
     return redirect(`/home/games/${parsedFormData.data.gameRemoteId}`);
 }
 
+export const handlePut = async (request: Request) => {
+    const userId = await requireUserId(request);
+
+    let formData = Object.fromEntries(await request.formData())
+
+    const parsedFormData = parseAndValidateFormData(formData);
+
+    if (!parsedFormData.success) {
+        return badRequest(parsedFormData.error.flatten().fieldErrors);
+    }
+    
+    await backendAPIClientInstance.game_UpdateTrackedGame(new UpdateTrackedGameCommand({
+        gameRemoteId: parsedFormData.data.gameRemoteId,
+        userRemoteId: userId,
+        hoursPlayed: parsedFormData.data.hoursPlayed,
+        platform: parsedFormData.data.platform,
+        ownership: parsedFormData.data.ownership,
+        format: parsedFormData.data.format,
+        status: parsedFormData.data.status,
+    }));
+    
+    return redirect(`/home/games/${parsedFormData.data.gameRemoteId}`);
+}
 
 export const action: ActionFunction = async ({ request }) => {
     if (request.method === "POST") {
         return handlePost(request)
     } else if (request.method === "DELETE") {
         return handleDelete(request)
+    } else if (request.method === "PUT") {
+        return handlePut(request)
     } else {
         return json({message: "Method not allowed"}, 405);
     }

@@ -144,10 +144,10 @@ export default function Game() {
         const gamePlatforms = data.game.platforms?.map(value => ({value: value, label: value})) ?? [];
         
         const id = modals.openModal({
-            title: "Game tracking editor",
+            title: data.trackedGame ? "Edit tracked game" : "Add tracked game",
             centered: true,
             children: (
-                <Form action={"/home/games/track"} method={"post"}>
+                <Form action={"/home/games/track"} method={data.trackedGame ? "put" : "post"}>
                     <TextInput name="gameRemoteId" hidden defaultValue={data.game.remoteId}/>
                     <NumberInput name="hoursPlayed" label="Hours played" defaultValue={data.trackedGame?.hoursPlayed ?? 0}/>
                     <Select name="platform" defaultValue={data.trackedGame?.platform ?? gamePlatforms[0].value} mt={16}
@@ -163,8 +163,10 @@ export default function Game() {
                             { data.trackedGame && <Button color={"red"} onClick={showDeleteConfirmModal}>Remove</Button> }
                         </Group>
                         <Group position={"right"}>
-                            <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Discard</Button>
-                            <Button type={"submit"} onClick={modals.closeAll}>Save</Button>
+                            <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Cancel</Button>
+                            <Button type={"submit"} onClick={modals.closeAll}>
+                                {data.trackedGame ? "Save" : "Add"}
+                            </Button>
                         </Group>
                     </Group>
                 </Form>
