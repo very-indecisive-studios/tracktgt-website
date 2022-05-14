@@ -3,16 +3,17 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
 import {
     backendAPIClientInstance,
-    PagedListResultOfGetAllUserTrackedGamesItemResult, TrackedGameFormat,
-    TrackedGameOwnership,
-    TrackedGameStatus
+    PagedListResultOfGetAllGameTrackingsItemResult, 
+    GameTrackingFormat,
+    GameTrackingOwnership,
+    GameTrackingStatus
 } from "backend";
 import { Link, useLoaderData } from "@remix-run/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
     const userId = await requireUserId(request);
     
-    const getAllUserTrackedGamesBackendAPIResponse = await backendAPIClientInstance.game_GetAllUserTrackedGames(
+    const getAllUserTrackedGamesBackendAPIResponse = await backendAPIClientInstance.game_GetAllGameTrackings(
         userId,
         null,
         false,
@@ -27,16 +28,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function Games() {
-    const data = useLoaderData<PagedListResultOfGetAllUserTrackedGamesItemResult>();
+    const data = useLoaderData<PagedListResultOfGetAllGameTrackingsItemResult>();
     const theme = useMantineTheme();
 
     const rows = data.items?.map((item) => (
         <tr key={item.gameRemoteId}>
             <td><Link style={{color: theme.colors.dark[1]}} to={`/home/games/${item.gameRemoteId}`}>{item.title}</Link></td>
             <td>{item.hoursPlayed}</td>
-            <td>{TrackedGameFormat[item.format!!]}</td>
-            <td>{TrackedGameStatus[item.status!!]}</td>
-            <td>{TrackedGameOwnership[item.ownership!!]}</td>
+            <td>{item.platform}</td>
+            <td>{GameTrackingFormat[item.format!!]}</td>
+            <td>{GameTrackingStatus[item.status!!]}</td>
+            <td>{GameTrackingOwnership[item.ownership!!]}</td>
         </tr>
     ));
     
@@ -49,6 +51,7 @@ export default function Games() {
                 <tr>
                     <th>Title</th>
                     <th>Hours Played</th>
+                    <th>Platform</th>
                     <th>Format</th>
                     <th>Status</th>
                     <th>Ownership</th>

@@ -1,12 +1,12 @@
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import {
     backendAPIClientInstance,
-    AddTrackedGameCommand,
-    RemoveTrackedGameCommand,
-    UpdateTrackedGameCommand,
-    TrackedGameFormat,
-    TrackedGameOwnership,
-    TrackedGameStatus
+    AddGameTrackingCommand,
+    RemoveGameTrackingCommand,
+    UpdateGameTrackingCommand,
+    GameTrackingFormat,
+    GameTrackingOwnership,
+    GameTrackingStatus
 } from "backend";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
@@ -21,7 +21,8 @@ const handleDelete = async (request: Request) => {
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
-            gameRemoteId: z.preprocess(preProcessToNumber, z.number())
+            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
+            platform: z.string(),
         });
 
     const parsedFormData = formDataSchema.safeParse(formData);
@@ -30,24 +31,25 @@ const handleDelete = async (request: Request) => {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
 
-    await backendAPIClientInstance.game_RemoveTrackedGame(new RemoveTrackedGameCommand({
+    await backendAPIClientInstance.game_RemoveGameTracking(new RemoveGameTrackingCommand({
         gameRemoteId: parsedFormData.data.gameRemoteId,
         userRemoteId: userId,
+        platform: parsedFormData.data.platform
     }));
 
     return redirect(`/home/games/${parsedFormData.data.gameRemoteId}`);
 }
 
 const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
-    const gameStatusesLength = Object.keys(TrackedGameStatus)
+    const gameStatusesLength = Object.keys(GameTrackingStatus)
         .filter((s) => isNaN(Number(s)))
         .length;
 
-    const gameFormatsLength = Object.keys(TrackedGameFormat)
+    const gameFormatsLength = Object.keys(GameTrackingFormat)
         .filter((s) => isNaN(Number(s)))
         .length;
 
-    const gameOwnershipsLength = Object.keys(TrackedGameOwnership)
+    const gameOwnershipsLength = Object.keys(GameTrackingOwnership)
         .filter((s) => isNaN(Number(s)))
         .length;
 
@@ -77,7 +79,7 @@ const handlePost = async (request: Request) => {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
 
-    await backendAPIClientInstance.game_AddTrackedGame(new AddTrackedGameCommand({
+    await backendAPIClientInstance.game_AddGameTracking(new AddGameTrackingCommand({
         gameRemoteId: parsedFormData.data.gameRemoteId,
         userRemoteId: userId,
         hoursPlayed: parsedFormData.data.hoursPlayed,
@@ -101,7 +103,7 @@ export const handlePut = async (request: Request) => {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
     
-    await backendAPIClientInstance.game_UpdateTrackedGame(new UpdateTrackedGameCommand({
+    await backendAPIClientInstance.game_UpdateGameTracking(new UpdateGameTrackingCommand({
         gameRemoteId: parsedFormData.data.gameRemoteId,
         userRemoteId: userId,
         hoursPlayed: parsedFormData.data.hoursPlayed,
