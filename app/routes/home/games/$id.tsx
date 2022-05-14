@@ -22,6 +22,7 @@ import { Edit, Plus, Star } from "tabler-icons-react";
 import { useEffect, useRef, useState } from "react";
 import TrackGameEditorModal from "~/components/TrackGameEditorModal";
 import { requireUserId } from "~/utils/session.server";
+import CoverImage from "~/components/CoverImage";
 
 interface LoaderData {
     game: GetGameResult;
@@ -65,19 +66,10 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({ coverImageURL, title, rating, platforms, companies, isTracked, onButtonClick }: GameHeaderProps) {
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
-    const imageRef = useRef<HTMLImageElement>(null);
-    useEffect(() => {
-        setIsImageLoaded(true);
-    }, [imageRef.current?.complete])
-
     return (
         <>
             <Stack mr={12}>
-                <Image imageRef={imageRef} onLoad={() => setIsImageLoaded(true)} src={coverImageURL} width={200}
-                       height={300}
-                       radius={"md"} hidden={!isImageLoaded}/>
-                {!isImageLoaded && <Skeleton width={200} height={300} radius={"md"}/>}
+                <CoverImage src={coverImageURL} width={200} height={300} />
 
                 <Button color={isTracked ? "orange" : "indigo"} 
                         onClick={onButtonClick} 
