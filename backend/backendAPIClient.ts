@@ -750,6 +750,7 @@ export interface IAddTrackedGameCommand {
 export enum TrackedGameFormat {
     Digital = 0,
     Physical = 1,
+    None = 2,
 }
 
 export enum TrackedGameStatus {
@@ -948,6 +949,7 @@ export interface IPagedListResultOfGetAllUserTrackedGamesItemResult {
 
 export class GetAllUserTrackedGamesItemResult implements IGetAllUserTrackedGamesItemResult {
     gameRemoteId?: number;
+    title?: string;
     hoursPlayed?: number;
     platform?: string;
     format?: TrackedGameFormat;
@@ -966,6 +968,7 @@ export class GetAllUserTrackedGamesItemResult implements IGetAllUserTrackedGames
     init(_data?: any) {
         if (_data) {
             this.gameRemoteId = _data["gameRemoteId"];
+            this.title = _data["title"];
             this.hoursPlayed = _data["hoursPlayed"];
             this.platform = _data["platform"];
             this.format = _data["format"];
@@ -984,6 +987,7 @@ export class GetAllUserTrackedGamesItemResult implements IGetAllUserTrackedGames
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["gameRemoteId"] = this.gameRemoteId;
+        data["title"] = this.title;
         data["hoursPlayed"] = this.hoursPlayed;
         data["platform"] = this.platform;
         data["format"] = this.format;
@@ -995,6 +999,7 @@ export class GetAllUserTrackedGamesItemResult implements IGetAllUserTrackedGames
 
 export interface IGetAllUserTrackedGamesItemResult {
     gameRemoteId?: number;
+    title?: string;
     hoursPlayed?: number;
     platform?: string;
     format?: TrackedGameFormat;
