@@ -4,7 +4,7 @@ import { Form, useActionData, useTransition } from "@remix-run/react";
 import { createUserSession, getUserId } from "~/utils/session.server";
 import { register } from "auth";
 import { z } from "zod";
-import { backendAPIClientInstance, BackendAPIException, CheckUserExistQuery, RegisterUserCommand } from "backend";
+import { backendAPIClientInstance, BackendAPIException, RegisterUserCommand } from "backend";
 
 interface ActionData {
     userName?: string;
@@ -70,7 +70,6 @@ export const action: ActionFunction = async ({ request }) => {
             }
         }
     } catch(err) {
-        console.log(err);
         const backendError = err as BackendAPIException
 
         return ({ formError: backendError.result ?? "Error occured while registering." });

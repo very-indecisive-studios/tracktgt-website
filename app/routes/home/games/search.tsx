@@ -5,7 +5,7 @@ import {
     SearchGamesResult
 } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import CoverImage from "~/components/CoverImage";
 
 export const loader: LoaderFunction = async ({request}) => {
     const url = new URL(request.url);
@@ -26,23 +26,13 @@ interface SearchResultItemProps {
 }
 
 function SearchResultItem({id, title, coverImageURL, platforms}: SearchResultItemProps) {
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
-    const imageRef = useRef<HTMLImageElement>(null);
-    useEffect(() => {
-        setIsImageLoaded(true);
-    }, [imageRef.current?.complete])
-    
     return (
         <div style={{width: "100%", margin: 'auto'}}>
             <Link to={`/home/games/${id}`} style={{textDecoration: "none"}}>
                 <Card shadow="xs" p="lg">
                     <Group align={"end"}>
-                        <Image imageRef={imageRef} onLoad={() => setIsImageLoaded(true)} src={coverImageURL} 
-                               hidden={!isImageLoaded}
-                               width={100}
-                               height={150}
-                               radius={"md"}/>
-                        { !isImageLoaded && <Skeleton width={100} height={150} radius={"md"}/> }
+                        <CoverImage src={coverImageURL} width={100} height={150} />
+                        
                         <Stack ml={8}>
                             <Title order={3}>{title}</Title>
                             <Group>
