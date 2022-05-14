@@ -15,10 +15,11 @@ import {
     backendAPIClientInstance, BackendAPIException,
     GetGameResult, GetTrackedGameResult, TrackedGameFormat, TrackedGameOwnership, TrackedGameStatus,
 } from "backend";
-import { Edit, Plus, Star } from "tabler-icons-react";
+import { Edit, Pencil, PlaylistAdd, Plus, Star, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/CoverImage";
 import { useModals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 
 interface LoaderData {
     game: GetGameResult;
@@ -121,7 +122,16 @@ export default function Game() {
                     <TextInput name={"gameRemoteId"} defaultValue={data?.game?.remoteId} hidden={true} />
                     <Group position={"right"} mt={32} >
                         <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Cancel</Button>
-                        <Button color={"red"} type={"submit"} onClick={modals.closeAll}>Yes, I am sure</Button>
+                        <Button color={"red"} type={"submit"} onClick={() => {
+                            showNotification({
+                                title: 'Successfully removed tracked game',
+                                message: `Removed ${data.game.title} for ${data.trackedGame?.platform} from tracking.`,
+                                icon: <TrashX size={16} />,
+                                color: "red"
+                            });
+                            
+                            modals.closeAll();
+                        }}>Yes, I am sure</Button>
                     </Group>
                 </Form>
             )
@@ -164,7 +174,25 @@ export default function Game() {
                         </Group>
                         <Group position={"right"}>
                             <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Cancel</Button>
-                            <Button type={"submit"} onClick={modals.closeAll}>
+                            <Button type={"submit"} onClick={() => {
+                                if (data.trackedGame) {
+                                    showNotification({
+                                        title: 'Successfully updated tracked game',
+                                        message: `Updated ${data.game.title} for ${data.trackedGame.platform}.`,
+                                        icon: <Pencil size={16} />,
+                                        color: "green"
+                                    });
+                                } else {
+                                    showNotification({
+                                        title: 'Successfully added tracked game',
+                                        message: `Added ${data.game.title} for tracking.`,
+                                        icon: <PlaylistAdd size={16} />,
+                                        color: "green"
+                                    });
+                                }
+                                
+                                modals.closeAll();
+                            }}>
                                 {data.trackedGame ? "Save" : "Add"}
                             </Button>
                         </Group>
