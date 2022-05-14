@@ -3,26 +3,22 @@
     Chip,
     Container,
     Group,
-    Image,
-    MediaQuery,
-    Skeleton,
+    MediaQuery, NumberInput, Select,
     Stack,
-    Text,
+    Text, TextInput,
     ThemeIcon,
     Title,
-    useMantineTheme
 } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import {
     backendAPIClientInstance, BackendAPIException,
-    GetGameResult, GetTrackedGameResult,
+    GetGameResult, GetTrackedGameResult, TrackedGameFormat, TrackedGameOwnership, TrackedGameStatus,
 } from "backend";
 import { Edit, Plus, Star } from "tabler-icons-react";
-import { useEffect, useRef, useState } from "react";
-import TrackGameEditorModal from "~/components/TrackGameEditorModal";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/CoverImage";
+import { useModals } from "@mantine/modals";
 
 interface LoaderData {
     game: GetGameResult;
@@ -74,13 +70,15 @@ export function GameHeader({ coverImageURL, title, rating, platforms, companies,
                 <Button color={isTracked ? "orange" : "indigo"} 
                         onClick={onButtonClick} 
                         leftIcon={isTracked ? <Edit size={20}/> : <Plus size={20}/>}>
-                    {isTracked ? "Edit tracking" : "Add to list"}
+                    {isTracked ? "Edit existing" : "Create tracking"}
                 </Button>
             </Stack>
+            
             <Stack spacing={"xs"}>
                 <Title order={1}>
                     {title}
                 </Title>
+                
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
@@ -107,10 +105,71 @@ export function GameHeader({ coverImageURL, title, rating, platforms, companies,
 
 export default function Game() {
     const data = useLoaderData<LoaderData>();
-    const [isModalOpened, setIsModalOpened] = useState(false);
     
-    const toggleModal = () => {
-        setIsModalOpened(value => !value);
+    const modals = useModals();
+
+    const showDeleteConfirmModal = () => {
+        const id = modals.openModal({
+            title: "Confirm deletion",
+            centered: true,
+            children: (
+                <Form action={"/home/games/track"} method={"delete"}>
+                    <Text>
+                        Are you sure you want to remove tracking for this game on <b>{data.trackedGame?.platform}</b>?
+                        This is an irreversable action!
+                    </Text>
+                    <TextInput name={"gameRemoteId"} defaultValue={data?.game?.remoteId} hidden={true} />
+                    <Group position={"right"} mt={32} >
+                        <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Cancel</Button>
+                        <Button color={"red"} type={"submit"} onClick={modals.closeAll}>Yes, I am sure</Button>
+                    </Group>
+                </Form>
+            )
+        });
+    }
+    
+    const showTrackGameEditorModal = () => {
+        const gameStatuses = Object.keys(TrackedGameStatus)
+            .filter((s) => isNaN(Number(s)))
+            .map((value, index) => ({value: index.toString(), label: value}))
+
+        const gameFormats = Object.keys(TrackedGameFormat)
+            .filter((s) => isNaN(Number(s)))
+            .map((value, index) => ({value: index.toString(), label: value}))
+
+        const gameOwnerships = Object.keys(TrackedGameOwnership)
+            .filter((s) => isNaN(Number(s)))
+            .map((value, index) => ({value: index.toString(), label: value}))
+
+        const gamePlatforms = data.game.platforms?.map(value => ({value: value, label: value})) ?? [];
+        
+        const id = modals.openModal({
+            title: "Game tracking editor",
+            centered: true,
+            children: (
+                <Form action={"/home/games/track"} method={"post"}>
+                    <TextInput name="gameRemoteId" hidden defaultValue={data.game.remoteId}/>
+                    <NumberInput name="hoursPlayed" label="Hours played" defaultValue={data.trackedGame?.hoursPlayed ?? 0}/>
+                    <Select name="platform" defaultValue={data.trackedGame?.platform ?? gamePlatforms[0].value} mt={16}
+                            label="Platform" data={gamePlatforms}/>
+                    <Select name="status" defaultValue={data.trackedGame?.status?.toString() ?? gameStatuses[0].value} mt={16}
+                            label="Status" data={gameStatuses}/>
+                    <Select name="format" defaultValue={data.trackedGame?.format?.toString() ?? gameFormats[0].value} mt={16}
+                            label="Format" data={gameFormats}/>
+                    <Select name="ownership" defaultValue={data.trackedGame?.ownership?.toString() ?? gameOwnerships[0].value}
+                            mt={16} label="Ownership" data={gameOwnerships}/>
+                    <Group mt={32} grow>
+                        <Group position={"left"}>
+                            { data.trackedGame && <Button color={"red"} onClick={showDeleteConfirmModal}>Remove</Button> }
+                        </Group>
+                        <Group position={"right"}>
+                            <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Discard</Button>
+                            <Button type={"submit"} onClick={modals.closeAll}>Save</Button>
+                        </Group>
+                    </Group>
+                </Form>
+            )
+        });
     }
 
     const gameHeader = <GameHeader coverImageURL={data.game.coverImageURL}
@@ -119,17 +178,10 @@ export default function Game() {
                                    platforms={data.game.platforms}
                                    companies={data.game.companies}
                                    isTracked={!!data.trackedGame}
-                                   onButtonClick={toggleModal}/>
+                                   onButtonClick={showTrackGameEditorModal}/>
 
     return (
         <Container py={16}>
-            <TrackGameEditorModal opened={isModalOpened} 
-                                  onModalClosed={toggleModal} 
-                                  gameRemoteId={data.game.remoteId ?? 0}
-                                  platforms={data.game.platforms ?? []}
-                                  trackedGame={data.trackedGame}
-            />
-
             <MediaQuery styles={{display: "none"}} largerThan={"sm"}>
                 <Stack>
                     {gameHeader}

@@ -1,8 +1,8 @@
-﻿import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json, redirect } from "@remix-run/node";
 import {
     AddTrackedGameCommand,
     backendAPIClientInstance,
-    BackendAPIException,
+    BackendAPIException, RemoveTrackedGameCommand,
     TrackedGameFormat,
     TrackedGameOwnership,
     TrackedGameStatus
@@ -11,13 +11,35 @@ import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
 import { requireUserId } from "~/utils/session.server";
 
-export const action: ActionFunction = async ({ request }) => {
-    if (request.method !== "POST") {
-        return json({message: "Method not allowed"}, 405);
-    }
-    
+export const handleDelete = async (request: Request) => {
     const userId = await requireUserId(request);
-    
+
+    let formData = Object.fromEntries(await request.formData())
+
+    // Validate form.
+    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
+    const formDataSchema = z
+        .object({
+            gameRemoteId: z.preprocess(preProcessToNumber, z.number())
+        });
+
+    const parsedFormData = formDataSchema.safeParse(formData);
+
+    if (!parsedFormData.success) {
+        return badRequest(parsedFormData.error.flatten().fieldErrors);
+    }
+
+    await backendAPIClientInstance.game_RemoveTrackedGame(new RemoveTrackedGameCommand({
+        gameRemoteId: parsedFormData.data.gameRemoteId,
+        userRemoteId: userId,
+    }));
+
+    return redirect(`/home/games/${parsedFormData.data.gameRemoteId}`);
+}
+
+export const handlePost = async (request: Request) => {
+    const userId = await requireUserId(request);
+
     let formData = Object.fromEntries(await request.formData())
 
     const gameStatusesLength = Object.keys(TrackedGameStatus)
@@ -62,9 +84,20 @@ export const action: ActionFunction = async ({ request }) => {
         }));
     } catch(err) {
         const backendError = err as BackendAPIException
-        
+
         throw backendError;
     }
 
     return redirect(`/home/games/${parsedFormData.data.gameRemoteId}`);
+}
+
+
+export const action: ActionFunction = async ({ request }) => {
+    if (request.method === "POST") {
+        return handlePost(request)
+    } else if (request.method === "DELETE") {
+        return handleDelete(request)
+    } else {
+        return json({message: "Method not allowed"}, 405);
+    }
 }

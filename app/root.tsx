@@ -9,6 +9,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import styles from "~/styles/root.css";
+import { ModalsProvider } from "@mantine/modals";
 
 export function links() {
 	return [{ rel: "stylesheet", href: styles }];
@@ -38,7 +39,9 @@ export default function App() {
       </head>
       <body>
         <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
-          <Outlet />
+          <ModalsProvider>
+            <Outlet />
+          </ModalsProvider>
         </MantineProvider>
         <ScrollRestoration />
         <Scripts />

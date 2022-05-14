@@ -33,7 +33,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 
     game_AddTrackedGame(addTrackedGameCommand: AddTrackedGameCommand): Promise<BackendAPIResponse<Unit>> {
-        let url_ = this.baseUrl + "/api/game/track/add";
+        let url_ = this.baseUrl + "/api/game/track";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(addTrackedGameCommand);
@@ -94,7 +94,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 
     game_RemoveTrackedGame(removeTrackedGameCommand: RemoveTrackedGameCommand): Promise<BackendAPIResponse<Unit>> {
-        let url_ = this.baseUrl + "/api/game/track/remove";
+        let url_ = this.baseUrl + "/api/game/track";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(removeTrackedGameCommand);
@@ -155,7 +155,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 
     game_UpdateTrackedGame(updateTrackedGameCommand: UpdateTrackedGameCommand): Promise<BackendAPIResponse<Unit>> {
-        let url_ = this.baseUrl + "/api/game/track/update";
+        let url_ = this.baseUrl + "/api/game/track";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(updateTrackedGameCommand);
@@ -215,8 +215,8 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    game_GetTrackedGames(userRemoteId: string | null | undefined, gameStatus: TrackedGameStatus | null | undefined, sortByHoursPlayed: boolean | undefined, sortByPlatform: boolean | undefined, sortByFormat: boolean | undefined, sortByOwnership: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetTrackedGamesItemResult>> {
-        let url_ = this.baseUrl + "/api/game/track/get?";
+    game_GetAllUserTrackedGames(userRemoteId: string | null | undefined, gameStatus: TrackedGameStatus | null | undefined, sortByHoursPlayed: boolean | undefined, sortByPlatform: boolean | undefined, sortByFormat: boolean | undefined, sortByOwnership: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllUserTrackedGamesItemResult>> {
+        let url_ = this.baseUrl + "/api/game/track?";
         if (userRemoteId !== undefined && userRemoteId !== null)
             url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
         if (gameStatus !== undefined && gameStatus !== null)
@@ -257,18 +257,18 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.processGame_GetTrackedGames(_response);
+            return this.processGame_GetAllUserTrackedGames(_response);
         });
     }
 
-    protected processGame_GetTrackedGames(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetTrackedGamesItemResult>> {
+    protected processGame_GetAllUserTrackedGames(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetAllUserTrackedGamesItemResult>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PagedListResultOfGetTrackedGamesItemResult.fromJS(resultData200);
+            result200 = PagedListResultOfGetAllUserTrackedGamesItemResult.fromJS(resultData200);
             return new BackendAPIResponse(status, _headers, result200);
             });
         } else if (status === 400) {
@@ -297,11 +297,11 @@ export class BackendAPIClient extends ExtBackendAPIClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetTrackedGamesItemResult>>(new BackendAPIResponse(status, _headers, null as any));
+        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetAllUserTrackedGamesItemResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
     game_GetTrackedGame(userRemoteId: string | null, gameRemoteId: number): Promise<BackendAPIResponse<GetTrackedGameResult>> {
-        let url_ = this.baseUrl + "/api/game/track/get/{userRemoteId}/{gameRemoteId}";
+        let url_ = this.baseUrl + "/api/game/track/{userRemoteId}/{gameRemoteId}";
         if (userRemoteId === undefined || userRemoteId === null)
             throw new Error("The parameter 'userRemoteId' must be defined.");
         url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
@@ -866,7 +866,7 @@ export interface IUpdateTrackedGameCommand {
     ownership?: TrackedGameOwnership;
 }
 
-export class PagedListResultOfGetTrackedGamesItemResult implements IPagedListResultOfGetTrackedGamesItemResult {
+export class PagedListResultOfGetAllUserTrackedGamesItemResult implements IPagedListResultOfGetAllUserTrackedGamesItemResult {
     page?: number;
     totalPages?: number;
     pageSize?: number;
@@ -876,9 +876,9 @@ export class PagedListResultOfGetTrackedGamesItemResult implements IPagedListRes
     totalCount?: number;
     hasPrevious?: boolean;
     hasNext?: boolean;
-    items?: GetTrackedGamesItemResult[];
+    items?: GetAllUserTrackedGamesItemResult[];
 
-    constructor(data?: IPagedListResultOfGetTrackedGamesItemResult) {
+    constructor(data?: IPagedListResultOfGetAllUserTrackedGamesItemResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -901,14 +901,14 @@ export class PagedListResultOfGetTrackedGamesItemResult implements IPagedListRes
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(GetTrackedGamesItemResult.fromJS(item));
+                    this.items!.push(GetAllUserTrackedGamesItemResult.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): PagedListResultOfGetTrackedGamesItemResult {
+    static fromJS(data: any): PagedListResultOfGetAllUserTrackedGamesItemResult {
         data = typeof data === 'object' ? data : {};
-        let result = new PagedListResultOfGetTrackedGamesItemResult();
+        let result = new PagedListResultOfGetAllUserTrackedGamesItemResult();
         result.init(data);
         return result;
     }
@@ -933,7 +933,7 @@ export class PagedListResultOfGetTrackedGamesItemResult implements IPagedListRes
     }
 }
 
-export interface IPagedListResultOfGetTrackedGamesItemResult {
+export interface IPagedListResultOfGetAllUserTrackedGamesItemResult {
     page?: number;
     totalPages?: number;
     pageSize?: number;
@@ -943,10 +943,10 @@ export interface IPagedListResultOfGetTrackedGamesItemResult {
     totalCount?: number;
     hasPrevious?: boolean;
     hasNext?: boolean;
-    items?: GetTrackedGamesItemResult[];
+    items?: GetAllUserTrackedGamesItemResult[];
 }
 
-export class GetTrackedGamesItemResult implements IGetTrackedGamesItemResult {
+export class GetAllUserTrackedGamesItemResult implements IGetAllUserTrackedGamesItemResult {
     gameRemoteId?: number;
     hoursPlayed?: number;
     platform?: string;
@@ -954,7 +954,7 @@ export class GetTrackedGamesItemResult implements IGetTrackedGamesItemResult {
     status?: TrackedGameStatus;
     ownership?: TrackedGameOwnership;
 
-    constructor(data?: IGetTrackedGamesItemResult) {
+    constructor(data?: IGetAllUserTrackedGamesItemResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -974,9 +974,9 @@ export class GetTrackedGamesItemResult implements IGetTrackedGamesItemResult {
         }
     }
 
-    static fromJS(data: any): GetTrackedGamesItemResult {
+    static fromJS(data: any): GetAllUserTrackedGamesItemResult {
         data = typeof data === 'object' ? data : {};
-        let result = new GetTrackedGamesItemResult();
+        let result = new GetAllUserTrackedGamesItemResult();
         result.init(data);
         return result;
     }
@@ -993,7 +993,7 @@ export class GetTrackedGamesItemResult implements IGetTrackedGamesItemResult {
     }
 }
 
-export interface IGetTrackedGamesItemResult {
+export interface IGetAllUserTrackedGamesItemResult {
     gameRemoteId?: number;
     hoursPlayed?: number;
     platform?: string;
@@ -1177,6 +1177,7 @@ export interface ISearchGamesResult {
 export class SearchGamesItemResult implements ISearchGamesItemResult {
     remoteId?: number;
     title?: string;
+    coverImageURL?: string;
     platforms?: string[];
 
     constructor(data?: ISearchGamesItemResult) {
@@ -1192,6 +1193,7 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
         if (_data) {
             this.remoteId = _data["remoteId"];
             this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
             if (Array.isArray(_data["platforms"])) {
                 this.platforms = [] as any;
                 for (let item of _data["platforms"])
@@ -1211,6 +1213,7 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
         data = typeof data === 'object' ? data : {};
         data["remoteId"] = this.remoteId;
         data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
         if (Array.isArray(this.platforms)) {
             data["platforms"] = [];
             for (let item of this.platforms)
@@ -1223,6 +1226,7 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
 export interface ISearchGamesItemResult {
     remoteId?: number;
     title?: string;
+    coverImageURL?: string;
     platforms?: string[];
 }
 
