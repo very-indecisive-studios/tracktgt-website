@@ -1,6 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import {
     AppShell,
     Header,
@@ -10,27 +10,70 @@ import {
     Burger,
     useMantineTheme,
     TextInput,
-    Grid,
+    Grid, Progress,
 } from '@mantine/core';
 import { Search } from "tabler-icons-react";
 import AppNavbar from "~/components/AppNavbar";
-import { Outlet } from "@remix-run/react";
+import { Outlet, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/SearchBar";
 
 export const loader: LoaderFunction = async ({request}) => {
     // Redirect to login if user is signed in.
     const userId = await requireUserId(request);
-    
+
     // Get user profile.
     return null;
+}
+
+const LoadingIndicator = () => {
+    const transition = useTransition();
+    
+    const [intervalId, setIntervalId] = useState(0);
+    const [progressVal, setProgressVal] = useState(0);
+    useEffect(() => {
+        if (transition.state === "submitting" || transition.state === "loading") {
+            window.clearInterval(intervalId)
+            setProgressVal(0);
+            
+            function increaseMyVar()
+            {
+                const maxValue = 100;
+                setProgressVal((value) => ++value % maxValue);
+            }
+
+            setIntervalId(window.setInterval(increaseMyVar,20))
+        } else {
+            setProgressVal(0);
+            window.clearInterval(intervalId)
+        }
+        
+        return () => { window.clearInterval(intervalId) };
+    }, [transition.state])
+
+    return (
+        <>
+            <Progress radius={"xs"} 
+                      color={"indigo"}
+                      size={"sm"}
+                      value={progressVal} 
+                      hidden={transition.state === "idle"}
+                      sx={(theme) => ({
+                          zIndex: 101,
+                          position: "fixed",
+                          width: "100vw"
+                      })}/>
+        </>
+    );
 }
 
 export default function Home() {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
+    const transition = useTransition();
 
     return (
         <>
+            <LoadingIndicator/>
             <AppShell
                 styles={{
                     main: {
@@ -41,7 +84,7 @@ export default function Home() {
                 asideOffsetBreakpoint="sm"
                 fixed
                 navbar={
-                    <AppNavbar opened={opened} userName={"User name"} profileImageURL={""} />
+                    <AppNavbar opened={opened} userName={"User name"} profileImageURL={""}/>
                 }
                 header={
                     <Header height={70} p="md">
@@ -51,7 +94,7 @@ export default function Home() {
                                     <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
                                 </Grid.Col>
                                 <Grid.Col span={6}>
-                                    <SearchBar />
+                                    <SearchBar/>
                                 </Grid.Col>
                                 <Grid.Col span={3}>
                                 </Grid.Col>
@@ -78,7 +121,7 @@ export default function Home() {
                     </Header>
                 }
             >
-                <Outlet />
+                <Outlet/>
             </AppShell>
         </>
     );
