@@ -1,7 +1,7 @@
 ﻿import { forwardRef } from "react";
-import { Avatar, Group, Menu, Navbar, UnstyledButton, Text, ThemeIcon, Divider } from "@mantine/core";
+import { Avatar, Group, Menu, Navbar, UnstyledButton, Text, ThemeIcon, Divider, useMantineTheme } from "@mantine/core";
 import { Book2, ChevronRight, DeviceGamepad, DeviceTv, Logout } from "tabler-icons-react";
-import { Link } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 
 interface NavbarLinkProps {
     icon: React.ReactElement;
@@ -82,6 +82,9 @@ interface NavbarUserProps {
 }
 
 function NavbarUser({ userName, profileImageURL }: NavbarUserProps) {
+    const theme = useMantineTheme();
+    const submit = useSubmit();
+    
     return (
         <Group>
             <Menu
@@ -96,7 +99,9 @@ function NavbarUser({ userName, profileImageURL }: NavbarUserProps) {
                 }
             >
                 <Menu.Label>Account</Menu.Label>
-                <Menu.Item icon={<Logout size={14} />}>Logout</Menu.Item>
+                <Menu.Item onClick={() => {
+                    submit(null, { method: "post", action: "/logout" });
+                }} icon={<Logout size={24} color={theme.colors.red[6]} />}>Logout</Menu.Item>
             </Menu>
         </Group>
     );
