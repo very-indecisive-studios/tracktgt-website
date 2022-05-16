@@ -32,7 +32,16 @@ export async function login(email: string, password: string): Promise<AuthResult
 
         return { userId: userCredentials.user.uid};
     } catch(err: any) {
-        return { error: (err as Error).message }
+        const code = (err as FirebaseError).code;
+        
+        let error = "Something went wrong. Try again later."
+        
+        let credentialsInvalidCodes = ["auth/user-not-found", "auth/wrong-password"];
+        if (credentialsInvalidCodes.includes(code)) {
+            error = "Email or password is incorrect!";
+        }
+        
+        return { error: error }
     }
 }
 
@@ -44,6 +53,8 @@ export async function register(email: string, password: string): Promise<AuthRes
         
         return { userId: userCredentials.user.uid};
     } catch(err: any) {
-        return { error: (err as Error).message }
+        let error = "Something went wrong. Try again later."
+        
+        return { error: error }
     }
 }
