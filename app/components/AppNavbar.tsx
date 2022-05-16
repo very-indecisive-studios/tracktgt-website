@@ -110,8 +110,8 @@ interface AppNavbarProps {
 
 export default function AppNavbar({ opened, userName, profileImageURL }: AppNavbarProps) {
     return (
-        <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{sm: 200, lg: 300}}>
-            <Navbar p="xs" width={{ base: 300 }}>
+        <Navbar p="md" hiddenBreakpoint="md" hidden={!opened} width={{md: 300}}>
+            <Navbar p="xs" width={{ md: 300 }}>
                 <Navbar.Section grow mt="xs">
                     <NavbarLink to={"/home/games"} icon={<DeviceGamepad size={18} />} label={"Games"} color={"blue"}  />
                     <NavbarLink to={"/home/shows"} icon={<DeviceTv size={18} />} label={"Shows"} color={"red"}  />
