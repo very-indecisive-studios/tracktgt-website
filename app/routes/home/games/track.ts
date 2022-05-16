@@ -1,4 +1,4 @@
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import {
     backendAPIClientInstance,
     AddGameTrackingCommand,
@@ -6,11 +6,57 @@ import {
     UpdateGameTrackingCommand,
     GameTrackingFormat,
     GameTrackingOwnership,
-    GameTrackingStatus
+    GameTrackingStatus, 
+    GetAllGameTrackingsItemResult
 } from "backend";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
 import { requireUserId } from "~/utils/session.server";
+
+export interface GameTrackingLoaderData {
+    items: GetAllGameTrackingsItemResult[],
+    totalNoOfPages: number
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+    const userId = await requireUserId(request);
+
+    let url = new URL(request.url);
+    let queryData = {
+        page: url.searchParams.get("page"),
+        status: url.searchParams.get("status")
+    }
+
+    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
+    const formDataSchema = z
+        .object({
+            page: z.preprocess(preProcessToNumber, z.number()),
+            status: z.string()
+        });
+
+    const parsedQueryData = formDataSchema.safeParse(queryData);
+
+    if (!parsedQueryData.success) {
+        return badRequest(parsedQueryData.error.flatten().fieldErrors);
+    }
+    
+    const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetAllGameTrackings(
+        userId,
+        (<any>GameTrackingStatus)[parsedQueryData.data.status],
+        true,
+        false,
+        false,
+        false,
+        false,
+        parsedQueryData.data.page,
+        5
+    );
+    
+    return json<GameTrackingLoaderData>({
+        items: getGameTrackingsBackendAPIResponse.result.items ?? [],
+        totalNoOfPages: getGameTrackingsBackendAPIResponse.result.totalPages ?? 0
+    });
+}
 
 const handleDelete = async (request: Request) => {
     const userId = await requireUserId(request);
@@ -118,11 +164,11 @@ export const handlePut = async (request: Request) => {
 
 export const action: ActionFunction = async ({ request }) => {
     if (request.method === "POST") {
-        return handlePost(request)
+        return handlePost(request);
     } else if (request.method === "DELETE") {
-        return handleDelete(request)
+        return handleDelete(request);
     } else if (request.method === "PUT") {
-        return handlePut(request)
+        return handlePut(request);
     } else {
         return json({message: "Method not allowed"}, 405);
     }
