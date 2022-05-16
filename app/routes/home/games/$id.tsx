@@ -174,7 +174,7 @@ export default function Game() {
             .map(platform => ({value: platform, label: platform}));
 
         const id = modals.openModal({
-            title: data.gameTrackings ? "Edit tracked game" : "Add tracked game",
+            title: gameTracking ? "Edit tracked game" : "Add tracked game",
             centered: true,
             children: (
                 <Form action={"/home/games/track"} method={gameTracking ? "put" : "post"}>
