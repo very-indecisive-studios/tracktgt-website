@@ -3,19 +3,11 @@ import { Form, useLocation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { Search } from "tabler-icons-react";
 
-const useStyles = createStyles((theme, _params, getRef) => ({
-    iconWrapper: {
-        display: "none"
-    },
-}));
-
 interface SearchBarTypeProps {
     type: string;
 }
 
 function SearchBarType({ type }: SearchBarTypeProps) {
-    const { classes } = useStyles();
-    
     let color = "grey";
     if (type === "games") {
         color = "blue";    
@@ -25,7 +17,11 @@ function SearchBarType({ type }: SearchBarTypeProps) {
         color = "yellow"
     }
     
-    return (<Chip classNames={classes} variant={"filled"} color={color} checked={true}>in {type}</Chip>);
+    return (<Chip styles={(theme) => ({
+        iconWrapper: {
+            display: "none"
+        },
+    })} variant={"filled"} color={color} checked={true}>in {type}</Chip>);
 }
 
 export default function SearchBar() {
@@ -36,11 +32,13 @@ export default function SearchBar() {
         const path = location.pathname.slice(1).split("/");
         if (path.length > 1) {
             setType(path[1]);
+        } else {
+            setType("");
         }
-    },[location])
+    },[location.pathname])
     
     return (                  
-        <Form action={"/home/games/search"}>
+        <Form hidden={!type} action={"/home/games/search"}>
             <TextInput 
                 name="title" 
                 placeholder={"Search"}  

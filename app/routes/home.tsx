@@ -88,7 +88,7 @@ export default function Home() {
                 }
                 header={
                     <Header height={70} p="md">
-                        <MediaQuery smallerThan="sm" styles={{display: 'none'}}>
+                        <MediaQuery smallerThan="md" styles={{display: 'none'}}>
                             <Grid columns={12} align={"center"}>
                                 <Grid.Col span={3}>
                                     <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
@@ -100,7 +100,7 @@ export default function Home() {
                                 </Grid.Col>
                             </Grid>
                         </MediaQuery>
-                        <MediaQuery largerThan="sm" styles={{display: 'none'}}>
+                        <MediaQuery largerThan="md" styles={{display: 'none'}}>
                             <Grid columns={12} align={"center"}>
                                 <Grid.Col span={1}>
                                     <Burger
