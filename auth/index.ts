@@ -58,3 +58,19 @@ export async function register(email: string, password: string): Promise<AuthRes
         return { error: error }
     }
 }
+
+export async function verifyHuman(captcha: string): Promise<boolean> {
+    const response = await fetch("https://hcaptcha.com/siteverify", {
+        method: "POST",
+        headers: {
+            'Content-Type': "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+            response: captcha,
+            secret: process.env.HCAPTCHA_SECRET ?? ""
+        })
+    });
+    
+    const {success} = JSON.parse(await response.text());
+    return success;
+}
