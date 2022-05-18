@@ -4,8 +4,8 @@ import { LoaderFunction, redirect } from "@remix-run/node";
 import { Link } from "@remix-run/react";
 import { ArrowRight } from "tabler-icons-react";
 import { getUserId } from "~/utils/session.server";
-import { Mesh, TextureLoader, Vector3 } from "three";
-import { Suspense, useRef, useState } from "react";
+import { InstancedMesh, Mesh, Object3D, TextureLoader, Vector3 } from "three";
+import { Suspense, useMemo, useRef, useState } from "react";
 import { ClientOnly } from "remix-utils";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -18,19 +18,61 @@ export const loader: LoaderFunction = async ({ request }) => {
     return null;
 }
 
-function MediaPoster(props: JSX.IntrinsicElements['mesh']) {
-	const map = useLoader(TextureLoader, "/sample1.jpg");
-	const ref = useRef<Mesh>(null!);
+interface MediaPostersProps {
+	opp: boolean;
+	xOffset: number;
+	yOffset: number;
+}
+
+function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
+	const count = 17;
+	const offset = 10;
+	const speed = 0.2;
+	
+	const maps = useLoader(TextureLoader, ["/sample1.jpg", "/sample2.jpg", "/sample3.jpg", "/sample4.jpg"]);
+	const ref = useRef<InstancedMesh>(null!);
+	const object3D = useMemo<Object3D>(() => new Object3D(), []);
+	const xPosArray = useMemo<Array<number>>(() => Array.from(Array(count).keys()).map(i => ((i - offset + xOffset) * 1.2)), []);
 
 	useFrame((state, delta, frame) => {
-		ref.current.position.x = ref.current.position.x + 0.075 * delta * (props.opp ? -1 : 1)
+		for (let i = 0; i < count; i++) {
+			let xPos = xPosArray[i];
+			
+			if (opp) {
+				if (xPos < -8) {
+					let next = i - 1;
+					if (next < 0) {
+						next = count - 1
+					}
+					xPos = xPosArray[next] + 1.2;
+
+				}
+				xPosArray[i] = xPos + (-speed * delta);
+			}
+			else {
+				if (xPos > 8) {
+					let next = i + 1;
+					if (next == count) { 
+						next = 0
+					}
+					xPos = xPosArray[next] - 1.2;
+					
+				}
+				xPosArray[i] = xPos + (speed * delta);
+			}
+						
+			object3D.position.set(xPosArray[i], yOffset, 0)
+			object3D.updateMatrix()
+			ref.current.setMatrixAt(i, object3D.matrix)
+			ref.current.instanceMatrix.needsUpdate = true
+		}
 	});
 
 	return (
-		<mesh ref={ref} scale={[2.4, 3.6, 1]} {...props}>
+		<instancedMesh ref={ref} args={[null, null, count]} scale={[2.4, 3.6, 1]}>
 			<planeGeometry />
-			<meshBasicMaterial map={map} />
-		</mesh>
+			<meshBasicMaterial map={maps[(Math.floor(Math.random() * 4))]} />
+		</instancedMesh>
 	)
 }
 
@@ -39,7 +81,7 @@ export function Content() {
 	return (
 		<>
 			<Header fixed height={72} py="md" px="xl" sx={(theme) => ({
-				background: "rgba(0, 0, 0, 0.65)",
+				background: "rgba(0, 0, 0, 0)",
 				borderColor: "rgba(0, 0, 0, 0)"
 			})}>
 				<Group position="apart">
@@ -62,35 +104,16 @@ export function Content() {
 					position: "absolute"
 				}} camera={{ position: [4, 0, 4], rotation: [0.25, 0.25, 0.25] }}>
 					<Suspense fallback={null}>
-						<MediaPoster position={[-9, 0, 0]} />
-						<MediaPoster position={[-6, 0, 0]} />
-						<MediaPoster position={[-3, 0, 0]} />
-						<MediaPoster position={[0, 0, 0]} />
-						<MediaPoster position={[3, 0, 0]} />
-						<MediaPoster position={[6, 0, 0]} />
-						<MediaPoster position={[9, 0, 0]} />						
-						
-						<MediaPoster position={[-9.25, 4, 0]} opp/>
-						<MediaPoster position={[-6.25, 4, 0]} opp/>
-						<MediaPoster position={[-3.25, 4, 0]} opp/>
-						<MediaPoster position={[0.25, 4, 0]} opp/>
-						<MediaPoster position={[3.25, 4, 0]} opp/>
-						<MediaPoster position={[6.25, 4, 0]} opp/>
-						<MediaPoster position={[9.25, 4, 0]} opp/>
-
-						<MediaPoster position={[-9.25, -4, 0]} opp/>
-						<MediaPoster position={[-6.25, -4, 0]} opp/>
-						<MediaPoster position={[-3.25, -4, 0]} opp/>
-						<MediaPoster position={[0.25,-4, 0]} opp/>
-						<MediaPoster position={[3.25, -4, 0]} opp/>
-						<MediaPoster position={[6.25, -4, 0]} opp/>
-						<MediaPoster position={[9.25, -4, 0]} opp/>
+						<MediaPosters opp={true} xOffset={0.75} yOffset={1.2} />
+						<MediaPosters opp={false} xOffset={0} yOffset={0} />
+						<MediaPosters opp={true} xOffset={0.75} yOffset={-1.2} />
 					</Suspense>
 				</Canvas>
+				
 				<Box sx={(theme) => ({
 					height: "100%",
 					width: "100%",
-					backgroundColor: "rgba(0, 0, 0, 0.8)",
+					backgroundColor: "rgba(0, 0, 0, 0.85)",
 					position: "relative"
 				})}>
 					<Stack mx={32} sx={(theme) => ({
