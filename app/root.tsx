@@ -1,4 +1,4 @@
-import { MantineProvider, MantineThemeOverride } from "@mantine/core";
+import { ButtonStylesParams, MantineProvider, MantineThemeOverride } from "@mantine/core";
 import type { MetaFunction } from "@remix-run/node";
 import {
     Links,
@@ -17,7 +17,7 @@ export function links() {
 }
 
 const appTheme: MantineThemeOverride = {
-    fontFamily: "'Work Sans'",
+    fontFamily: "'DM Sans'",
     headings: {
         fontFamily: "Poppins"
     },
@@ -39,7 +39,13 @@ export default function App() {
             <Links/>
         </head>
         <body>
-            <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
+            <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme} styles={{
+                Button: (theme, params: ButtonStylesParams) => ({
+                    root: {
+                        fontWeight: 400
+                    }
+                })
+            }}>
                 <ModalsProvider>
                     <NotificationsProvider autoClose={5000}>
                         <Outlet/>
