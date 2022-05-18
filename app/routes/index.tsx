@@ -25,9 +25,10 @@ interface MediaPostersProps {
 }
 
 function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
-	const count = 17;
-	const offset = 10;
-	const speed = 0.2;
+	const count = 10;
+	const offset = 5;
+	const speed = 0.05;
+	const outOfBounds = 6;
 	
 	const maps = useLoader(TextureLoader, ["/sample1.jpg", "/sample2.jpg", "/sample3.jpg", "/sample4.jpg"]);
 	const ref = useRef<InstancedMesh>(null!);
@@ -39,7 +40,7 @@ function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
 			let xPos = xPosArray[i];
 			
 			if (opp) {
-				if (xPos < -8) {
+				if (xPos < -outOfBounds) {
 					let next = i - 1;
 					if (next < 0) {
 						next = count - 1
@@ -50,7 +51,7 @@ function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
 				xPosArray[i] = xPos + (-speed * delta);
 			}
 			else {
-				if (xPos > 8) {
+				if (xPos > outOfBounds) {
 					let next = i + 1;
 					if (next == count) { 
 						next = 0
@@ -114,6 +115,7 @@ export function Content() {
 					height: "100%",
 					width: "100%",
 					backgroundColor: "rgba(0, 0, 0, 0.85)",
+					backdropFilter: "blur(6px)",
 					position: "relative"
 				})}>
 					<Stack mx={32} sx={(theme) => ({
