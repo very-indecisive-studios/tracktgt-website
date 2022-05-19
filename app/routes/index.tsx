@@ -128,13 +128,13 @@ export function Content() {
 						})}>Keep track of all your<br/>books, shows and games.</Title>
 	
 						<Group mt={18} >
-							<Button variant={"outline"} sx={(theme) => ({
+							<Button size={"lg"} variant={"outline"} sx={(theme) => ({
 								width: "fit-content",
 								color: theme.colors.gray[5],
 								borderColor: theme.colors.gray[5],
 							})}>Learn more</Button>
 	
-							<Button component={Link} to="/signup" variant={"filled"} rightIcon={<ArrowRight size={20} />} sx={(theme) => ({
+							<Button size={"lg"} component={Link} to="/signup" variant={"filled"} rightIcon={<ArrowRight size={20} />} sx={(theme) => ({
 								width: "fit-content"
 							})}>Get started</Button>
 						</Group>
