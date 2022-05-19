@@ -43,7 +43,7 @@ export const loader: LoaderFunction = async ({params, request}) => {
 
     return json<LoaderData>({
         game: game,
-        gameTrackings: getGameTrackingsBackendAPIResponse.result.gameTrackings ?? []
+        gameTrackings: getGameTrackingsBackendAPIResponse.result.items ?? []
     });
 }
 

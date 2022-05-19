@@ -55,7 +55,7 @@ export default function Search() {
         <Container py={16}>
             <Title mb={32} order={2}>Search results for "{title}"</Title>
             <Stack>
-                {searchResults?.games?.map(g => (
+                {searchResults?.items?.map(g => (
                     <SearchResultItem key={g.remoteId ?? 0}
                                       id={g.remoteId ?? 0}
                                       title={g.title ?? ""}

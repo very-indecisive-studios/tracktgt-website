@@ -1020,7 +1020,7 @@ export interface IGetAllGameTrackingsItemResult {
 }
 
 export class GetGameTrackingsResult implements IGetGameTrackingsResult {
-    gameTrackings?: GetGameTrackingsItemResult[];
+    items?: GetGameTrackingsItemResult[];
 
     constructor(data?: IGetGameTrackingsResult) {
         if (data) {
@@ -1033,10 +1033,10 @@ export class GetGameTrackingsResult implements IGetGameTrackingsResult {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["gameTrackings"])) {
-                this.gameTrackings = [] as any;
-                for (let item of _data["gameTrackings"])
-                    this.gameTrackings!.push(GetGameTrackingsItemResult.fromJS(item));
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetGameTrackingsItemResult.fromJS(item));
             }
         }
     }
@@ -1050,17 +1050,17 @@ export class GetGameTrackingsResult implements IGetGameTrackingsResult {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.gameTrackings)) {
-            data["gameTrackings"] = [];
-            for (let item of this.gameTrackings)
-                data["gameTrackings"].push(item.toJSON());
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
         }
         return data;
     }
 }
 
 export interface IGetGameTrackingsResult {
-    gameTrackings?: GetGameTrackingsItemResult[];
+    items?: GetGameTrackingsItemResult[];
 }
 
 export class GetGameTrackingsItemResult implements IGetGameTrackingsItemResult {
@@ -1192,7 +1192,7 @@ export interface IGetGameResult {
 }
 
 export class SearchGamesResult implements ISearchGamesResult {
-    games?: SearchGamesItemResult[];
+    items?: SearchGamesItemResult[];
 
     constructor(data?: ISearchGamesResult) {
         if (data) {
@@ -1205,10 +1205,10 @@ export class SearchGamesResult implements ISearchGamesResult {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["games"])) {
-                this.games = [] as any;
-                for (let item of _data["games"])
-                    this.games!.push(SearchGamesItemResult.fromJS(item));
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(SearchGamesItemResult.fromJS(item));
             }
         }
     }
@@ -1222,17 +1222,17 @@ export class SearchGamesResult implements ISearchGamesResult {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.games)) {
-            data["games"] = [];
-            for (let item of this.games)
-                data["games"].push(item.toJSON());
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
         }
         return data;
     }
 }
 
 export interface ISearchGamesResult {
-    games?: SearchGamesItemResult[];
+    items?: SearchGamesItemResult[];
 }
 
 export class SearchGamesItemResult implements ISearchGamesItemResult {
