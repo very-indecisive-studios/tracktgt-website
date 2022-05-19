@@ -1,4 +1,17 @@
-import { Button, Header, Image, Text, Title, Footer, Group, Box, Stack, Container, Center } from "@mantine/core";
+import {
+	Button,
+	Header,
+	Image,
+	Text,
+	Title,
+	Footer,
+	Group,
+	Box,
+	Stack,
+	Container,
+	Center,
+	MediaQuery
+} from "@mantine/core";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { Link } from "@remix-run/react";
 import { ArrowRight } from "tabler-icons-react";
@@ -58,6 +71,51 @@ const LandingHeader = () => {
 	);
 }
 
+const LandingHeroTitle = () => (
+	<>
+		<MediaQuery largerThan={"sm"} styles={{display: "none"}}>
+			<MediaQuery smallerThan={"sm"} styles={{fontSize: "42px"}}>
+				<Title order={1} sx={(theme) => ({
+					color: theme.colors.gray[0]
+				})}>Keep track of all your books, shows and games.</Title>
+			</MediaQuery>
+		</MediaQuery>
+
+		<MediaQuery smallerThan={"sm"} styles={{display: "none"}}>
+			<MediaQuery largerThan={"sm"} styles={{fontSize: "64px"}}>
+				<Title order={1} sx={(theme) => ({
+					color: theme.colors.gray[0]
+				})}>Keep track of all your<br/>books, shows and games.</Title>
+			</MediaQuery>
+		</MediaQuery>
+	</>
+)
+
+interface LandingFeatureProps {
+	src: string;
+	title: string;
+	content: string;
+	addMargin: boolean;
+}
+
+const LandingFeature = ({ src, title, content, addMargin }: LandingFeatureProps) => {
+	return (
+		<Container mt={addMargin ? 128 : 0}>
+			<Center>
+				<Stack align={"center"}>
+					<Image src={src} />
+					<Title mt={32} order={1} align={"center"} sx={(theme) => ({
+						color: theme.colors.gray[4]
+					})}>{title}</Title>
+					<Text size={"lg"} align={"center"} sx={(theme) => ({
+						color: theme.colors.gray[6]
+					})}>{content}</Text>
+				</Stack>
+			</Center>
+		</Container>
+	);
+}
+
 export function Content() {
 	return (
 		<main>
@@ -65,7 +123,7 @@ export function Content() {
 
 			<Box sx={(theme) => ({
 				height: "100vh",
-				maxHeight: "720px",
+				maxHeight: "840px",
 				position: "relative"
 			})}>
 				<LandingHeroScene />
@@ -81,10 +139,7 @@ export function Content() {
 						position: "absolute",
 						bottom: "64px",
 					})}>
-						<Title order={1} sx={(theme) => ({
-							fontSize: "64px",
-							color: theme.colors.gray[0]
-						})}>Keep track of all your<br/>books, shows and games.</Title>
+						<LandingHeroTitle />
 	
 						<Group mt={18} >
 							<Button component={"a"} href={"#features"} size={"lg"} variant={"outline"} sx={(theme) => ({
@@ -102,42 +157,20 @@ export function Content() {
 			</Box>
 			
 			<Stack py={128} id="features">
-				<Container>
-					<Center>
-						<Stack align={"center"}>
-							<Image src={"/landing_tabs.png"} />
-							<Title mt={32} order={1}>One browser tab is all you need</Title>
-							<Text size={"lg"} align={"center"}>
-								Say goodbye to Ctrl+Tab, tracktgt is your all-in-one companion
-								<br/>for tracking your books, shows and games.
-							</Text>
-						</Stack>
-					</Center>
-				</Container>
-
-				<Container mt={128}>
-					<Center>
-						<Stack align={"center"}>
-							<Image src={"/landing_organize.png"} />
-							<Title mt={32} order={1}>Never lose track and focus on what's next</Title>
-							<Text size={"lg"} align={"center"}>
-								Organize your queues, backlog, 'watch-later-more-like never' list intuitively
-							</Text>
-						</Stack>
-					</Center>
-				</Container>
-
-				<Container mt={128}>
-					<Center>
-						<Stack align={"center"}>
-							<Image src={"/landing_progress.png"} />
-							<Title mt={32} order={1}>Track your progress</Title>
-							<Text size={"lg"} align={"center"}>
-								Update your books, shows and games progress so you will never have to rewind
-							</Text>
-						</Stack>
-					</Center>
-				</Container>
+				<LandingFeature src={"/landing_tabs.png"} 
+								title={"One browser tab is all you need"} 
+								content={"Say goodbye to Ctrl+Tab, tracktgt tracks your books, shows and games."} 
+								addMargin={false}/>				
+				
+				<LandingFeature src={"/landing_organize.png"} 
+								title={"Never lose track and focus on what's next"} 
+								content={"Organize your queues, backlog, 'watch-later-more-like never' list intuitively"} 
+								addMargin={true}/>				
+				
+				<LandingFeature src={"/landing_progress.png"} 
+								title={"Never lose track and focus on what's next"} 
+								content={"Update your books, shows and games progress so you will never have to rewind"} 
+								addMargin={true}/>	
 			</Stack>
 			
 			
