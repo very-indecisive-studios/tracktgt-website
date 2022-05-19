@@ -27,7 +27,7 @@ const appTheme: MantineThemeOverride = {
 
 export const meta: MetaFunction = () => ({
     charset: "utf-8",
-    title: "TrackTGT",
+    title: "TrackTogether",
     viewport: "width=device-width,initial-scale=1",
 });
 
