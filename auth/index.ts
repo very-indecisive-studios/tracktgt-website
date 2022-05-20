@@ -1,21 +1,31 @@
-import { initializeApp, getApp, FirebaseError } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import * as firebaseClient from "firebase/app";
+import * as firebaseClientAuth from "firebase/auth";
+import * as firebaseAdmin from "firebase-admin/app";
+import * as firebaseAdminAuth from "firebase-admin/auth";
 
-function lazyInitialize() {
+function lazyInitializeClient() {
     try {
-        getApp()
+        firebaseClient.getApp()
     } catch {
-        const firebaseConfig = {
-            apiKey: "AIzaSyC95uMd-vIbnYZyE8hYN76PwbR_xaoOaxM",
-            authDomain: "vis-tracktgt.firebaseapp.com",
-            projectId: "vis-tracktgt",
-            storageBucket: "vis-tracktgt.appspot.com",
-            messagingSenderId: "1053065189777",
-            appId: "1:1053065189777:web:7542d160a0426324fe2230"
-        };
+        const serviceConfig = JSON.parse(
+            process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG as string
+        );
+        
+        // Initialize Firebase client
+        firebaseClient.initializeApp(serviceConfig);
+    }
+}
 
-        // Initialize Firebase
-        initializeApp(firebaseConfig);
+function lazyInitializeAdmin() {
+    if (firebaseAdmin.getApps().length === 0) {
+        const serviceAccount = JSON.parse(
+            process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+        );
+        
+        firebaseAdmin.initializeApp({
+            credential: firebaseAdmin.cert(serviceAccount),
+            databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+        });
     }
 }
 
@@ -25,14 +35,14 @@ export interface AuthResult {
 }
 
 export async function login(email: string, password: string): Promise<AuthResult> {
-    lazyInitialize();
+    lazyInitializeClient();
 
     try {
-        const userCredentials = await signInWithEmailAndPassword(getAuth(), email, password);
+        const userCredentials = await firebaseClientAuth.signInWithEmailAndPassword(firebaseClientAuth.getAuth(), email, password);
 
         return { userId: userCredentials.user.uid};
     } catch(err: any) {
-        const code = (err as FirebaseError).code;
+        const code = (err as firebaseClient.FirebaseError).code;
         
         let error = "Something went wrong. Try again later."
         
@@ -46,16 +56,44 @@ export async function login(email: string, password: string): Promise<AuthResult
 }
 
 export async function register(email: string, password: string): Promise<AuthResult> {
-    lazyInitialize();
+    lazyInitializeClient();
 
     try {
-        const userCredentials = await createUserWithEmailAndPassword(getAuth(), email, password);
+        const userCredentials = await firebaseClientAuth.createUserWithEmailAndPassword(firebaseClientAuth.getAuth(), email, password);
+        
+        await firebaseClientAuth.sendEmailVerification(userCredentials.user);
         
         return { userId: userCredentials.user.uid};
     } catch(err: any) {
         let error = "Something went wrong. Try again later."
         
         return { error: error }
+    }
+}
+
+export async function resendUserVerification(userId: string) {
+    lazyInitializeAdmin();
+
+    try {
+        const userRecord = await firebaseAdminAuth.getAuth().getUser(userId);
+
+        
+
+        return userRecord.emailVerified;
+    } catch (err: any) {
+        return false;
+    }
+}
+
+export async function checkUserVerification(userId: string): Promise<boolean> {
+    lazyInitializeAdmin();
+    
+    try {
+        const userRecord = await firebaseAdminAuth.getAuth().getUser(userId);
+        
+        return userRecord.emailVerified;
+    } catch (err: any) {
+        return false;
     }
 }
 

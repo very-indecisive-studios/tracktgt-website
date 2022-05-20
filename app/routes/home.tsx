@@ -1,5 +1,5 @@
 import { LoaderFunction } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
+import { requireUserId, requireVerifiedUserId } from "~/utils/session.server";
 import React, { forwardRef, useEffect, useState } from 'react';
 import {
     AppShell,
@@ -19,7 +19,7 @@ import SearchBar from "~/components/SearchBar";
 
 export const loader: LoaderFunction = async ({request}) => {
     // Redirect to login if user is signed in.
-    const userId = await requireUserId(request);
+    const userId = await requireVerifiedUserId(request);
 
     // Get user profile.
     return null;

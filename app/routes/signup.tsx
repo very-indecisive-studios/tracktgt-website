@@ -106,7 +106,7 @@ export const action: ActionFunction = async ({ request }) => {
         }));
 
         if (backendResult.status === 200) {
-            return createUserSession(authResult.userId, "/home");    
+            return createUserSession(authResult.userId, "/verify");    
         }
 
         return ({ formError: backendResult.result ?? "Error occured while registering." });
@@ -136,6 +136,8 @@ export default function SignUp() {
             <Container size={"xs"}>
                 <Title mb={24} order={1}>Create a tracktgt account</Title>
                 <Form method="post">
+                    <TextInput name="captcha" hidden defaultValue={captchaToken} />
+
                     <TextInput name="userName" label="Username" type="text" error={actionData?.userName}/>
                     <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
                     <PasswordInput mt={16} name="password" label="Password" error={actionData?.password} />

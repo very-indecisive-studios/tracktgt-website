@@ -1,4 +1,5 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import { checkUserVerification } from "../../auth";
 
 let sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -32,6 +33,14 @@ export async function requireUserId(request: Request) {
 	let session = await getUserSession(request);
 	let userId = session.get("userId");
 	if (!userId || typeof userId !== "string") throw redirect("/login");
+	return userId;
+}
+
+export async function requireVerifiedUserId(request: Request) {
+	let session = await getUserSession(request);
+	let userId = session.get("userId");
+	if (!userId || typeof userId !== "string") throw redirect("/login");
+	if (!(await checkUserVerification(userId))) throw redirect("/verify");
 	return userId;
 }
 
