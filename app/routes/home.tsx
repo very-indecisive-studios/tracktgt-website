@@ -1,5 +1,4 @@
-import { LoaderFunction } from "@remix-run/node";
-import { requireVerifiedUserId } from "~/utils/session.server";
+import { LoaderFunction, redirect } from "@remix-run/node";
 import React, { useEffect, useState } from 'react';
 import {
     AppShell,
@@ -11,14 +10,19 @@ import {
     Grid, Progress,
 } from '@mantine/core';
 import HomeNavbar from "~/components/HomeNavbar";
-import { Outlet, useTransition } from "@remix-run/react";
+import { Outlet, useFetcher, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/SearchBar";
+import { requireAuthInfo } from "~/utils/session.server";
+import { checkUserVerification } from "../../auth";
 
 export const loader: LoaderFunction = async ({request}) => {
-    // Redirect to login if user is signed in.
-    const userId = await requireVerifiedUserId(request);
-
-    // Get user profile.
+    // Redirect to login if user is not signed in.
+    const authInfo = await requireAuthInfo(request);
+    const isUserVerified = await checkUserVerification(authInfo.idToken);
+    if (!isUserVerified) {
+        return redirect("/account/verify");
+    }
+    
     return null;
 }
 
@@ -66,8 +70,17 @@ const LoadingIndicator = () => {
 export default function Home() {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
-    const transition = useTransition();
-
+    
+    // Refresh user session.
+    const fetcher = useFetcher();
+    useEffect(() => {
+        const id = window.setInterval(() => {
+            fetcher.submit(null, { method: "post", action: "/account/session"})
+        }, 300000)
+        
+        return () => window.clearInterval(id);
+    }, []);
+    
     return (
         <>
             <LoadingIndicator/>

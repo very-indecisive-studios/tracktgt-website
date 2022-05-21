@@ -1,40 +1,61 @@
-﻿import { Center, Container, Title, Text, Button, Stack } from "@mantine/core";
-import { Form, useActionData, useTransition } from "@remix-run/react";
+﻿import { Center, Container, Title, Text, Button, Stack, Group } from "@mantine/core";
+import { Form, useActionData, useSubmit, useTransition } from "@remix-run/react";
 import { UserCheck } from "tabler-icons-react";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
-import { checkUserVerification } from "auth";
+import { requireAuthInfo, requireUserId } from "~/utils/session.server";
+import { checkUserVerification, sendUserVerification } from "auth";
+import { z } from "zod";
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const user = await requireUserId(request);
+    const authInfo = await requireAuthInfo(request);
 
-    const isVerified = await checkUserVerification(user);
+    const isVerified = await checkUserVerification(authInfo.idToken);
 
     if (isVerified) {
-        redirect("/home");
+        return redirect("/home");
     }
     
     return null;
 }
 
 interface ActionData {
-    isVerified: boolean;
+    isVerified?: boolean;
+    isResend?: boolean;
 }
 
 export const action: ActionFunction = async ({ request }) => {
-    const user = await requireUserId(request);
+    let formData = Object.fromEntries(await request.formData());
+
+    // Validate form.
+    const formDataSchema = z
+        .object({
+            type: z.string().optional()
+        });
     
-    const isVerified = await checkUserVerification(user);
+    const { type } = formDataSchema.safeParse(formData).data;
     
-    if (isVerified) {
-        return redirect("/home");
+    if (type === "resend") {
+        const authInfo = await requireAuthInfo(request);
+
+        const isResend = await sendUserVerification(authInfo.idToken);
+        
+        return json<ActionData>({ isResend: isResend });
+    } else {
+        const authInfo = await requireAuthInfo(request);
+
+        const isVerified = await checkUserVerification(authInfo.idToken);
+
+        if (isVerified) {
+            return redirect("/home");
+        }
+
+        return json<ActionData>({ isVerified: isVerified });
     }
-    
-    return json<ActionData>({ isVerified: isVerified });
 }
 
 export default function Verify() {
     const actionData = useActionData<ActionData>();
+    const submit = useSubmit();
     const transition = useTransition();
 
     return (
@@ -55,9 +76,15 @@ export default function Verify() {
                         {(actionData?.isVerified ?? true) ? "Once completed, press on the button below." : "You are still not verified. Try again."}
                     </Text>
                     
-                    <Form method={"post"}>
-                        <Button type={"submit"} loading={transition.state === "submitting"}>Done</Button>
-                    </Form>
+                    <Group>
+                        <Button variant={"outline"} onClick={() => {
+                            submit({type: "resend"}, {method: "post"})
+                        }} disabled={transition.state === "submitting"}>Resend</Button>
+                        
+                        <Form method={"post"}>
+                            <Button type={"submit"} disabled={transition.state === "submitting"}>Done</Button>
+                        </Form>
+                    </Group>
                 </Stack>
             </Container>
         </Center>

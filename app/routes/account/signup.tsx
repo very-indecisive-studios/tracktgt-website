@@ -2,7 +2,7 @@ import { Button, Center, Container, createStyles, PasswordInput, Stack, Text, Te
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { createUserSession, getUserId } from "~/utils/session.server";
-import { register, verifyHuman } from "auth";
+import { register, sendUserVerification, verifyHuman } from "auth";
 import { z } from "zod";
 import { backendAPIClientInstance, BackendAPIException, RegisterUserCommand } from "backend";
 import { useState } from "react";
@@ -93,20 +93,22 @@ export const action: ActionFunction = async ({ request }) => {
     // Register with Firebase.
     const authResult = await register(email, password);
     
-    if (!authResult.userId || authResult.error) {
+    if (!authResult.authInfo || authResult.error) {
         return ({ formError: authResult.error ?? "Error occured while registering." });
     } 
+    
+    await sendUserVerification(authResult.authInfo.idToken);
     
     // Register with server.
     try {
         const backendResult = await backendAPIClientInstance.user_RegisterUser(new RegisterUserCommand({
-            remoteUserId: authResult.userId,
+            remoteUserId: authResult.authInfo.userId,
             email: email,
             userName: userName,
         }));
 
         if (backendResult.status === 200) {
-            return createUserSession(authResult.userId, "/account/verify");    
+            return createUserSession(authResult.authInfo, "/account/verify");    
         }
 
         return ({ formError: backendResult.result ?? "Error occured while registering." });

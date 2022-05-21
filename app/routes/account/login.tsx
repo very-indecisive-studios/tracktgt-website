@@ -68,11 +68,11 @@ export const action: ActionFunction = async ({request}) => {
     // Login with Firebase.
     const authResult = await login(email, password);
 
-    if (!authResult.userId || authResult.error) {
+    if (!authResult.authInfo || authResult.error) {
         return ({formError: authResult.error ?? "Error occured while logging in."});
     }
 
-    return createUserSession(authResult.userId, "/home");
+    return createUserSession(authResult.authInfo, "/home");
 }
 
 export default function Login() {

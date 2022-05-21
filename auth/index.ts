@@ -1,95 +1,164 @@
-import * as firebaseClient from "firebase/app";
-import * as firebaseClientAuth from "firebase/auth";
-import * as firebaseAdmin from "firebase-admin/app";
-import * as firebaseAdminAuth from "firebase-admin/auth";
+import dayjs from "dayjs";
 
-function lazyInitializeClient() {
-    try {
-        firebaseClient.getApp()
-    } catch {
-        const serviceConfig = JSON.parse(
-            process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG as string
-        );
-        
-        // Initialize Firebase client
-        firebaseClient.initializeApp(serviceConfig);
-    }
-}
+const serviceConfig = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT_CONFIG as string
+);
 
-function lazyInitializeAdmin() {
-    if (firebaseAdmin.getApps().length === 0) {
-        const serviceAccount = JSON.parse(
-            process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
-        );
-        
-        firebaseAdmin.initializeApp({
-            credential: firebaseAdmin.cert(serviceAccount),
-            databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-        });
-    }
+export interface AuthInfo {
+    userId: string;
+    idToken: string;
+    expiresAt: string;
+    refreshToken: string;
 }
 
 export interface AuthResult {
-    userId?: string;
+    authInfo?: AuthInfo;
     error?: string;
 }
 
 export async function login(email: string, password: string): Promise<AuthResult> {
-    lazyInitializeClient();
-
-    try {
-        const userCredentials = await firebaseClientAuth.signInWithEmailAndPassword(firebaseClientAuth.getAuth(), email, password);
-
-        return { userId: userCredentials.user.uid};
-    } catch(err: any) {
-        const code = (err as firebaseClient.FirebaseError).code;
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password,
+            returnSecureToken: true
+        })
+    });
+    
+    const responseBody = JSON.parse(await response.text())
+    if (responseBody.error) {
+        let error = "Something went wrong. Try again later.";
         
-        let error = "Something went wrong. Try again later."
-        
-        let credentialsInvalidCodes = ["auth/user-not-found", "auth/wrong-password"];
-        if (credentialsInvalidCodes.includes(code)) {
-            error = "Email or password is incorrect!";
+        if (["EMAIL_NOT_FOUND", "INVALID_PASSWORD"].includes(responseBody.error.message)) {
+            error = "Email or password is incorrect ";
         }
-        
-        return { error: error }
+        return { error: error};
     }
+    
+    return {
+        authInfo: {
+            userId: responseBody.localId,
+            idToken: responseBody.idToken,
+            expiresAt: dayjs().add(responseBody.expiresIn, "seconds").toISOString(),
+            refreshToken: responseBody.refreshToken,
+        }
+    };
 }
 
 export async function register(email: string, password: string): Promise<AuthResult> {
-    lazyInitializeClient();
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password,
+            returnSecureToken: true
+        })
+    });
 
-    try {
-        const userCredentials = await firebaseClientAuth.createUserWithEmailAndPassword(firebaseClientAuth.getAuth(), email, password);
+    const responseBody = JSON.parse(await response.text())
+    console.log(responseBody)
+    if (responseBody.error) {
+        let error = "Something went wrong. Try again later.";
         
-        await firebaseClientAuth.sendEmailVerification(userCredentials.user);
-        
-        return { userId: userCredentials.user.uid};
-    } catch(err: any) {
-        let error = "Something went wrong. Try again later."
-        
-        return { error: error }
+        return { error: error};
     }
+
+    return {
+        authInfo: {
+            userId: responseBody.localId,
+            idToken: responseBody.idToken,
+            expiresAt: dayjs().add(responseBody.expiresIn, "seconds").toISOString(),
+            refreshToken: responseBody.refreshToken,
+        }
+    };  
+}
+
+export async function refreshIdToken(refreshToken: string): Promise<AuthResult> {
+    const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+        })
+    });
+
+    const responseBody = JSON.parse(await response.text())
+    if (responseBody.error) {
+        return { error: "Sign in again."};
+    }
+
+    return {
+        authInfo: {
+            userId: responseBody.user_id,
+            idToken: responseBody.id_token,
+            expiresAt: dayjs().add(responseBody.expires_in, "seconds").toISOString(),
+            refreshToken: responseBody.refresh_token,
+        }
+    };
 }
 
 export async function passwordReset(email: string): Promise<boolean> {
-    lazyInitializeClient();
-
     try {
-        await firebaseClientAuth.sendPasswordResetEmail(firebaseClientAuth.getAuth(), email);
-        
-        return true;
+        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${serviceConfig.apiKey}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                requestType: "PASSWORD_RESET",
+                email: email
+            })
+        });
+
+        return response.ok;
     } catch (err: any) {
         return false;
     }
 }
 
-export async function checkUserVerification(userId: string): Promise<boolean> {
-    lazyInitializeAdmin();
-    
+export async function checkUserVerification(idToken: string): Promise<boolean> {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            idToken: idToken
+        })
+    });
+
+    const responseBody = JSON.parse(await response.text())
+    if (responseBody.error) {
+        return false;
+    }
+
+    return responseBody.users[0].emailVerified;
+}
+
+export async function sendUserVerification(idToken: string): Promise<boolean> {
     try {
-        const userRecord = await firebaseAdminAuth.getAuth().getUser(userId);
+        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${serviceConfig.apiKey}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                requestType: "VERIFY_EMAIL",
+                idToken: idToken
+            })
+        });
         
-        return userRecord.emailVerified;
+        return response.ok;
     } catch (err: any) {
         return false;
     }
