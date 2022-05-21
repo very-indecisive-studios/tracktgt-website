@@ -100,20 +100,20 @@ function NavbarUser({ userName, profileImageURL }: NavbarUserProps) {
             >
                 <Menu.Label>Account</Menu.Label>
                 <Menu.Item onClick={() => {
-                    submit(null, { method: "post", action: "/logout" });
+                    submit(null, { method: "post", action: "/account/logout" });
                 }} icon={<Logout size={24} color={theme.colors.red[6]} />}>Logout</Menu.Item>
             </Menu>
         </Group>
     );
 }
 
-interface AppNavbarProps {
+interface HomeNavbarProps {
     opened: boolean;
     userName: string;
     profileImageURL: string;
 }
 
-export default function AppNavbar({ opened, userName, profileImageURL }: AppNavbarProps) {
+export default function HomeNavbar({ opened, userName, profileImageURL }: HomeNavbarProps) {
     return (
         <Navbar p="md" hiddenBreakpoint="md" hidden={!opened} width={{md: 300}}>
             <Navbar p="xs" width={{ md: 300 }}>

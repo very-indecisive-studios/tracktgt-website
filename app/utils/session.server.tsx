@@ -32,21 +32,21 @@ export async function getUserId(request: Request) {
 export async function requireUserId(request: Request) {
 	let session = await getUserSession(request);
 	let userId = session.get("userId");
-	if (!userId || typeof userId !== "string") throw redirect("/login");
+	if (!userId || typeof userId !== "string") throw redirect("/account/login");
 	return userId;
 }
 
 export async function requireVerifiedUserId(request: Request) {
 	let session = await getUserSession(request);
 	let userId = session.get("userId");
-	if (!userId || typeof userId !== "string") throw redirect("/login");
-	if (!(await checkUserVerification(userId))) throw redirect("/verify");
+	if (!userId || typeof userId !== "string") throw redirect("/account/login");
+	if (!(await checkUserVerification(userId))) throw redirect("/account/verify");
 	return userId;
 }
 
 export async function endUserSession(request: Request) {
 	let session = await getSession(request.headers.get("Cookie"));
-	return redirect("/login", {
+	return redirect("/account/login", {
 		headers: { "Set-Cookie": await destroySession(session) },
 	});
 }

@@ -106,7 +106,7 @@ export const action: ActionFunction = async ({ request }) => {
         }));
 
         if (backendResult.status === 200) {
-            return createUserSession(authResult.userId, "/verify");    
+            return createUserSession(authResult.userId, "/account/verify");    
         }
 
         return ({ formError: backendResult.result ?? "Error occured while registering." });

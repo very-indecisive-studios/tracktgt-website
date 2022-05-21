@@ -6,10 +6,10 @@ import {
     Text,
     PasswordInput,
     Center,
-    Stack
+    Stack, useMantineTheme
 } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
+import { Form, Link, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { z } from "zod";
 import { createUserSession, getUserId } from "~/utils/session.server";
 import { login, verifyHuman } from "auth";
@@ -80,6 +80,8 @@ export default function Login() {
     const actionData = useActionData<ActionData>()
     const transition = useTransition()
     
+    const theme = useMantineTheme();
+    
     const [captchaToken, setCaptchaToken] = useState("");
     const handleVerificationSuccess = (token: string, ekey: string) => {
         setCaptchaToken(token);
@@ -93,9 +95,16 @@ export default function Login() {
             <Container size={"xs"}>
                     <Title mb={24} order={1}>Welcome back to tracktgt</Title>
                     <Form method="post">
+                          <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
+  
                         <TextInput name="captcha" hidden defaultValue={captchaToken} />
-                        <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
                         <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
+                        <Link to={"/account/passwordReset"} style={{
+                            color: theme.colors.indigo[6],
+                            fontSize: theme.fontSizes.sm
+                        }}>
+                            Forget password?
+                        </Link>
                         
                         <Stack mt={16} align={"center"}>
                             <HCaptcha

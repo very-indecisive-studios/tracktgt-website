@@ -1,19 +1,16 @@
 import { LoaderFunction } from "@remix-run/node";
-import { requireUserId, requireVerifiedUserId } from "~/utils/session.server";
-import React, { forwardRef, useEffect, useState } from 'react';
+import { requireVerifiedUserId } from "~/utils/session.server";
+import React, { useEffect, useState } from 'react';
 import {
     AppShell,
     Header,
     Image,
-    Text,
     MediaQuery,
     Burger,
     useMantineTheme,
-    TextInput,
     Grid, Progress,
 } from '@mantine/core';
-import { Search } from "tabler-icons-react";
-import AppNavbar from "~/components/AppNavbar";
+import HomeNavbar from "~/components/HomeNavbar";
 import { Outlet, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/SearchBar";
 
@@ -84,7 +81,7 @@ export default function Home() {
                 asideOffsetBreakpoint="sm"
                 fixed
                 navbar={
-                    <AppNavbar opened={opened} userName={"User name"} profileImageURL={""}/>
+                    <HomeNavbar opened={opened} userName={"User name"} profileImageURL={""}/>
                 }
                 header={
                     <Header height={70} p="md">

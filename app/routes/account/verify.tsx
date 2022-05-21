@@ -1,9 +1,9 @@
-﻿import { Center, Container, Title, Text, Button, Stack, Group } from "@mantine/core";
+﻿import { Center, Container, Title, Text, Button, Stack } from "@mantine/core";
 import { Form, useActionData, useTransition } from "@remix-run/react";
 import { UserCheck } from "tabler-icons-react";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
-import { checkUserVerification } from "../../auth";
+import { checkUserVerification } from "auth";
 
 export const loader: LoaderFunction = async ({ request }) => {
     const user = await requireUserId(request);

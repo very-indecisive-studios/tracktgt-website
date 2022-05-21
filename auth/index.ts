@@ -71,15 +71,13 @@ export async function register(email: string, password: string): Promise<AuthRes
     }
 }
 
-export async function resendUserVerification(userId: string) {
-    lazyInitializeAdmin();
+export async function passwordReset(email: string): Promise<boolean> {
+    lazyInitializeClient();
 
     try {
-        const userRecord = await firebaseAdminAuth.getAuth().getUser(userId);
-
+        await firebaseClientAuth.sendPasswordResetEmail(firebaseClientAuth.getAuth(), email);
         
-
-        return userRecord.emailVerified;
+        return true;
     } catch (err: any) {
         return false;
     }
