@@ -81,7 +81,7 @@ export default function Home() {
                 asideOffsetBreakpoint="sm"
                 fixed
                 navbar={
-                    <HomeNavbar opened={opened} userName={"User name"} profileImageURL={""}/>
+                    <HomeNavbar opened={opened} />
                 }
                 header={
                     <Header height={70} p="md">
