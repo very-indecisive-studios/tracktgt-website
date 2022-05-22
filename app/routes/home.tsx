@@ -1,5 +1,5 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
     AppShell,
     Header,
@@ -7,13 +7,14 @@ import {
     MediaQuery,
     Burger,
     useMantineTheme,
-    Grid, Progress,
+    Grid, Progress, MantineProvider, Center, Container, Stack, Title,
 } from '@mantine/core';
 import HomeNavbar from "~/components/HomeNavbar";
-import { Outlet, useFetcher, useTransition } from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, useCatch, useFetcher, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/SearchBar";
 import { requireAuthInfo } from "~/utils/session.server";
 import { checkUserVerification } from "../../auth";
+import { MoodConfuzed, QuestionMark } from "tabler-icons-react";
 
 export const loader: LoaderFunction = async ({request}) => {
     // Redirect to login if user is not signed in.
@@ -67,10 +68,68 @@ const LoadingIndicator = () => {
     );
 }
 
-export default function Home() {
+interface ShellProps {
+    children?: ReactNode
+}
+
+const Shell = ({ children }: ShellProps) => {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
-    
+
+    return (
+        <AppShell
+            styles={{
+                main: {
+                    background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
+                },
+            }}
+            navbarOffsetBreakpoint="sm"
+            asideOffsetBreakpoint="sm"
+            fixed
+            navbar={
+                <HomeNavbar opened={opened} />
+            }
+            header={
+                <Header height={70} p="md">
+                    <MediaQuery smallerThan="md" styles={{display: 'none'}}>
+                        <Grid columns={12} align={"center"}>
+                            <Grid.Col span={3}>
+                                <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
+                            </Grid.Col>
+                            <Grid.Col span={6}>
+                                <SearchBar/>
+                            </Grid.Col>
+                            <Grid.Col span={3}>
+                            </Grid.Col>
+                        </Grid>
+                    </MediaQuery>
+                    <MediaQuery largerThan="md" styles={{display: 'none'}}>
+                        <Grid columns={12} align={"center"}>
+                            <Grid.Col span={1}>
+                                <Burger
+                                    opened={opened}
+                                    onClick={() => setOpened((o) => !o)}
+                                    size="sm"
+                                    color={theme.colors.gray[6]}
+                                    mr="xl"
+                                />
+                            </Grid.Col>
+                            <Grid.Col span={2}>
+                                <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
+                            </Grid.Col>
+                            <Grid.Col span={4}>
+                            </Grid.Col>
+                        </Grid>
+                    </MediaQuery>
+                </Header>
+            }
+        >
+            {children}
+        </AppShell>
+    );
+}
+
+export default function Home() {
     // Refresh user session.
     const fetcher = useFetcher();
     useEffect(() => {
@@ -84,55 +143,54 @@ export default function Home() {
     return (
         <>
             <LoadingIndicator/>
-            <AppShell
-                styles={{
-                    main: {
-                        background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
-                    },
-                }}
-                navbarOffsetBreakpoint="sm"
-                asideOffsetBreakpoint="sm"
-                fixed
-                navbar={
-                    <HomeNavbar opened={opened} />
-                }
-                header={
-                    <Header height={70} p="md">
-                        <MediaQuery smallerThan="md" styles={{display: 'none'}}>
-                            <Grid columns={12} align={"center"}>
-                                <Grid.Col span={3}>
-                                    <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
-                                </Grid.Col>
-                                <Grid.Col span={6}>
-                                    <SearchBar/>
-                                </Grid.Col>
-                                <Grid.Col span={3}>
-                                </Grid.Col>
-                            </Grid>
-                        </MediaQuery>
-                        <MediaQuery largerThan="md" styles={{display: 'none'}}>
-                            <Grid columns={12} align={"center"}>
-                                <Grid.Col span={1}>
-                                    <Burger
-                                        opened={opened}
-                                        onClick={() => setOpened((o) => !o)}
-                                        size="sm"
-                                        color={theme.colors.gray[6]}
-                                        mr="xl"
-                                    />
-                                </Grid.Col>
-                                <Grid.Col span={2}>
-                                    <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
-                                </Grid.Col>
-                                <Grid.Col span={4}>
-                                </Grid.Col>
-                            </Grid>
-                        </MediaQuery>
-                    </Header>
-                }
-            >
+            <Shell>
                 <Outlet/>
-            </AppShell>
+            </Shell>
         </>
+    );
+}
+
+interface ErrorBoundaryProps {
+    error: Error;
+}
+
+export function ErrorBoundary({ error }: ErrorBoundaryProps) {
+    console.error(error);
+
+    return (
+        <Shell>
+            <Center sx={(theme) => ({
+                width: "100%",
+                height: "100%"
+            })}>
+                <Container size={"xs"}>
+                    <Stack align={"center"}>
+                        <MoodConfuzed size={96} />
+                        <Title mt={24} order={1}>Something went wrong!</Title>
+                    </Stack>
+                </Container>
+            </Center>
+        </Shell>
+    );
+}
+
+export function CatchBoundary() {
+    const caught = useCatch();
+
+    return (
+        <Shell>
+            bruh?
+            <Center sx={(theme) => ({
+                width: "100%",
+                height: "100%"
+            })}>
+                <Container size={"xs"}>
+                    <Stack align={"center"}>
+                        <QuestionMark size={96}/>
+                        <Title mt={24} order={1}>bruh wtf?? {caught.status} {caught.statusText}</Title>
+                    </Stack>
+                </Container>
+            </Center>
+        </Shell>
     );
 }

@@ -21,7 +21,7 @@ import {
 import { Link, useFetcher } from "@remix-run/react";
 import CoverImage from "~/components/CoverImage";
 import { Check, Clock, MoodConfuzed, PlayerPause, PlayerPlay } from "tabler-icons-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GameTrackingLoaderData } from "~/routes/home/games/track";
 
 interface GameTrackingStatusTableProps {
