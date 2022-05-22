@@ -2,9 +2,10 @@
 import { Form, useActionData, useSubmit, useTransition } from "@remix-run/react";
 import { UserCheck } from "tabler-icons-react";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { requireAuthInfo, requireUserId } from "~/utils/session.server";
+import { requireAuthInfo } from "~/utils/session.server";
 import { checkUserVerification, sendUserVerificationEmail } from "auth";
 import { z } from "zod";
+import { badRequest } from "~/utils/response.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
     const authInfo = await requireAuthInfo(request);
@@ -32,7 +33,12 @@ export const action: ActionFunction = async ({ request }) => {
             type: z.string().optional()
         });
     
-    const { type } = formDataSchema.safeParse(formData).data;
+    const parsedFormData = formDataSchema.safeParse(formData)
+    if (!parsedFormData.success) {
+        return badRequest(parsedFormData.error.flatten().fieldErrors);
+    }
+    
+    const {type} = parsedFormData.data;
     
     if (type === "resend") {
         const authInfo = await requireAuthInfo(request);

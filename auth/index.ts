@@ -63,7 +63,6 @@ export async function register(email: string, password: string): Promise<AuthRes
     });
 
     const responseBody = JSON.parse(await response.text())
-    console.log(responseBody)
     if (responseBody.error) {
         let error = "Something went wrong. Try again later.";
         
@@ -108,61 +107,49 @@ export async function refreshIdToken(refreshToken: string): Promise<AuthResult> 
 }
 
 export async function sendPasswordResetEmail(email: string): Promise<boolean> {
-    try {
-        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${serviceConfig.apiKey}`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                requestType: "PASSWORD_RESET",
-                email: email
-            })
-        });
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            requestType: "PASSWORD_RESET",
+            email: email
+        })
+    });
 
-        return response.ok;
-    } catch (err: any) {
-        return false;
-    }
+    return response.ok;
 }
 
 export async function checkPasswordResetCode(code: string): Promise<boolean> {
-    try {
-        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${serviceConfig.apiKey}`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                oobCode: code
-            })
-        });
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            oobCode: code
+        })
+    });
 
-        const responseBody = JSON.parse(await response.text())
-        return !responseBody.error;
-    } catch (err: any) {
-        return false;
-    }
+    const responseBody = JSON.parse(await response.text())
+    return !responseBody.error;
 }
 
 export async function setPasswordReset(code: string, newPassword: string): Promise<boolean> {
-    try {
-        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${serviceConfig.apiKey}`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                oobCode: code,
-                newPassword: newPassword
-            })
-        });
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            oobCode: code,
+            newPassword: newPassword
+        })
+    });
 
-        const responseBody = JSON.parse(await response.text())
-        return !responseBody.error;
-    } catch (err: any) {
-        return false;
-    }
+    const responseBody = JSON.parse(await response.text())
+    return !responseBody.error;
 }
 
 export async function checkUserVerification(idToken: string): Promise<boolean> {
@@ -185,22 +172,36 @@ export async function checkUserVerification(idToken: string): Promise<boolean> {
 }
 
 export async function sendUserVerificationEmail(idToken: string): Promise<boolean> {
-    try {
-        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${serviceConfig.apiKey}`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                requestType: "VERIFY_EMAIL",
-                idToken: idToken
-            })
-        });
-        
-        return response.ok;
-    } catch (err: any) {
-        return false;
-    }
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            requestType: "VERIFY_EMAIL",
+            idToken: idToken
+        })
+    });
+
+    const responseBody = JSON.parse(await response.text())
+   console.log(responseBody)
+
+    return response.ok;
+}
+
+export async function setUserVerification(code: string): Promise<boolean> {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${serviceConfig.apiKey}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            oobCode: code
+        })
+    });
+
+    const responseBody = JSON.parse(await response.text())
+    return !responseBody.error;
 }
 
 export async function verifyHuman(captcha: string): Promise<boolean> {
