@@ -1352,7 +1352,7 @@ export interface ISearchGamesItemResult {
 }
 
 export class RegisterUserCommand implements IRegisterUserCommand {
-    remoteUserId?: string;
+    userRemoteId?: string;
     email?: string;
     userName?: string;
 
@@ -1367,7 +1367,7 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.remoteUserId = _data["remoteUserId"];
+            this.userRemoteId = _data["userRemoteId"];
             this.email = _data["email"];
             this.userName = _data["userName"];
         }
@@ -1382,7 +1382,7 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["remoteUserId"] = this.remoteUserId;
+        data["userRemoteId"] = this.userRemoteId;
         data["email"] = this.email;
         data["userName"] = this.userName;
         return data;
@@ -1390,7 +1390,7 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 }
 
 export interface IRegisterUserCommand {
-    remoteUserId?: string;
+    userRemoteId?: string;
     email?: string;
     userName?: string;
 }

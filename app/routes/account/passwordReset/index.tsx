@@ -15,7 +15,7 @@ import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node"
 import { getUserId } from "~/utils/session.server";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
-import { passwordReset, verifyHuman } from "auth";
+import { sendPasswordResetEmail, verifyHuman } from "auth";
 
 interface LoaderData {
     captchaSitekey: string;
@@ -65,7 +65,7 @@ export const action: ActionFunction = async ({request}) => {
     const { email } = parsedFormData.data;
 
     // Login with Firebase.
-    await passwordReset(email);
+    await sendPasswordResetEmail(email);
 
     return json<ActionData>({
         isEmailSent: true

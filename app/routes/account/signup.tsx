@@ -2,7 +2,7 @@ import { Button, Center, Container, createStyles, PasswordInput, Stack, Text, Te
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { createUserSession, getUserId } from "~/utils/session.server";
-import { register, sendUserVerification, verifyHuman } from "auth";
+import { register, sendUserVerificationEmail, verifyHuman } from "auth";
 import { z } from "zod";
 import { backendAPIClientInstance, BackendAPIException, RegisterUserCommand } from "backend";
 import { useState } from "react";
@@ -97,12 +97,12 @@ export const action: ActionFunction = async ({ request }) => {
         return ({ formError: authResult.error ?? "Error occured while registering." });
     } 
     
-    await sendUserVerification(authResult.authInfo.idToken);
+    await sendUserVerificationEmail(authResult.authInfo.idToken);
     
     // Register with server.
     try {
         const backendResult = await backendAPIClientInstance.user_RegisterUser(new RegisterUserCommand({
-            remoteUserId: authResult.authInfo.userId,
+            userRemoteId: authResult.authInfo.userId,
             email: email,
             userName: userName,
         }));

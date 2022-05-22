@@ -3,7 +3,7 @@ import { Form, useActionData, useSubmit, useTransition } from "@remix-run/react"
 import { UserCheck } from "tabler-icons-react";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { requireAuthInfo, requireUserId } from "~/utils/session.server";
-import { checkUserVerification, sendUserVerification } from "auth";
+import { checkUserVerification, sendUserVerificationEmail } from "auth";
 import { z } from "zod";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -37,7 +37,7 @@ export const action: ActionFunction = async ({ request }) => {
     if (type === "resend") {
         const authInfo = await requireAuthInfo(request);
 
-        const isResend = await sendUserVerification(authInfo.idToken);
+        const isResend = await sendUserVerificationEmail(authInfo.idToken);
         
         return json<ActionData>({ isResend: isResend });
     } else {
