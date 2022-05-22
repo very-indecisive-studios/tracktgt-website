@@ -168,7 +168,7 @@ export function Content() {
 								addMargin={true}/>				
 				
 				<LandingFeature src={"/landing_progress.png"} 
-								title={"Never lose track and focus on what's next"} 
+								title={"Track your progress"} 
 								content={"Update your books, shows and games progress so you will never have to rewind"} 
 								addMargin={true}/>	
 			</Stack>
