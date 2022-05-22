@@ -148,7 +148,7 @@ export function Content() {
 								borderColor: theme.colors.gray[5],
 							})}>Learn more</Button>
 	
-							<Button size={"lg"} component={Link} to="/signup" variant={"filled"} rightIcon={<ArrowRight size={20} />} sx={(theme) => ({
+							<Button size={"lg"} component={Link} to="/account/signup" variant={"filled"} rightIcon={<ArrowRight size={20} />} sx={(theme) => ({
 								width: "fit-content"
 							})}>Get started</Button>
 						</Group>
