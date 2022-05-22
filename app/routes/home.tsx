@@ -1,27 +1,28 @@
-import { LoaderFunction } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
-import React, { forwardRef, useEffect, useState } from 'react';
+import { LoaderFunction, redirect } from "@remix-run/node";
+import React, { useEffect, useState } from 'react';
 import {
     AppShell,
     Header,
     Image,
-    Text,
     MediaQuery,
     Burger,
     useMantineTheme,
-    TextInput,
     Grid, Progress,
 } from '@mantine/core';
-import { Search } from "tabler-icons-react";
-import AppNavbar from "~/components/AppNavbar";
-import { Outlet, useTransition } from "@remix-run/react";
+import HomeNavbar from "~/components/HomeNavbar";
+import { Outlet, useFetcher, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/SearchBar";
+import { requireAuthInfo } from "~/utils/session.server";
+import { checkUserVerification } from "../../auth";
 
 export const loader: LoaderFunction = async ({request}) => {
-    // Redirect to login if user is signed in.
-    const userId = await requireUserId(request);
-
-    // Get user profile.
+    // Redirect to login if user is not signed in.
+    const authInfo = await requireAuthInfo(request);
+    const isUserVerified = await checkUserVerification(authInfo.idToken);
+    if (!isUserVerified) {
+        return redirect("/account/verify");
+    }
+    
     return null;
 }
 
@@ -69,8 +70,17 @@ const LoadingIndicator = () => {
 export default function Home() {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
-    const transition = useTransition();
-
+    
+    // Refresh user session.
+    const fetcher = useFetcher();
+    useEffect(() => {
+        const id = window.setInterval(() => {
+            fetcher.submit(null, { method: "post", action: "/account/session"})
+        }, 300000)
+        
+        return () => window.clearInterval(id);
+    }, []);
+    
     return (
         <>
             <LoadingIndicator/>
@@ -84,7 +94,7 @@ export default function Home() {
                 asideOffsetBreakpoint="sm"
                 fixed
                 navbar={
-                    <AppNavbar opened={opened} userName={"User name"} profileImageURL={""}/>
+                    <HomeNavbar opened={opened} />
                 }
                 header={
                     <Header height={70} p="md">

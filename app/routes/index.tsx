@@ -73,8 +73,8 @@ export default function Index() {
 						<Image height={32} src="/logo.svg">tracktgt</Image>
 					
 						<div className={classes.headerButtons}>
-							<Button component={Link} to="/login" variant="outline">Login</Button>
-							<Button component={Link} to="/signup">Sign Up</Button>
+							<Button component={Link} to="/account/login" variant="outline">Login</Button>
+							<Button component={Link} to="/account/signup">Sign Up</Button>
 						</div>
 					</div>
 				</Header>

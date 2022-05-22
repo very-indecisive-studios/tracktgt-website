@@ -607,6 +607,66 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         }
         return Promise.resolve<BackendAPIResponse<CheckUserExistResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
+
+    user_GetUser(userRemoteId: string | null): Promise<BackendAPIResponse<GetUserResult>> {
+        let url_ = this.baseUrl + "/api/user/user/{userRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_GetUser(_response);
+        });
+    }
+
+    protected processUser_GetUser(response: Response): Promise<BackendAPIResponse<GetUserResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetUserResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetUserResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
 }
 
 export class Unit implements IUnit {
@@ -1292,7 +1352,7 @@ export interface ISearchGamesItemResult {
 }
 
 export class RegisterUserCommand implements IRegisterUserCommand {
-    remoteUserId?: string;
+    userRemoteId?: string;
     email?: string;
     userName?: string;
 
@@ -1307,7 +1367,7 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.remoteUserId = _data["remoteUserId"];
+            this.userRemoteId = _data["userRemoteId"];
             this.email = _data["email"];
             this.userName = _data["userName"];
         }
@@ -1322,7 +1382,7 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["remoteUserId"] = this.remoteUserId;
+        data["userRemoteId"] = this.userRemoteId;
         data["email"] = this.email;
         data["userName"] = this.userName;
         return data;
@@ -1330,7 +1390,7 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 }
 
 export interface IRegisterUserCommand {
-    remoteUserId?: string;
+    userRemoteId?: string;
     email?: string;
     userName?: string;
 }
@@ -1373,6 +1433,46 @@ export class CheckUserExistResult implements ICheckUserExistResult {
 export interface ICheckUserExistResult {
     isUserNameTaken?: boolean;
     isEmailTaken?: boolean;
+}
+
+export class GetUserResult implements IGetUserResult {
+    userName?: string;
+    email?: string;
+
+    constructor(data?: IGetUserResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+        }
+    }
+
+    static fromJS(data: any): GetUserResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        return data;
+    }
+}
+
+export interface IGetUserResult {
+    userName?: string;
+    email?: string;
 }
 
 export class BackendAPIResponse<TResult> {

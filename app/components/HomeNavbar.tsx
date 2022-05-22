@@ -1,7 +1,20 @@
-﻿import { forwardRef } from "react";
-import { Avatar, Group, Menu, Navbar, UnstyledButton, Text, ThemeIcon, Divider } from "@mantine/core";
+﻿import { forwardRef, useEffect, useState } from "react";
+import {
+    Avatar,
+    Group,
+    Menu,
+    Navbar,
+    UnstyledButton,
+    Text,
+    ThemeIcon,
+    Divider,
+    useMantineTheme,
+    Loader
+} from "@mantine/core";
 import { Book2, ChevronRight, DeviceGamepad, DeviceTv, Logout } from "tabler-icons-react";
-import { Link } from "@remix-run/react";
+import { Link, useFetcher, useSubmit } from "@remix-run/react";
+import { UserLoaderData } from "~/routes/home/user";
+import { GetUserResult } from "../../backend";
 
 interface NavbarLinkProps {
     icon: React.ReactElement;
@@ -40,8 +53,8 @@ function NavbarLink({ icon, label, color, to }: NavbarLinkProps) {
 }
 
 interface UserButtonProps extends React.ComponentPropsWithoutRef<'button'> {
-    profileImageURL: string;
-    userName: string;
+    profileImageURL: string | undefined;
+    userName: string | undefined;
 }
 
 const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
@@ -65,9 +78,10 @@ const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
                 <Avatar src={profileImageURL} radius="xl" />
                 
                 <div style={{ flex: 1 }}>
-                    <Text px={4} size="sm" weight={500}>
-                        {userName}
-                    </Text>
+                    {userName ?
+                        <Text px={4} size="sm" weight={500}>
+                            {userName}
+                        </Text> : <Loader size={"sm"} variant={"dots"} />}
                 </div>
                 
                 <ChevronRight size={18} />
@@ -76,12 +90,22 @@ const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
     )
 );
 
-interface NavbarUserProps {
-    userName: string;
-    profileImageURL: string;
-}
-
-function NavbarUser({ userName, profileImageURL }: NavbarUserProps) {
+function NavbarUser() {
+    const theme = useMantineTheme();
+    const submit = useSubmit();
+    
+    const [user, setUser] = useState<GetUserResult>();
+    
+    const fetcher = useFetcher<UserLoaderData>();
+    useEffect(() => {
+        fetcher.submit({}, { action: "/home/user", method: "get" })
+    }, []);
+    useEffect(() => {
+        if (fetcher.type == "done") {
+            setUser(fetcher.data.user);
+        }
+    }, [fetcher.type]);
+    
     return (
         <Group>
             <Menu
@@ -90,25 +114,25 @@ function NavbarUser({ userName, profileImageURL }: NavbarUserProps) {
                 placement="end"
                 control={
                     <UserButton
-                        profileImageURL={profileImageURL}
-                        userName={userName}
+                        profileImageURL={""}
+                        userName={user?.userName}
                     />
                 }
             >
                 <Menu.Label>Account</Menu.Label>
-                <Menu.Item icon={<Logout size={14} />}>Logout</Menu.Item>
+                <Menu.Item onClick={() => {
+                    submit(null, { method: "post", action: "/account/logout" });
+                }} icon={<Logout size={24} color={theme.colors.red[6]} />}>Logout</Menu.Item>
             </Menu>
         </Group>
     );
 }
 
-interface AppNavbarProps {
+interface HomeNavbarProps {
     opened: boolean;
-    userName: string;
-    profileImageURL: string;
 }
 
-export default function AppNavbar({ opened, userName, profileImageURL }: AppNavbarProps) {
+export default function HomeNavbar({ opened }: HomeNavbarProps) {
     return (
         <Navbar p="md" hiddenBreakpoint="md" hidden={!opened} width={{md: 300}}>
             <Navbar p="xs" width={{ md: 300 }}>
@@ -119,7 +143,7 @@ export default function AppNavbar({ opened, userName, profileImageURL }: AppNavb
                 </Navbar.Section>
                 <Divider my="sm" />
                 <Navbar.Section>
-                    <NavbarUser userName={userName} profileImageURL={profileImageURL} />
+                    <NavbarUser />
                 </Navbar.Section>
             </Navbar>
         </Navbar>
