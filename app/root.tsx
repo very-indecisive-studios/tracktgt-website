@@ -1,10 +1,8 @@
 import {
-    ButtonStylesParams, Center,
-    Container,
+    ButtonStylesParams,
     MantineProvider,
     MantineThemeOverride,
-    Stack,
-    Title
+    useMantineTheme
 } from "@mantine/core";
 import type { MetaFunction } from "@remix-run/node";
 import {
@@ -75,6 +73,8 @@ interface ErrorBoundaryProps {
 export function ErrorBoundary({error}: ErrorBoundaryProps) {
     console.error(error);
 
+    const theme = useMantineTheme();
+
     return (
         <html>
         <head>
@@ -82,21 +82,29 @@ export function ErrorBoundary({error}: ErrorBoundaryProps) {
             <Meta/>
             <Links/>
         </head>
-        <body>
-        <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
-            <Center sx={(theme) => ({
-                width: "100vw",
-                height: "100vh"
-            })}>
-                <Container size={"xs"}>
-                    <Stack align={"center"}>
-                        <MoodConfuzed size={96}/>
-                        <Title mt={24} order={1}>Something went wrong!</Title>
-                    </Stack>
-                </Container>
-            </Center>
-        </MantineProvider>
-
+        <body style={{
+            margin: "0px",
+            fontFamily: "Poppins"
+        }}>
+        <div style={{
+            width: "100vw",
+            height: "100vh",
+            background: theme.colors.gray[9],
+            display: "flex",
+            flexDirection: "column",
+            alignContent: "center",
+            justifyContent: "center",
+        }}>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                color: theme.colors.gray[0]
+            }}>
+                <MoodConfuzed size={96}/>
+                <h1>Something went wrong!</h1>
+            </div>
+        </div>
         <Scripts/>
         </body>
         </html>
@@ -105,6 +113,7 @@ export function ErrorBoundary({error}: ErrorBoundaryProps) {
 
 export function CatchBoundary() {
     const caught = useCatch();
+    const theme = useMantineTheme();
     
     return (
         <html>
@@ -113,21 +122,29 @@ export function CatchBoundary() {
             <Meta/>
             <Links/>
         </head>
-        <body>
-        <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
-            <Center sx={(theme) => ({
-                width: "100vw",
-                height: "100vh"
-            })}>
-                <Container size={"xs"}>
-                    <Stack align={"center"}>
-                        <QuestionMark size={96}/>
-                        <Title mt={24} order={1}>{caught.status} {caught.statusText}</Title>
-                    </Stack>
-                </Container>
-            </Center>
-        </MantineProvider>
-
+        <body style={{
+            margin: "0px",
+            fontFamily: "Poppins"
+        }}>
+        <div style={{
+            width: "100vw",
+            height: "100vh",
+            background: theme.colors.gray[9],
+            display: "flex",
+            flexDirection: "column",
+            alignContent: "center",
+            justifyContent: "center",
+        }}>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                color: theme.colors.gray[0]
+            }}>
+                <QuestionMark size={96}/>
+                <h1>{caught.status} {caught.statusText}</h1>
+            </div>
+        </div>
         <Scripts/>
         </body>
         </html>

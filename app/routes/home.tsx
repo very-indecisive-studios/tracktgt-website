@@ -179,6 +179,7 @@ export function CatchBoundary() {
 
     return (
         <Shell>
+            bruh?
             <Center sx={(theme) => ({
                 width: "100%",
                 height: "100%"
@@ -186,7 +187,7 @@ export function CatchBoundary() {
                 <Container size={"xs"}>
                     <Stack align={"center"}>
                         <QuestionMark size={96}/>
-                        <Title mt={24} order={1}>{caught.status} {caught.statusText}</Title>
+                        <Title mt={24} order={1}>bruh wtf?? {caught.status} {caught.statusText}</Title>
                     </Stack>
                 </Container>
             </Center>
