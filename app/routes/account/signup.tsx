@@ -1,10 +1,10 @@
-import { Button, Center, Container, createStyles, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Center, Container, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
-import { createUserSession, getUserId } from "~/utils/session.server";
+import { redirectWithUserSession, getUserId } from "~/utils/session.server";
 import { register, sendUserVerificationEmail, verifyHuman } from "auth";
 import { z } from "zod";
-import { backendAPIClientInstance, BackendAPIException, RegisterUserCommand } from "backend";
+import { backendAPIClientInstance, RegisterUserCommand } from "backend";
 import { useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { badRequest } from "~/utils/response.server";
@@ -66,28 +66,18 @@ export const action: ActionFunction = async ({ request }) => {
     const { email, password, userName } = parsedFormData.data;
 
     // Validate user name and email with server.
-    try {
-        const backendResult = await backendAPIClientInstance.user_CheckUserExist(
-            userName,
-            email,
-        );
+    const checkUserExistBackendResponse = await backendAPIClientInstance.user_CheckUserExist(
+        userName,
+        email,
+    );
 
-        if (backendResult.status !== 200) {
-            return ({ formError: backendResult.result ?? "Error occured while registering." });
+    const { isUserNameTaken, isEmailTaken } =  checkUserExistBackendResponse.result;
+    
+    if (isUserNameTaken || isEmailTaken) {
+        return {
+            userName: isUserNameTaken ? "Username taken." : null,
+            email: isEmailTaken ? "Email taken." : null
         }
-        
-        const { isUserNameTaken, isEmailTaken } =  backendResult.result;
-        
-        if (isUserNameTaken || isEmailTaken) {
-            return {
-                userName: isUserNameTaken ? "Username taken." : null,
-                email: isEmailTaken ? "Email taken." : null
-            }
-        }
-    } catch(err) {
-        const backendError = err as BackendAPIException
-
-        return ({ formError: backendError.result ?? "Error occured while registering." });
     }
     
     // Register with Firebase.
@@ -97,27 +87,17 @@ export const action: ActionFunction = async ({ request }) => {
         return ({ formError: authResult.error ?? "Error occured while registering." });
     } 
     
+    // Send email verification.
     await sendUserVerificationEmail(authResult.authInfo.idToken);
     
     // Register with server.
-    try {
-        const backendResult = await backendAPIClientInstance.user_RegisterUser(new RegisterUserCommand({
-            userRemoteId: authResult.authInfo.userId,
-            email: email,
-            userName: userName,
-        }));
+    await backendAPIClientInstance.user_RegisterUser(new RegisterUserCommand({
+        userRemoteId: authResult.authInfo.userId,
+        email: email,
+        userName: userName,
+    }));
 
-        if (backendResult.status === 200) {
-            return createUserSession(authResult.authInfo, "/account/verify");    
-        }
-
-        return ({ formError: backendResult.result ?? "Error occured while registering." });
-
-    } catch(err) {
-        const backendError = err as BackendAPIException
-
-        return ({ formError: backendError.result ?? "Error occured while registering." });
-    }
+    return redirectWithUserSession(authResult.authInfo, "/account/verify");    
 }
 
 export default function SignUp() {

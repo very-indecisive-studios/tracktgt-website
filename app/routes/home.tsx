@@ -7,24 +7,42 @@ import {
     MediaQuery,
     Burger,
     useMantineTheme,
-    Grid, Progress, MantineProvider, Center, Container, Stack, Title,
+    Grid, Progress, Center, Container, Stack, Title,
 } from '@mantine/core';
 import HomeNavbar from "~/components/HomeNavbar";
-import { Links, Meta, Outlet, Scripts, useCatch, useFetcher, useTransition } from "@remix-run/react";
+import { Outlet, useCatch, useFetcher, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/SearchBar";
-import { requireAuthInfo } from "~/utils/session.server";
-import { checkUserVerification } from "../../auth";
+import {
+    hasValidAuthInfo,
+    removeUserSession,
+    requireAuthInfo,
+    okWithUserSession
+} from "~/utils/session.server";
+import { refresh } from "auth";
 import { MoodConfuzed, QuestionMark } from "tabler-icons-react";
 
 export const loader: LoaderFunction = async ({request}) => {
     // Redirect to login if user is not signed in.
-    const authInfo = await requireAuthInfo(request);
-    const isUserVerified = await checkUserVerification(authInfo.idToken);
-    if (!isUserVerified) {
+    let authInfo = await requireAuthInfo(request);
+    
+    // Check if auth info is still valid.
+    const isAuthInfoValid = await hasValidAuthInfo(request);
+    if (!isAuthInfoValid) {
+        const authResult = await refresh(authInfo.refreshToken);
+        
+        if (!authResult.authInfo || authResult.error) {
+            return await removeUserSession(request);
+        }
+        
+        authInfo = authResult.authInfo;
+    }
+    
+    // Check if user is verified.
+    if (!authInfo.isVerified) {
         return redirect("/account/verify");
     }
     
-    return null;
+    return await okWithUserSession(authInfo);
 }
 
 const LoadingIndicator = () => {

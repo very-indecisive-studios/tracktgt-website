@@ -132,7 +132,7 @@ export function Content() {
 					height: "100%",
 					width: "100%",
 					backgroundColor: "rgba(0, 0, 0, 0.85)",
-					backdropFilter: "blur(3px)",
+					backdropFilter: "",
 					position: "relative"
 				})}>
 					<Stack mx={32} sx={(theme) => ({

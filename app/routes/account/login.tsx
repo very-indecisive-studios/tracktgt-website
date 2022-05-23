@@ -11,7 +11,7 @@ import {
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { z } from "zod";
-import { createUserSession, getUserId } from "~/utils/session.server";
+import { redirectWithUserSession, getUserId } from "~/utils/session.server";
 import { login, verifyHuman } from "auth";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useState } from "react";
@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({request}) => {
         return ({formError: authResult.error ?? "Error occured while logging in."});
     }
 
-    return createUserSession(authResult.authInfo, "/home");
+    return redirectWithUserSession(authResult.authInfo, "/home");
 }
 
 export default function Login() {

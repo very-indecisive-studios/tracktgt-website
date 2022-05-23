@@ -9,6 +9,7 @@ export interface AuthInfo {
     idToken: string;
     expiresAt: string;
     refreshToken: string;
+    isVerified: boolean;
 }
 
 export interface AuthResult {
@@ -38,6 +39,8 @@ export async function login(email: string, password: string): Promise<AuthResult
         }
         return { error: error};
     }
+
+    const isVerified = await checkUserVerification(responseBody.idToken);
     
     return {
         authInfo: {
@@ -45,6 +48,7 @@ export async function login(email: string, password: string): Promise<AuthResult
             idToken: responseBody.idToken,
             expiresAt: dayjs().add(responseBody.expiresIn, "seconds").toISOString(),
             refreshToken: responseBody.refreshToken,
+            isVerified: isVerified
         }
     };
 }
@@ -75,11 +79,12 @@ export async function register(email: string, password: string): Promise<AuthRes
             idToken: responseBody.idToken,
             expiresAt: dayjs().add(responseBody.expiresIn, "seconds").toISOString(),
             refreshToken: responseBody.refreshToken,
+            isVerified: false
         }
     };  
 }
 
-export async function refreshIdToken(refreshToken: string): Promise<AuthResult> {
+export async function refresh(refreshToken: string): Promise<AuthResult> {
     const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${serviceConfig.apiKey}`, {
         method: "POST",
         headers: {
@@ -96,12 +101,15 @@ export async function refreshIdToken(refreshToken: string): Promise<AuthResult> 
         return { error: "Sign in again."};
     }
 
+    const isVerified = await checkUserVerification(responseBody.id_token);
+
     return {
         authInfo: {
             userId: responseBody.user_id,
             idToken: responseBody.id_token,
             expiresAt: dayjs().add(responseBody.expires_in, "seconds").toISOString(),
             refreshToken: responseBody.refresh_token,
+            isVerified: isVerified
         }
     };
 }
@@ -182,9 +190,6 @@ export async function sendUserVerificationEmail(idToken: string): Promise<boolea
             idToken: idToken
         })
     });
-
-    const responseBody = JSON.parse(await response.text())
-   console.log(responseBody)
 
     return response.ok;
 }
