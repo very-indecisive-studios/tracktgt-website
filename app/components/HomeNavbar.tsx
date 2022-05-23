@@ -112,6 +112,7 @@ function NavbarUser() {
         <Group>
             <Menu
                 sx={{width: "100%"}}
+                position="top"
                 placement="end"
                 control={
                     <UserButton
