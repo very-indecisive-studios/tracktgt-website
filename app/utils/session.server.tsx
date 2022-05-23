@@ -64,10 +64,6 @@ export async function requireAuthInfo(request: Request): Promise<AuthInfo> {
 
 export async function hasValidAuthInfo(request: Request): Promise<boolean> {
 	const authInfo = await requireAuthInfo(request);
-
-	console.log(`auth info expiry: ${dayjs(authInfo.expiresAt).toISOString()}`);
-	console.log(`its now: ${dayjs().toISOString()}`);
-	console.log(`so is it valid: ${dayjs().isBefore(dayjs(authInfo.expiresAt))}`);
 	
 	return dayjs().isBefore(dayjs(authInfo.expiresAt));
 }
