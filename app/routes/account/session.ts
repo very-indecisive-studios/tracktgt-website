@@ -1,24 +1,30 @@
 ﻿import { ActionFunction, json } from "@remix-run/node";
-import { getAuthInfo, setUserSession } from "~/utils/session.server";
-import dayjs from "dayjs";
-import { refreshIdToken } from "auth";
+import {
+    hasValidAuthInfo,
+    removeUserSession,
+    requireAuthInfo,
+    jsonWithUserSession,
+    okWithUserSession
+} from "~/utils/session.server";
+import { refresh } from "auth";
 
 export const action: ActionFunction = async ({request}) => {
     if (request.method !== "POST") {
         return json({message: "Method not allowed"}, 405);
     }    
     
-    const authInfo = await getAuthInfo(request);
-    
-    if (dayjs(authInfo.expiresAt).isAfter(dayjs())) {
-        const authResult = await refreshIdToken(authInfo.refreshToken);
-        
+    let authInfo = await requireAuthInfo(request);
+
+    const isAuthInfoValid = await hasValidAuthInfo(request);
+    if (!isAuthInfoValid) {
+        const authResult = await refresh(authInfo.refreshToken);
+
         if (!authResult.authInfo || authResult.error) {
-            return null;
+            return await removeUserSession(request);
         }
         
-        return await setUserSession(authResult.authInfo);
+        authInfo = authResult.authInfo;
     }
     
-    return null;
+    return await okWithUserSession(authInfo);
 }

@@ -1,5 +1,6 @@
-import { createCookieSessionStorage, redirect } from "@remix-run/node";
-import { AuthInfo, checkUserVerification } from "auth";
+import { createCookieSessionStorage, redirect, Session } from "@remix-run/node";
+import { AuthInfo, checkUserVerification, refresh } from "auth";
+import dayjs from "dayjs";
 
 let sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -29,6 +30,12 @@ export async function getUserId(request: Request): Promise<string|null> {
 	return userId;
 }
 
+export async function requireUserId(request: Request) {
+	let userId = getUserId(request);
+	if (!userId) throw redirect("/account/login");
+	return userId;
+}
+
 export async function getAuthInfo(request: Request): Promise<AuthInfo|null> {
 	let session = await getUserSession(request);
 
@@ -38,53 +45,76 @@ export async function getAuthInfo(request: Request): Promise<AuthInfo|null> {
 	let expiresAt = session.get("expiresAt");
 	let idToken = session.get("idToken");
 	let refreshToken = session.get("refreshToken");
-	
+	let isVerified = Boolean(JSON.parse(session.get("isVerified")));
+
 	return {
 		userId: userId,
 		expiresAt: expiresAt,
 		idToken: idToken,
-		refreshToken: refreshToken
+		refreshToken: refreshToken,
+		isVerified: isVerified
 	};
 }
 
-export async function requireUserId(request: Request) {
-	let session = await getUserSession(request);
-	let userId = session.get("userId");
-	if (!userId || typeof userId !== "string") throw redirect("/account/login");
-	return userId;
-}
-
-export async function requireAuthInfo(request: Request) {
+export async function requireAuthInfo(request: Request): Promise<AuthInfo> {
 	const authInfo = await getAuthInfo(request);
 	if (!authInfo) throw redirect("/account/login");
 	return authInfo;
+}
+
+export async function hasValidAuthInfo(request: Request): Promise<boolean> {
+	const authInfo = await requireAuthInfo(request);
+
+	console.log(`auth info expiry: ${dayjs(authInfo.expiresAt).toISOString()}`);
+	console.log(`its now: ${dayjs().toISOString()}`);
+	console.log(`so is it valid: ${dayjs().isBefore(dayjs(authInfo.expiresAt))}`);
+	
+	return dayjs().isBefore(dayjs(authInfo.expiresAt));
+}
+
+async function setUserSession(authInfo: AuthInfo): Promise<Session> {
+	const session = await getSession();
+	session.set("userId", authInfo.userId);
+	session.set("expiresAt", authInfo.expiresAt);
+	session.set("idToken", authInfo.idToken);
+	session.set("refreshToken", authInfo.refreshToken);
+	session.set("isVerified", authInfo.isVerified);
+	
+	return session;
+}
+
+export async function okWithUserSession(authInfo: AuthInfo) {
+	const session = await setUserSession(authInfo);
+
+	return new Response(null, {
+		headers: {
+			"Set-Cookie": await commitSession(session)
+		},
+	});
+}
+
+export async function jsonWithUserSession<T>(authInfo: AuthInfo, body: T | null) {
+	const session = await setUserSession(authInfo);
+	
+	return new Response(JSON.stringify(body), {
+		headers: {
+			"Content-Type": "application/json; charset=utf-8",
+			"Set-Cookie": await commitSession(session)
+		},
+	});
+}
+
+export async function redirectWithUserSession(authInfo: AuthInfo, redirectTo: string) {
+	const session = await setUserSession(authInfo);
+
+	return redirect(redirectTo, {
+		headers: { "Set-Cookie": await commitSession(session) },
+	});
 }
 
 export async function removeUserSession(request: Request) {
 	let session = await getSession(request.headers.get("Cookie"));
 	return redirect("/account/login", {
 		headers: { "Set-Cookie": await destroySession(session) },
-	});
-}
-
-export async function setUserSession(authInfo: AuthInfo) {
-	let session = await getSession();
-	session.set("userId", authInfo.userId);
-	session.set("expiresAt", authInfo.expiresAt);
-	session.set("idToken", authInfo.idToken);
-	session.set("refreshToken", authInfo.refreshToken);
-	return new Response(null, {
-		headers: { "Set-Cookie": await commitSession(session) },
-	});
-}
-
-export async function createUserSession(authInfo: AuthInfo, redirectTo: string) {
-	let session = await getSession();
-	session.set("userId", authInfo.userId);
-	session.set("expiresAt", authInfo.expiresAt);
-	session.set("idToken", authInfo.idToken);
-	session.set("refreshToken", authInfo.refreshToken);
-	return redirect(redirectTo, {
-		headers: { "Set-Cookie": await commitSession(session) },
 	});
 }
