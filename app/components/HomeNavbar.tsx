@@ -20,12 +20,14 @@ interface NavbarLinkProps {
     icon: React.ReactElement;
     label: string;
     color: string;
-    to: string
+    to: string;
+    onClick: () => void;
 }
 
-function NavbarLink({ icon, label, color, to }: NavbarLinkProps) {
+function NavbarLink({ icon, label, color, to, onClick }: NavbarLinkProps) {
     return (
         <UnstyledButton
+            onClick={onClick}
             component={Link}
             to={to}
             sx={(theme) => ({
@@ -110,7 +112,6 @@ function NavbarUser() {
         <Group>
             <Menu
                 sx={{width: "100%"}}
-                position="right"
                 placement="end"
                 control={
                     <UserButton
@@ -130,16 +131,17 @@ function NavbarUser() {
 
 interface HomeNavbarProps {
     opened: boolean;
+    onNavigate: () => void;
 }
 
-export default function HomeNavbar({ opened }: HomeNavbarProps) {
+export default function HomeNavbar({ opened, onNavigate }: HomeNavbarProps) {
     return (
         <Navbar p="md" hiddenBreakpoint="md" hidden={!opened} width={{md: 300}}>
             <Navbar p="xs" width={{ md: 300 }}>
                 <Navbar.Section grow mt="xs">
-                    <NavbarLink to={"/home/games"} icon={<DeviceGamepad size={18} />} label={"Games"} color={"blue"}  />
-                    <NavbarLink to={"/home/shows"} icon={<DeviceTv size={18} />} label={"Shows"} color={"red"}  />
-                    <NavbarLink to={"/home/books"} icon={<Book2 size={18} />} label={"Books"} color={"yellow"}  />
+                    <NavbarLink onClick={onNavigate} to={"/home/games"} icon={<DeviceGamepad size={18} />} label={"Games"} color={"blue"}  />
+                    <NavbarLink onClick={onNavigate} to={"/home/shows"} icon={<DeviceTv size={18} />} label={"Shows"} color={"red"}  />
+                    <NavbarLink onClick={onNavigate} to={"/home/books"} icon={<Book2 size={18} />} label={"Books"} color={"yellow"}  />
                 </Navbar.Section>
                 <Divider my="sm" />
                 <Navbar.Section>

@@ -105,7 +105,7 @@ const Shell = ({ children }: ShellProps) => {
             asideOffsetBreakpoint="sm"
             fixed
             navbar={
-                <HomeNavbar opened={opened} />
+                <HomeNavbar onNavigate={() => setOpened(value => !value)} opened={opened} />
             }
             header={
                 <Header height={70} p="md">
