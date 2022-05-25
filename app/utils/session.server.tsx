@@ -30,8 +30,8 @@ export async function getUserId(request: Request): Promise<string|null> {
 	return userId;
 }
 
-export async function requireUserId(request: Request) {
-	let userId = getUserId(request);
+export async function requireUserId(request: Request): Promise<string> {
+	let userId = await getUserId(request);
 	if (!userId) throw redirect("/account/login");
 	return userId;
 }

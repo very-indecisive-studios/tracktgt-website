@@ -1,30 +1,31 @@
 ﻿import {
-    Button, Card,
+    Button,
     Chip,
     Container,
     Group,
-    MediaQuery, NumberInput, Select,
+    MediaQuery,
     Stack,
-    Text, TextInput,
+    Text,
     ThemeIcon,
     Title,
 } from "@mantine/core";
-import { json, LoaderFunction } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import { useLoaderData, useSubmit } from "@remix-run/react";
 import {
     backendAPIClientInstance,
     GetGameResult,
     GetGameTrackingsItemResult,
     GameTrackingFormat,
     GameTrackingOwnership,
-    GameTrackingStatus,
+    GameTrackingStatus, RemoveGameTrackingCommand, AddGameTrackingCommand, UpdateGameTrackingCommand,
 } from "backend";
-import { Edit, Pencil, PlaylistAdd, Plus, Star, TrashX } from "tabler-icons-react";
+import { Edit, Plus, Star } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/CoverImage";
 import { useModals } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
-import { platform } from "os";
+import { showGameTrackingsSelectorModal, showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
+import { z } from "zod";
+import { badRequest } from "~/utils/response.server";
 
 interface LoaderData {
     game: GetGameResult;
@@ -47,6 +48,122 @@ export const loader: LoaderFunction = async ({params, request}) => {
     });
 }
 
+const handleDelete = async (request: Request) => {
+    const userId = await requireUserId(request);
+
+    let formData = Object.fromEntries(await request.formData())
+
+    // Validate form.
+    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
+    const formDataSchema = z
+        .object({
+            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
+            platform: z.string(),
+        });
+
+    const parsedFormData = formDataSchema.safeParse(formData);
+
+    if (!parsedFormData.success) {
+        return badRequest(parsedFormData.error.flatten().fieldErrors);
+    }
+
+    await backendAPIClientInstance.game_RemoveGameTracking(new RemoveGameTrackingCommand({
+        gameRemoteId: parsedFormData.data.gameRemoteId,
+        userRemoteId: userId,
+        platform: parsedFormData.data.platform
+    }));
+
+    return null;
+}
+
+const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
+    const gameStatusesLength = Object.keys(GameTrackingStatus)
+        .filter((s) => isNaN(Number(s)))
+        .length;
+
+    const gameFormatsLength = Object.keys(GameTrackingFormat)
+        .filter((s) => isNaN(Number(s)))
+        .length;
+
+    const gameOwnershipsLength = Object.keys(GameTrackingOwnership)
+        .filter((s) => isNaN(Number(s)))
+        .length;
+
+    // Validate form.
+    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
+    const formDataSchema = z
+        .object({
+            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
+            hoursPlayed: z.preprocess(preProcessToNumber, z.number().gte(0)),
+            platform: z.string(),
+            status: z.preprocess(preProcessToNumber, z.number().min(0).max(gameStatusesLength - 1)),
+            format: z.preprocess(preProcessToNumber, z.number().min(0).max(gameFormatsLength - 1)),
+            ownership: z.preprocess(preProcessToNumber, z.number().min(0).max(gameOwnershipsLength - 1))
+        });
+
+    return formDataSchema.safeParse(formData);
+}
+
+const handlePost = async (request: Request) => {
+    const userId = await requireUserId(request);
+
+    let formData = Object.fromEntries(await request.formData())
+
+    const parsedFormData = parseAndValidateFormData(formData);
+
+    if (!parsedFormData.success) {
+        return badRequest(parsedFormData.error.flatten().fieldErrors);
+    }
+
+    await backendAPIClientInstance.game_AddGameTracking(new AddGameTrackingCommand({
+        gameRemoteId: parsedFormData.data.gameRemoteId,
+        userRemoteId: userId,
+        hoursPlayed: parsedFormData.data.hoursPlayed,
+        platform: parsedFormData.data.platform,
+        ownership: parsedFormData.data.ownership,
+        format: parsedFormData.data.format,
+        status: parsedFormData.data.status,
+    }));
+
+    return null;
+}
+
+const handlePut = async (request: Request) => {
+    const userId = await requireUserId(request);
+
+    let formData = Object.fromEntries(await request.formData())
+
+    const parsedFormData = parseAndValidateFormData(formData);
+
+    if (!parsedFormData.success) {
+        return badRequest(parsedFormData.error.flatten().fieldErrors);
+    }
+
+    await backendAPIClientInstance.game_UpdateGameTracking(new UpdateGameTrackingCommand({
+        gameRemoteId: parsedFormData.data.gameRemoteId,
+        userRemoteId: userId,
+        hoursPlayed: parsedFormData.data.hoursPlayed,
+        platform: parsedFormData.data.platform,
+        ownership: parsedFormData.data.ownership,
+        format: parsedFormData.data.format,
+        status: parsedFormData.data.status,
+    }));
+
+    return null;
+}
+
+export const action: ActionFunction = async ({request}) => {
+    if (request.method === "POST") {
+        return handlePost(request);
+    } else if (request.method === "DELETE") {
+        return handleDelete(request);
+    } else if (request.method === "PUT") {
+        return handlePut(request);
+    } else {
+        return json({message: "Method not allowed"}, 405);
+    }
+}
+
 interface GameHeaderProps {
     coverImageURL: string | undefined;
     title: string | undefined;
@@ -59,14 +176,14 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({
-   coverImageURL,
-   title,
-   rating,
-   platforms,
-   companies,
-   noOfGameTrackings,
-   onAddClick, 
-   onEditClick
+    coverImageURL,
+    title,
+    rating,
+    platforms,
+    companies,
+    noOfGameTrackings,
+    onAddClick,
+    onEditClick
 }: GameHeaderProps) {
     return (
         <>
@@ -79,7 +196,7 @@ export function GameHeader({
                             leftIcon={<Plus size={20}/>}>
                         Create tracking
                     </Button>}
-                
+
                 {(noOfGameTrackings > 0) &&
                     <Button color={"orange"}
                             onClick={onEditClick}
@@ -119,155 +236,32 @@ export function GameHeader({
 
 export default function Game() {
     const data = useLoaderData<LoaderData>();
-
     const modals = useModals();
+    const submit = useSubmit();
 
-    const showDeleteConfirmModal = (platform: string) => {
-        const id = modals.openModal({
-            title: "Confirm deletion",
-            centered: true,
-            children: (
-                <Form action={"/home/games/track"} method={"delete"}>
-                    <Text>
-                        Are you sure you want to remove tracking for this game on <b>{platform}</b>?
-                        This is an irreversable action!
-                    </Text>
-                    <TextInput name={"gameRemoteId"} defaultValue={data?.game?.remoteId} hidden={true}/>
-                    <TextInput name={"platform"} defaultValue={platform} hidden={true}/>
-                    <Group position={"right"} mt={32}>
-                        <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Cancel</Button>
-                        <Button color={"red"} type={"submit"} onClick={() => {
-                            showNotification({
-                                title: 'Successfully removed tracked game',
-                                message: `Removed ${data.game.title} for ${platform} from tracking.`,
-                                icon: <TrashX size={16}/>,
-                                color: "red"
-                            });
-
-                            modals.closeAll();
-                        }}>Yes, I am sure</Button>
-                    </Group>
-                </Form>
-            )
-        });
-    }
-
-    const showTrackGameEditorModal = (gameTracking: GetGameTrackingsItemResult | null) => {
-        const gameStatuses = Object.keys(GameTrackingStatus)
-            .filter((s) => isNaN(Number(s)))
-            .map((value, index) => ({value: index.toString(), label: value}))
-
-        const gameFormats = Object.keys(GameTrackingFormat)
-            .filter((s) => isNaN(Number(s)))
-            .map((value, index) => ({value: index.toString(), label: value}))
-
-        const gameOwnerships = Object.keys(GameTrackingOwnership)
-            .filter((s) => isNaN(Number(s)))
-            .map((value, index) => ({value: index.toString(), label: value}))
-
-        const gamePlatforms = data.game.platforms
-            ?.filter(value => !data.gameTrackings.map(tg => tg.platform).includes(value))
-            .map(value => ({value: value, label: value})) ?? [];
-        const gameTrackingsPlatforms = data.gameTrackings
-            .map(tg => tg.platform ?? "")
-            .filter(platform => platform)
-            .map(platform => ({value: platform, label: platform}));
-
-        const id = modals.openModal({
-            title: gameTracking ? "Edit tracked game" : "Add tracked game",
-            centered: true,
-            children: (
-                <Form action={"/home/games/track"} method={gameTracking ? "put" : "post"}>
-                    <TextInput name="gameRemoteId" hidden defaultValue={data.game.remoteId}/>
-                    <NumberInput name="hoursPlayed" label="Hours played" defaultValue={gameTracking?.hoursPlayed ?? 0}/>
-                    <Select name="platform" 
-                            label="Platform" 
-                            mt={16}
-                            defaultValue={gameTracking?.platform ?? gamePlatforms[0].value}
-                            data={gameTracking ? gameTrackingsPlatforms : gamePlatforms} 
-                            disabled={!!gameTracking}/>
-                    <Select name="status" 
-                            label="Status" 
-                            mt={16}
-                            defaultValue={gameTracking?.status?.toString() ?? gameStatuses[0].value}
-                            data={gameStatuses}/>
-                    <Select name="format" 
-                            label="Format" 
-                            mt={16}
-                            defaultValue={gameTracking?.format?.toString() ?? gameFormats[0].value} 
-                            data={gameFormats}/>
-                    <Select name="ownership"
-                            label="Ownership" 
-                            mt={16} 
-                            defaultValue={gameTracking?.ownership?.toString() ?? gameOwnerships[0].value}
-                            data={gameOwnerships}/>
-                    <Group mt={32} grow>
-                        <Group position={"left"}>
-                            {gameTracking &&
-                                <Button color={"red"}
-                                        onClick={() => showDeleteConfirmModal(gameTracking?.platform ?? "")}>
-                                    Remove
-                                </Button>}
-                        </Group>
-                        <Group position={"right"}>
-                            <Button variant={"outline"} onClick={() => modals.closeModal(id)}>Cancel</Button>
-                            <Button type={"submit"} onClick={() => {
-                                if (gameTracking) {
-                                    showNotification({
-                                        title: 'Successfully updated tracked game',
-                                        message: `Updated ${data.game.title} for ${gameTracking.platform}.`,
-                                        icon: <Pencil size={16}/>,
-                                        color: "green"
-                                    });
-                                } else {
-                                    showNotification({
-                                        title: 'Successfully added tracked game',
-                                        message: `Added ${data.game.title} for tracking.`,
-                                        icon: <PlaylistAdd size={16}/>,
-                                        color: "green"
-                                    });
-                                }
-
-                                modals.closeAll();
-                            }}>
-                                {gameTracking ? "Save" : "Add"}
-                            </Button>
-                        </Group>
-                    </Group>
-                </Form>
-            )
-        });
-    }
-    
-    const showGameTrackingsSelectorModal = (gameTrackings: GetGameTrackingsItemResult[]) => {
-        const id = modals.openModal({
-            title: "Select tracking to edit",
-            centered: true,
-            children: (
-                <Stack>
-                    {gameTrackings.map(tg => (
-                        <Card onClick={() => showTrackGameEditorModal(tg)} sx={theme => ({
-                            '&:hover': {
-                                backgroundColor: theme.colors.gray[8],
-                                cursor: "pointer"
-                            },
-                        })}>
-                            <Title order={5}>{tg.platform}</Title>
-                        </Card>
-                    ))}
-                </Stack>
-            )
-        });
-    }
-    
     const gameHeader = <GameHeader coverImageURL={data.game.coverImageURL}
                                    title={data.game.title}
                                    rating={data.game.rating}
                                    platforms={data.game.platforms}
                                    companies={data.game.companies}
                                    noOfGameTrackings={data.gameTrackings.length}
-                                   onAddClick={() => showTrackGameEditorModal(null)}
-                                   onEditClick={() => showGameTrackingsSelectorModal(data.gameTrackings)}/>
+                                   onAddClick={() => showTrackGameEditorModal(
+                                       modals,
+                                       data.game,
+                                       null,
+                                       data.gameTrackings,
+                                       (formData) => submit(formData, {method: "post"}),
+                                       () => {},
+                                       () => {}
+                                   )}
+                                   onEditClick={() => showGameTrackingsSelectorModal(
+                                       modals,
+                                       data.game,
+                                       data.gameTrackings,
+                                       (formData) => submit(formData, {method: "post"}),
+                                       (formData) => submit(formData, {method: "put"}),
+                                       (formData) => submit(formData, {method: "delete"})
+                                   )}/>
 
     return (
         <Container py={16}>
