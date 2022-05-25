@@ -21,7 +21,7 @@ import {
     UpdateGameTrackingCommand
 } from "backend";
 import { Link, useFetcher } from "@remix-run/react";
-import CoverImage from "~/components/CoverImage";
+import CoverImage from "~/components/home/games/CoverImage";
 import { Check, Clock, Eye, PlayerPause, PlayerPlay } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";

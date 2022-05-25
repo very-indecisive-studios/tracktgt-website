@@ -9,9 +9,9 @@ import {
     useMantineTheme,
     Grid, Progress, Center, Container, Stack, Title,
 } from '@mantine/core';
-import HomeNavbar from "~/components/HomeNavbar";
+import HomeNavbar from "~/components/home/HomeNavbar";
 import { Outlet, useCatch, useFetcher, useTransition } from "@remix-run/react";
-import SearchBar from "~/components/SearchBar";
+import SearchBar from "~/components/home/SearchBar";
 import {
     hasValidAuthInfo,
     removeUserSession,
