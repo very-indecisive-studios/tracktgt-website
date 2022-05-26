@@ -243,7 +243,7 @@ export default function Game() {
                                        data.game,
                                        null,
                                        data.gameTrackings,
-                                       (formData) => submit(formData, { method: "post" }),
+                                       (formData) => submit(formData, { method: "post", replace: true }),
                                        () => {
                                        },
                                        () => {
@@ -253,9 +253,9 @@ export default function Game() {
                                        modals,
                                        data.game,
                                        data.gameTrackings,
-                                       (formData) => submit(formData, { method: "post" }),
-                                       (formData) => submit(formData, { method: "put" }),
-                                       (formData) => submit(formData, { method: "delete" })
+                                       (formData) => submit(formData, { method: "post", replace: true }),
+                                       (formData) => submit(formData, { method: "put", replace: true }),
+                                       (formData) => submit(formData, { method: "delete", replace: true })
                                    )}/>
 
     return (
