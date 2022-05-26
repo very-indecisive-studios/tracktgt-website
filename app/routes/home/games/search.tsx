@@ -5,7 +5,7 @@ import {
     SearchGamesResult
 } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
-import CoverImage from "~/components/CoverImage";
+import CoverImage from "~/components/home/games/CoverImage";
 
 export const loader: LoaderFunction = async ({request}) => {
     const url = new URL(request.url);
