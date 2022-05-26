@@ -13,17 +13,17 @@ export default function CoverImage({ src, width, height }: CoverImageProps) {
     useEffect(() => {
         setIsImageLoaded(true);
     }, [imageRef.current?.complete])
-    
+
     return (
-      <>
-          <Image imageRef={imageRef} onLoad={() => setIsImageLoaded(true)} 
-                 src={src}
-                 hidden={!isImageLoaded}
-                 width={width}
-                 height={height}
-                 radius={"md"} 
-                 withPlaceholder={!src}/>
-          { !isImageLoaded && <Skeleton width={width} height={height} radius={"md"}/> }
-      </>  
+        <>
+            <Image imageRef={imageRef} onLoad={() => setIsImageLoaded(true)}
+                   src={src}
+                   hidden={!isImageLoaded}
+                   width={width}
+                   height={height}
+                   radius={"md"}
+                   withPlaceholder={!src}/>
+            {!isImageLoaded && <Skeleton width={width} height={height} radius={"md"}/>}
+        </>
     );
 }

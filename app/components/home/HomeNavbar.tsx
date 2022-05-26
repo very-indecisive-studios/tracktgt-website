@@ -1,15 +1,15 @@
 ﻿import { forwardRef, useEffect, useState } from "react";
 import {
     Avatar,
+    Divider,
     Group,
+    Loader,
     Menu,
     Navbar,
-    UnstyledButton,
     Text,
     ThemeIcon,
-    Divider,
-    useMantineTheme,
-    Loader
+    UnstyledButton,
+    useMantineTheme
 } from "@mantine/core";
 import { Book2, ChevronRight, DeviceGamepad, DeviceTv, Logout } from "tabler-icons-react";
 import { Link, useFetcher, useSubmit } from "@remix-run/react";
@@ -77,16 +77,16 @@ const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
             {...others}
         >
             <Group>
-                <Avatar src={profileImageURL} radius="xl" />
-                
+                <Avatar src={profileImageURL} radius="xl"/>
+
                 <div style={{ flex: 1 }}>
                     {userName ?
                         <Text px={4} size="sm" weight={500}>
                             {userName}
-                        </Text> : <Loader size={"sm"} variant={"dots"} />}
+                        </Text> : <Loader size={"sm"} variant={"dots"}/>}
                 </div>
-                
-                <ChevronRight size={18} />
+
+                <ChevronRight size={18}/>
             </Group>
         </UnstyledButton>
     )
@@ -95,9 +95,9 @@ const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
 function NavbarUser() {
     const theme = useMantineTheme();
     const submit = useSubmit();
-    
+
     const [user, setUser] = useState<GetUserResult>();
-    
+
     const fetcher = useFetcher<UserLoaderData>();
     useEffect(() => {
         fetcher.submit({}, { action: "/home/user", method: "get" })
@@ -107,11 +107,11 @@ function NavbarUser() {
             setUser(fetcher.data.user);
         }
     }, [fetcher.type]);
-    
+
     return (
         <Group>
             <Menu
-                sx={{width: "100%"}}
+                sx={{ width: "100%" }}
                 position="top"
                 placement="end"
                 control={
@@ -124,7 +124,7 @@ function NavbarUser() {
                 <Menu.Label>Account</Menu.Label>
                 <Menu.Item onClick={() => {
                     submit(null, { method: "post", action: "/account/logout" });
-                }} icon={<Logout size={24} color={theme.colors.red[6]} />}>Logout</Menu.Item>
+                }} icon={<Logout size={24} color={theme.colors.red[6]}/>}>Logout</Menu.Item>
             </Menu>
         </Group>
     );
@@ -137,16 +137,19 @@ interface HomeNavbarProps {
 
 export default function HomeNavbar({ opened, onNavigate }: HomeNavbarProps) {
     return (
-        <Navbar p="md" hiddenBreakpoint="md" hidden={!opened} width={{md: 300}}>
+        <Navbar p="md" hiddenBreakpoint="md" hidden={!opened} width={{ md: 300 }}>
             <Navbar p="xs" width={{ md: 300 }}>
                 <Navbar.Section grow mt="xs">
-                    <NavbarLink onClick={onNavigate} to={"/home/games"} icon={<DeviceGamepad size={18} />} label={"Games"} color={"blue"}  />
-                    <NavbarLink onClick={onNavigate} to={"/home/shows"} icon={<DeviceTv size={18} />} label={"Shows"} color={"red"}  />
-                    <NavbarLink onClick={onNavigate} to={"/home/books"} icon={<Book2 size={18} />} label={"Books"} color={"yellow"}  />
+                    <NavbarLink onClick={onNavigate} to={"/home/games"} icon={<DeviceGamepad size={18}/>}
+                                label={"Games"} color={"blue"}/>
+                    <NavbarLink onClick={onNavigate} to={"/home/shows"} icon={<DeviceTv size={18}/>} label={"Shows"}
+                                color={"red"}/>
+                    <NavbarLink onClick={onNavigate} to={"/home/books"} icon={<Book2 size={18}/>} label={"Books"}
+                                color={"yellow"}/>
                 </Navbar.Section>
-                <Divider my="sm" />
+                <Divider my="sm"/>
                 <Navbar.Section>
-                    <NavbarUser />
+                    <NavbarUser/>
                 </Navbar.Section>
             </Navbar>
         </Navbar>

@@ -1,19 +1,20 @@
-﻿import { Center, Container, Title, Text, Button, Stack, Group } from "@mantine/core";
+﻿import { Button, Center, Container, Group, Stack, Text, Title } from "@mantine/core";
 import { Form, useActionData, useSubmit, useTransition } from "@remix-run/react";
 import { UserCheck } from "tabler-icons-react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import {
-    redirectWithUserSession,
     hasValidAuthInfo,
+    jsonWithUserSession,
+    okWithUserSession,
+    redirectWithUserSession,
     removeUserSession,
-    requireAuthInfo,
-    jsonWithUserSession, okWithUserSession
+    requireAuthInfo
 } from "~/utils/session.server";
 import { checkUserVerification, refresh, sendUserVerificationEmail } from "auth";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
 
-export const loader: LoaderFunction = async ({request}) => {
+export const loader: LoaderFunction = async ({ request }) => {
     let authInfo = await requireAuthInfo(request);
 
     const isAuthInfoValid = await hasValidAuthInfo(request);
@@ -39,7 +40,7 @@ interface ActionData {
     isResend?: boolean;
 }
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
     let formData = Object.fromEntries(await request.formData());
 
     // Validate form.
@@ -66,11 +67,11 @@ export const action: ActionFunction = async ({request}) => {
         authInfo = authResult.authInfo;
     }
 
-    const {type} = parsedFormData.data;
+    const { type } = parsedFormData.data;
     if (type === "resend") {
         const isResend = await sendUserVerificationEmail(authInfo.idToken);
 
-        return jsonWithUserSession<ActionData>(authInfo, {isResend: isResend});
+        return jsonWithUserSession<ActionData>(authInfo, { isResend: isResend });
     }
 
     const hasUserVerified = await checkUserVerification(authInfo.idToken);
@@ -87,7 +88,7 @@ export const action: ActionFunction = async ({request}) => {
         return redirectWithUserSession(authInfo, "/home");
     }
 
-    return await jsonWithUserSession<ActionData>(authInfo, {isVerified: false});
+    return await jsonWithUserSession<ActionData>(authInfo, { isVerified: false });
 }
 
 export default function Verify() {
@@ -115,7 +116,7 @@ export default function Verify() {
 
                     <Group>
                         <Button variant={"outline"} onClick={() => {
-                            submit({type: "resend"}, {method: "post"})
+                            submit({ type: "resend" }, { method: "post" })
                         }} disabled={transition.state === "submitting"}>Resend</Button>
 
                         <Form method={"post"}>

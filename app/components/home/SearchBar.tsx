@@ -1,4 +1,4 @@
-﻿import { Chip, createStyles, TextInput } from "@mantine/core";
+﻿import { Chip, TextInput } from "@mantine/core";
 import { Form, useLocation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { Search } from "tabler-icons-react";
@@ -10,13 +10,13 @@ interface SearchBarTypeProps {
 function SearchBarType({ type }: SearchBarTypeProps) {
     let color = "grey";
     if (type === "games") {
-        color = "blue";    
+        color = "blue";
     } else if (type === "shows") {
         color = "red";
     } else if (type === "books") {
         color = "yellow"
     }
-    
+
     return (<Chip styles={(theme) => ({
         iconWrapper: {
             display: "none"
@@ -26,7 +26,7 @@ function SearchBarType({ type }: SearchBarTypeProps) {
 
 export default function SearchBar() {
     const location = useLocation();
-    
+
     const [type, setType] = useState("");
     useEffect(() => {
         const path = location.pathname.slice(1).split("/");
@@ -35,15 +35,15 @@ export default function SearchBar() {
         } else {
             setType("");
         }
-    },[location.pathname])
-    
-    return (                  
+    }, [location.pathname])
+
+    return (
         <Form hidden={!type} action={"/home/games/search"}>
-            <TextInput 
-                name="title" 
-                placeholder={"Search"}  
-                icon={<Search size={20} />}
-                rightSection={<SearchBarType type={type} />}
+            <TextInput
+                name="title"
+                placeholder={"Search"}
+                icon={<Search size={20}/>}
+                rightSection={<SearchBarType type={type}/>}
                 rightSectionWidth={100}/>
         </Form>
     );

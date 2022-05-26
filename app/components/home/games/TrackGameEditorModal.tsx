@@ -1,4 +1,4 @@
-﻿import { Form, useFetcher } from "@remix-run/react";
+﻿import { Form } from "@remix-run/react";
 import { Button, Card, Group, NumberInput, Select, Stack, Text, TextInput, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Pencil, PlaylistAdd, TrashX } from "tabler-icons-react";
@@ -33,7 +33,7 @@ interface DeleteConfirmModalProps {
     onDelete: (formData: FormData) => void;
 }
 
-function DeleteConfirmModal({game, platform, onCancel, onConfirm, onDelete}: DeleteConfirmModalProps) {
+function DeleteConfirmModal({ game, platform, onCancel, onConfirm, onDelete }: DeleteConfirmModalProps) {
     return (
         <>
             <Form onSubmit={(e) => {
@@ -96,24 +96,24 @@ export function showTrackGameEditorModal(
     // Get all statuses, formats and ownerships.
     const gameStatuses = Object.keys(GameTrackingStatus)
         .filter((s) => isNaN(Number(s)))
-        .map((value, index) => ({value: index.toString(), label: value}))
+        .map((value, index) => ({ value: index.toString(), label: value }))
 
     const gameFormats = Object.keys(GameTrackingFormat)
         .filter((s) => isNaN(Number(s)))
-        .map((value, index) => ({value: index.toString(), label: value}))
+        .map((value, index) => ({ value: index.toString(), label: value }))
 
     const gameOwnerships = Object.keys(GameTrackingOwnership)
         .filter((s) => isNaN(Number(s)))
-        .map((value, index) => ({value: index.toString(), label: value}))
+        .map((value, index) => ({ value: index.toString(), label: value }))
 
     const availableGamePlatforms = game.platforms
         ?.filter(value => !allGameTrackings.map(gt => gt.platform).includes(value))
-        .map(value => ({value: value, label: value})) ?? [];
+        .map(value => ({ value: value, label: value })) ?? [];
 
     const gameTrackingsPlatforms = allGameTrackings
         .map(gt => gt.platform ?? "")
         .filter(platform => platform)
-        .map(platform => ({value: platform, label: platform}));
+        .map(platform => ({ value: platform, label: platform }));
 
     const id = modalsContext.openModal({
         title: selectedGameTracking ? "Edit tracked game" : "Add tracked game",
@@ -210,13 +210,13 @@ export function showGameTrackingsSelectorModal(
             <Stack>
                 {gameTrackings.map(gt => (
                     <Card onClick={() => showTrackGameEditorModal(
-                            modalsContext,
-                            game,
-                            gt,
-                            gameTrackings,
-                            onAdd,
-                            onUpdate,
-                            onDelete)}
+                        modalsContext,
+                        game,
+                        gt,
+                        gameTrackings,
+                        onAdd,
+                        onUpdate,
+                        onDelete)}
                           sx={theme => ({
                               '&:hover': {
                                   backgroundColor: theme.colors.gray[8],

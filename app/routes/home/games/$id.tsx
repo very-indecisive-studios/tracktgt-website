@@ -1,23 +1,16 @@
-﻿import {
-    Button,
-    Chip,
-    Container,
-    Group,
-    MediaQuery,
-    Stack,
-    Text,
-    ThemeIcon,
-    Title,
-} from "@mantine/core";
+﻿import { Button, Chip, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
 import {
+    AddGameTrackingCommand,
     backendAPIClientInstance,
-    GetGameResult,
-    GetGameTrackingsItemResult,
     GameTrackingFormat,
     GameTrackingOwnership,
-    GameTrackingStatus, RemoveGameTrackingCommand, AddGameTrackingCommand, UpdateGameTrackingCommand,
+    GameTrackingStatus,
+    GetGameResult,
+    GetGameTrackingsItemResult,
+    RemoveGameTrackingCommand,
+    UpdateGameTrackingCommand,
 } from "backend";
 import { Edit, Plus, Star } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
@@ -32,7 +25,7 @@ interface LoaderData {
     gameTrackings: GetGameTrackingsItemResult[]
 }
 
-export const loader: LoaderFunction = async ({params, request}) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
     const gameId: number = parseInt(params.id ?? "0");
 
     const getGameBackendAPIResponse = await backendAPIClientInstance.game_GetGame(gameId);
@@ -152,7 +145,7 @@ const handlePut = async (request: Request) => {
     return null;
 }
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
     if (request.method === "POST") {
         return handlePost(request);
     } else if (request.method === "DELETE") {
@@ -160,7 +153,7 @@ export const action: ActionFunction = async ({request}) => {
     } else if (request.method === "PUT") {
         return handlePut(request);
     } else {
-        return json({message: "Method not allowed"}, 405);
+        return json({ message: "Method not allowed" }, 405);
     }
 }
 
@@ -176,15 +169,15 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({
-    coverImageURL,
-    title,
-    rating,
-    platforms,
-    companies,
-    noOfGameTrackings,
-    onAddClick,
-    onEditClick
-}: GameHeaderProps) {
+                               coverImageURL,
+                               title,
+                               rating,
+                               platforms,
+                               companies,
+                               noOfGameTrackings,
+                               onAddClick,
+                               onEditClick
+                           }: GameHeaderProps) {
     return (
         <>
             <Stack mr={12}>
@@ -220,7 +213,7 @@ export function GameHeader({
                     <ThemeIcon color={"yellow"}>
                         <Star size={16}/>
                     </ThemeIcon>
-                    <Text sx={(theme) => ({color: theme.colors.gray[6]})} size={"sm"}>
+                    <Text sx={(theme) => ({ color: theme.colors.gray[6] })} size={"sm"}>
                         {rating === 0 ? "No rating" : `${rating?.toFixed(0)}%`}
                     </Text>
                 </Group>
@@ -250,28 +243,30 @@ export default function Game() {
                                        data.game,
                                        null,
                                        data.gameTrackings,
-                                       (formData) => submit(formData, {method: "post"}),
-                                       () => {},
-                                       () => {}
+                                       (formData) => submit(formData, { method: "post" }),
+                                       () => {
+                                       },
+                                       () => {
+                                       }
                                    )}
                                    onEditClick={() => showGameTrackingsSelectorModal(
                                        modals,
                                        data.game,
                                        data.gameTrackings,
-                                       (formData) => submit(formData, {method: "post"}),
-                                       (formData) => submit(formData, {method: "put"}),
-                                       (formData) => submit(formData, {method: "delete"})
+                                       (formData) => submit(formData, { method: "post" }),
+                                       (formData) => submit(formData, { method: "put" }),
+                                       (formData) => submit(formData, { method: "delete" })
                                    )}/>
 
     return (
         <Container py={16}>
-            <MediaQuery styles={{display: "none"}} largerThan={"sm"}>
+            <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
                 <Stack>
                     {gameHeader}
                 </Stack>
             </MediaQuery>
 
-            <MediaQuery styles={{display: "none"}} smallerThan={"sm"}>
+            <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
                 <Group align={"end"} noWrap>
                     {gameHeader}
                 </Group>
@@ -279,7 +274,7 @@ export default function Game() {
 
             <Stack mt={48}>
                 <Title order={2}>Summary</Title>
-                <Text sx={(theme) => ({color: theme.colors.gray[6]})}>{data.game.summary}</Text>
+                <Text sx={(theme) => ({ color: theme.colors.gray[6] })}>{data.game.summary}</Text>
             </Stack>
         </Container>
     );

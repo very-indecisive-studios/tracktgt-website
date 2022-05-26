@@ -1,13 +1,10 @@
-﻿import { Group, Title, Image, Container, Stack, Card, Chip, Skeleton } from "@mantine/core";
+﻿import { Card, Chip, Container, Group, Stack, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
-import {
-    backendAPIClientInstance,
-    SearchGamesResult
-} from "backend";
+import { backendAPIClientInstance, SearchGamesResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/games/CoverImage";
 
-export const loader: LoaderFunction = async ({request}) => {
+export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const title = url.searchParams.get("title");
 
@@ -25,14 +22,14 @@ interface SearchResultItemProps {
     platforms: string[];
 }
 
-function SearchResultItem({id, title, coverImageURL, platforms}: SearchResultItemProps) {
+function SearchResultItem({ id, title, coverImageURL, platforms }: SearchResultItemProps) {
     return (
-        <div style={{width: "100%", margin: 'auto'}}>
-            <Link to={`/home/games/${id}`} style={{textDecoration: "none"}}>
+        <div style={{ width: "100%", margin: 'auto' }}>
+            <Link to={`/home/games/${id}`} style={{ textDecoration: "none" }}>
                 <Card shadow="xs" p="lg">
                     <Group align={"end"}>
-                        <CoverImage src={coverImageURL} width={100} height={150} />
-                        
+                        <CoverImage src={coverImageURL} width={100} height={150}/>
+
                         <Stack ml={8}>
                             <Title order={3}>{title}</Title>
                             <Group>

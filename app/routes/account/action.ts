@@ -2,10 +2,10 @@
 
 export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
-    
+
     const mode = url.searchParams.get("mode");
     const oobCode = url.searchParams.get("oobCode");
-    
+
     if (mode === "verifyEmail") {
         return redirect(`/account/verify/${oobCode}`);
     } else if (mode === "resetPassword") {

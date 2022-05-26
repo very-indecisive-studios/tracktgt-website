@@ -65,7 +65,7 @@ function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
                 ref.current.instanceColor.needsUpdate = true;
             }
         }
-    },[])
+    }, [])
 
     useFrame((state, delta, frame) => {
         for (let i = 0; i < count; i++) {
@@ -81,8 +81,7 @@ function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
 
                 }
                 xPosArray[i] = xPos + (-speed * delta);
-            }
-            else {
+            } else {
                 if (xPos > outOfBounds) {
                     let next = i + 1;
                     if (next == count) {
@@ -104,7 +103,7 @@ function MediaPosters({ opp, xOffset, yOffset }: MediaPostersProps) {
 
     return (
         <instancedMesh ref={ref} args={[undefined, undefined, count]} scale={[2.4, 3.6, 1]}>
-            <planeGeometry />
+            <planeGeometry/>
             <shaderMaterial
                 uniforms={{
                     atlasMap: { value: map },
@@ -125,9 +124,9 @@ const LandingHeroScene = () => (
         position: "absolute"
     }} camera={{ position: [4, 0, 4], rotation: [0.25, 0.25, 0.25] }}>
         <Suspense fallback={null}>
-            <MediaPosters opp={true} xOffset={0.75} yOffset={1.15} />
-            <MediaPosters opp={false} xOffset={0} yOffset={0} />
-            <MediaPosters opp={true} xOffset={0.75} yOffset={-1.15} />
+            <MediaPosters opp={true} xOffset={0.75} yOffset={1.15}/>
+            <MediaPosters opp={false} xOffset={0} yOffset={0}/>
+            <MediaPosters opp={true} xOffset={0.75} yOffset={-1.15}/>
         </Suspense>
     </Canvas>
 );

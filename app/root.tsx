@@ -1,25 +1,13 @@
-import {
-    ButtonStylesParams,
-    MantineProvider,
-    MantineThemeOverride,
-    useMantineTheme
-} from "@mantine/core";
+import { ButtonStylesParams, MantineProvider, MantineThemeOverride, useMantineTheme } from "@mantine/core";
 import type { MetaFunction } from "@remix-run/node";
-import {
-    Links,
-    LiveReload,
-    Meta,
-    Outlet,
-    Scripts,
-    ScrollRestoration, useCatch,
-} from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, } from "@remix-run/react";
 import styles from "~/styles/root.css";
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 import { MoodConfuzed, QuestionMark } from "tabler-icons-react";
 
 export function links() {
-    return [{rel: "stylesheet", href: styles}];
+    return [{ rel: "stylesheet", href: styles }];
 }
 
 const appTheme: MantineThemeOverride = {
@@ -70,7 +58,7 @@ interface ErrorBoundaryProps {
     error: Error;
 }
 
-export function ErrorBoundary({error}: ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: ErrorBoundaryProps) {
     console.error(error);
 
     const theme = useMantineTheme();
@@ -114,7 +102,7 @@ export function ErrorBoundary({error}: ErrorBoundaryProps) {
 export function CatchBoundary() {
     const caught = useCatch();
     const theme = useMantineTheme();
-    
+
     return (
         <html>
         <head>

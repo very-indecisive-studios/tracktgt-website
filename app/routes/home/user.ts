@@ -8,10 +8,10 @@ export interface UserLoaderData {
 
 export const loader: LoaderFunction = async ({ request }) => {
     const userId = await requireUserId(request);
-    
+
     const getUserBackendAPIResponse = await backendAPIClientInstance.user_GetUser(userId);
-    
+
     return json<UserLoaderData>({
-       user: getUserBackendAPIResponse.result 
+        user: getUserBackendAPIResponse.result
     });
 }

@@ -16,8 +16,8 @@ import {
     GameTrackingFormat,
     GameTrackingOwnership,
     GameTrackingStatus,
-    GetAllGameTrackingsItemResult, 
-    RemoveGameTrackingCommand, 
+    GetAllGameTrackingsItemResult,
+    RemoveGameTrackingCommand,
     UpdateGameTrackingCommand
 } from "backend";
 import { Link, useFetcher } from "@remix-run/react";
@@ -165,7 +165,7 @@ export const action: ActionFunction = async ({ request }) => {
     } else if (request.method === "PUT") {
         return handlePut(request);
     } else {
-        return json({message: "Method not allowed"}, 405);
+        return json({ message: "Method not allowed" }, 405);
     }
 }
 
@@ -173,7 +173,7 @@ interface GameTrackingStatusTableProps {
     status: string;
 }
 
-const GameTrackingStatusTable = ({status}: GameTrackingStatusTableProps) => {
+const GameTrackingStatusTable = ({ status }: GameTrackingStatusTableProps) => {
     const theme = useMantineTheme();
 
     const isMobile = useMobileQuery();
@@ -187,12 +187,12 @@ const GameTrackingStatusTable = ({status}: GameTrackingStatusTableProps) => {
     const fetcherEditor = useFetcher();
 
     useEffect(() => {
-        fetcherTable.submit({page: page.toString(), status: status}, { method: "get"});
+        fetcherTable.submit({ page: page.toString(), status: status }, { method: "get" });
     }, [page])
 
     useEffect(() => {
         if (fetcherEditor.type == "done") {
-            fetcherTable.submit({page: page.toString(), status: status}, { method: "get"});
+            fetcherTable.submit({ page: page.toString(), status: status }, { method: "get" });
         }
     }, [fetcherEditor.type])
 
@@ -211,9 +211,9 @@ const GameTrackingStatusTable = ({status}: GameTrackingStatusTableProps) => {
             <Center sx={(theme) => ({
                 height: "8px",
             })}>
-                {fetcherTable.type === "loaderSubmission" && <Loader variant={"dots"}/> }
+                {fetcherTable.type === "loaderSubmission" && <Loader variant={"dots"}/>}
             </Center>
-            
+
             <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
                 <thead>
                 <tr>
@@ -237,7 +237,7 @@ const GameTrackingStatusTable = ({status}: GameTrackingStatusTableProps) => {
                             <CoverImage src={gt.coverImageURL} width={40} height={60}/>
                         </td>
                         <td>
-                            <Link style={{color: theme.colors.dark[1], textDecoration: "none"}}
+                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
                                   to={`/home/games/${gt.gameRemoteId}`}>
                                 <Text sx={(theme) => ({
                                     width: isMobile ? "10ch" : "20ch",
@@ -250,7 +250,7 @@ const GameTrackingStatusTable = ({status}: GameTrackingStatusTableProps) => {
                             </Link>
                         </td>
                         <td>{gt.platform}</td>
-                        {!isMobile && 
+                        {!isMobile &&
                             <>
                                 <td>{gt.hoursPlayed}</td>
                                 <td>{GameTrackingFormat[gt.format!!]}</td>
@@ -259,31 +259,32 @@ const GameTrackingStatusTable = ({status}: GameTrackingStatusTableProps) => {
                             </>}
                         <td>
                             <ActionIcon onClick={() => showTrackGameEditorModal(
-                                            modals, 
-                                            {
-                                                title: gt.title,
-                                                remoteId: gt.gameRemoteId,
-                                                platforms: []
-                                            }, 
-                                            gt,
-                                            [gt],
-                                            () => {},
-                                            (formData) => fetcherEditor.submit(formData, {method: "put"}),
-                                            (formData) => fetcherEditor.submit(formData, {method: "delete"})
+                                modals,
+                                {
+                                    title: gt.title,
+                                    remoteId: gt.gameRemoteId,
+                                    platforms: []
+                                },
+                                gt,
+                                [gt],
+                                () => {
+                                },
+                                (formData) => fetcherEditor.submit(formData, { method: "put" }),
+                                (formData) => fetcherEditor.submit(formData, { method: "delete" })
                             )}>
-                                <Eye />
+                                <Eye/>
                             </ActionIcon>
                         </td>
                     </tr>))}
                 </tbody>
             </Table>
 
-            {(pageData.length == 0 && fetcherTable.type === "done") && 
+            {(pageData.length == 0 && fetcherTable.type === "done") &&
                 <Center p={32}>
                     <Text>You do not have {status.toLowerCase()} games.</Text>
                 </Center>}
 
-            {(totalNoOfPages != 0 && fetcherTable.type === "done") && 
+            {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
                 <Pagination size={"sm"} total={totalNoOfPages} onChange={setPage} page={page}/>}
         </Stack>
     );
