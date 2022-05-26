@@ -14,7 +14,7 @@ import {
 import { Book2, ChevronRight, DeviceGamepad, DeviceTv, Logout } from "tabler-icons-react";
 import { Link, useFetcher, useSubmit } from "@remix-run/react";
 import { UserLoaderData } from "~/routes/home/user";
-import { GetUserResult } from "../../backend";
+import { GetUserResult } from "backend";
 
 interface NavbarLinkProps {
     icon: React.ReactElement;
