@@ -223,7 +223,7 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
 
     return (
         <Stack py={16} sx={(theme) => ({
-            overflowY: "scroll"
+            overflowX: "auto"
         })}>
             <Center sx={(theme) => ({
                 height: "8px",

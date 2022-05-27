@@ -76,7 +76,7 @@ export default function Home() {
             </Title>
             <Group py={16} mt={16} sx={() => ({
                 flexWrap: "nowrap",
-                overflowY: "scroll"
+                overflowX: "auto"
             })}>
                 {loaderData.games.map((gt) => (
                     <MediaTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
