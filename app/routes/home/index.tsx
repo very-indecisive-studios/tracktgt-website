@@ -44,10 +44,10 @@ function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCar
                 width: 200
             })}>
                 <Card.Section>
-                    <Image src={coverImageURL} height={225} fit={"cover"}/>
+                    <Image src={coverImageURL} height={220} fit={"cover"}/>
                 </Card.Section>
 
-                <Text mt={8} size={"md"} sx={() => ({
+                <Text mt={12} size={"md"} sx={() => ({
                     width: "10ch",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
