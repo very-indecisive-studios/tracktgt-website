@@ -1,18 +1,12 @@
 ﻿import { ActionFunction, json } from "@remix-run/node";
-import {
-    hasValidAuthInfo,
-    removeUserSession,
-    requireAuthInfo,
-    jsonWithUserSession,
-    okWithUserSession
-} from "~/utils/session.server";
+import { hasValidAuthInfo, okWithUserSession, removeUserSession, requireAuthInfo } from "~/utils/session.server";
 import { refresh } from "auth";
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
     if (request.method !== "POST") {
-        return json({message: "Method not allowed"}, 405);
-    }    
-    
+        return json({ message: "Method not allowed" }, 405);
+    }
+
     let authInfo = await requireAuthInfo(request);
 
     const isAuthInfoValid = await hasValidAuthInfo(request);
@@ -22,9 +16,9 @@ export const action: ActionFunction = async ({request}) => {
         if (!authResult.authInfo || authResult.error) {
             return await removeUserSession(request);
         }
-        
+
         authInfo = authResult.authInfo;
     }
-    
+
     return await okWithUserSession(authInfo);
 }

@@ -1,17 +1,18 @@
 import {
     Button,
+    Center,
     Container,
+    PasswordInput,
+    Stack,
+    Text,
     TextInput,
     Title,
-    Text,
-    PasswordInput,
-    Center,
-    Stack, useMantineTheme
+    useMantineTheme
 } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { z } from "zod";
-import { redirectWithUserSession, getUserId } from "~/utils/session.server";
+import { getUserId, redirectWithUserSession } from "~/utils/session.server";
 import { login, verifyHuman } from "auth";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useState } from "react";
@@ -21,7 +22,7 @@ interface LoaderData {
     captchaSitekey: string;
 }
 
-export const loader: LoaderFunction = async ({request}) => {
+export const loader: LoaderFunction = async ({ request }) => {
     // Redirect to home if user is signed in.
     const userId = await getUserId(request);
     if (userId) {
@@ -40,7 +41,7 @@ interface ActionData {
     formError?: string;
 }
 
-export const action: ActionFunction = async ({request}) => {
+export const action: ActionFunction = async ({ request }) => {
     let formData = Object.fromEntries(await request.formData());
 
     // Validate form.
@@ -57,19 +58,19 @@ export const action: ActionFunction = async ({request}) => {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
 
-    const {captcha} = parsedFormData.data;
+    const { captcha } = parsedFormData.data;
     const success = await verifyHuman(captcha);
     if (!success) {
-        return ({formError: "Human verification failed. Try again later."});
+        return ({ formError: "Human verification failed. Try again later." });
     }
-    
-    const {email, password} = parsedFormData.data;
+
+    const { email, password } = parsedFormData.data;
 
     // Login with Firebase.
     const authResult = await login(email, password);
 
     if (!authResult.authInfo || authResult.error) {
-        return ({formError: authResult.error ?? "Error occured while logging in."});
+        return ({ formError: authResult.error ?? "Error occured while logging in." });
     }
 
     return redirectWithUserSession(authResult.authInfo, "/home");
@@ -79,47 +80,47 @@ export default function Login() {
     const loaderData = useLoaderData<LoaderData>()
     const actionData = useActionData<ActionData>()
     const transition = useTransition()
-    
+
     const theme = useMantineTheme();
-    
+
     const [captchaToken, setCaptchaToken] = useState("");
     const handleVerificationSuccess = (token: string, ekey: string) => {
         setCaptchaToken(token);
     };
-    
+
     return (
         <Center sx={(theme) => ({
             width: "100vw",
             height: "100vh"
         })}>
             <Container size={"xs"}>
-                    <Title mb={24} order={1}>Welcome back to tracktgt</Title>
-                    <Form method="post">
-                          <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
-  
-                        <TextInput name="captcha" hidden defaultValue={captchaToken} />
-                        <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
-                        <Link to={"/account/passwordReset"} style={{
-                            color: theme.colors.indigo[6],
-                            fontSize: theme.fontSizes.sm
-                        }}>
-                            Forget password?
-                        </Link>
-                        
-                        <Stack mt={16} align={"center"}>
-                            <HCaptcha
-                                sitekey={loaderData.captchaSitekey}
-                                onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}
-                            />
-                        </Stack>
-                        <Text hidden={!(actionData?.captcha)} color={"red"}>{actionData?.captcha}</Text>
+                <Title mb={24} order={1}>Welcome back to tracktgt</Title>
+                <Form method="post">
+                    <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
 
-                        <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
-                        
-                        <Stack align={"end"}>
-                            <Button mt={16} type="submit" loading={transition.state === "submitting"}>Login</Button>
-                        </Stack>
-                    </Form>
+                    <TextInput name="captcha" hidden defaultValue={captchaToken}/>
+                    <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
+                    <Link to={"/account/passwordReset"} style={{
+                        color: theme.colors.indigo[6],
+                        fontSize: theme.fontSizes.sm
+                    }}>
+                        Forget password?
+                    </Link>
+
+                    <Stack mt={16} align={"center"}>
+                        <HCaptcha
+                            sitekey={loaderData.captchaSitekey}
+                            onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}
+                        />
+                    </Stack>
+                    <Text hidden={!(actionData?.captcha)} color={"red"}>{actionData?.captcha}</Text>
+
+                    <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
+
+                    <Stack align={"end"}>
+                        <Button mt={16} type="submit" loading={transition.state === "submitting"}>Login</Button>
+                    </Stack>
+                </Form>
             </Container>
         </Center>
     )

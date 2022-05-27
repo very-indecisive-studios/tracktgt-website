@@ -29,19 +29,19 @@ export async function login(email: string, password: string): Promise<AuthResult
             returnSecureToken: true
         })
     });
-    
+
     const responseBody = JSON.parse(await response.text())
     if (responseBody.error) {
         let error = "Something went wrong. Try again later.";
-        
+
         if (["EMAIL_NOT_FOUND", "INVALID_PASSWORD"].includes(responseBody.error.message)) {
             error = "Email or password is incorrect ";
         }
-        return { error: error};
+        return { error: error };
     }
 
     const isVerified = await checkUserVerification(responseBody.idToken);
-    
+
     return {
         authInfo: {
             userId: responseBody.localId,
@@ -69,8 +69,8 @@ export async function register(email: string, password: string): Promise<AuthRes
     const responseBody = JSON.parse(await response.text())
     if (responseBody.error) {
         let error = "Something went wrong. Try again later.";
-        
-        return { error: error};
+
+        return { error: error };
     }
 
     return {
@@ -81,7 +81,7 @@ export async function register(email: string, password: string): Promise<AuthRes
             refreshToken: responseBody.refreshToken,
             isVerified: false
         }
-    };  
+    };
 }
 
 export async function refresh(refreshToken: string): Promise<AuthResult> {
@@ -98,7 +98,7 @@ export async function refresh(refreshToken: string): Promise<AuthResult> {
 
     const responseBody = JSON.parse(await response.text())
     if (responseBody.error) {
-        return { error: "Sign in again."};
+        return { error: "Sign in again." };
     }
 
     const isVerified = await checkUserVerification(responseBody.id_token);
@@ -220,7 +220,7 @@ export async function verifyHuman(captcha: string): Promise<boolean> {
             secret: process.env.HCAPTCHA_SECRET ?? ""
         })
     });
-    
-    const {success} = JSON.parse(await response.text());
+
+    const { success } = JSON.parse(await response.text());
     return success;
 }

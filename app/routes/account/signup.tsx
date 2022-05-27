@@ -1,7 +1,7 @@
 import { Button, Center, Container, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
-import { redirectWithUserSession, getUserId } from "~/utils/session.server";
+import { getUserId, redirectWithUserSession } from "~/utils/session.server";
 import { register, sendUserVerificationEmail, verifyHuman } from "auth";
 import { z } from "zod";
 import { backendAPIClientInstance, RegisterUserCommand } from "backend";
@@ -36,7 +36,7 @@ interface ActionData {
 
 export const action: ActionFunction = async ({ request }) => {
     let formData = Object.fromEntries(await request.formData());
-    
+
     // Validate form.
     const formDataSchema = z
         .object({
@@ -46,23 +46,23 @@ export const action: ActionFunction = async ({ request }) => {
             confirmPassword: z.string().min(6, "Password must be at least 6 characters."),
             captcha: z.string().nonempty("Please complete human verification.")
         })
-        .refine((data) => data.password === data.confirmPassword, { 
+        .refine((data) => data.password === data.confirmPassword, {
             message: "Passwords don't match.",
             path: ["confirmPassword"]
         });
-    
+
     const parsedFormData = formDataSchema.safeParse(formData);
-    
+
     if (!parsedFormData.success) {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
 
-    const {captcha} = parsedFormData.data;
+    const { captcha } = parsedFormData.data;
     const success = await verifyHuman(captcha);
     if (!success) {
-        return ({formError: "Human verification failed. Try again later."});
+        return ({ formError: "Human verification failed. Try again later." });
     }
-    
+
     const { email, password, userName } = parsedFormData.data;
 
     // Validate user name and email with server.
@@ -71,25 +71,25 @@ export const action: ActionFunction = async ({ request }) => {
         email,
     );
 
-    const { isUserNameTaken, isEmailTaken } =  checkUserExistBackendResponse.result;
-    
+    const { isUserNameTaken, isEmailTaken } = checkUserExistBackendResponse.result;
+
     if (isUserNameTaken || isEmailTaken) {
         return {
             userName: isUserNameTaken ? "Username taken." : null,
             email: isEmailTaken ? "Email taken." : null
         }
     }
-    
+
     // Register with Firebase.
     const authResult = await register(email, password);
-    
+
     if (!authResult.authInfo || authResult.error) {
         return ({ formError: authResult.error ?? "Error occured while registering." });
-    } 
-    
+    }
+
     // Send email verification.
     await sendUserVerificationEmail(authResult.authInfo.idToken);
-    
+
     // Register with server.
     await backendAPIClientInstance.user_RegisterUser(new RegisterUserCommand({
         userRemoteId: authResult.authInfo.userId,
@@ -97,7 +97,7 @@ export const action: ActionFunction = async ({ request }) => {
         userName: userName,
     }));
 
-    return redirectWithUserSession(authResult.authInfo, "/account/verify");    
+    return redirectWithUserSession(authResult.authInfo, "/account/verify");
 }
 
 export default function SignUp() {
@@ -109,7 +109,7 @@ export default function SignUp() {
     const handleVerificationSuccess = (token: string, ekey: string) => {
         setCaptchaToken(token);
     };
-    
+
     return (
         <Center sx={(theme) => ({
             width: "100vw",
@@ -118,13 +118,14 @@ export default function SignUp() {
             <Container size={"xs"}>
                 <Title mb={24} order={1}>Create a tracktgt account</Title>
                 <Form method="post">
-                    <TextInput name="captcha" hidden defaultValue={captchaToken} />
+                    <TextInput name="captcha" hidden defaultValue={captchaToken}/>
 
                     <TextInput name="userName" label="Username" type="text" error={actionData?.userName}/>
                     <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
-                    <PasswordInput mt={16} name="password" label="Password" error={actionData?.password} />
-                    <PasswordInput mt={16} name="confirmPassword" label="Confirm Password" error={actionData?.confirmPassword} />
-                    
+                    <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
+                    <PasswordInput mt={16} name="confirmPassword" label="Confirm Password"
+                                   error={actionData?.confirmPassword}/>
+
                     <Stack mt={16} align={"center"}>
                         <HCaptcha
                             sitekey={loaderData.captchaSitekey}
@@ -134,7 +135,7 @@ export default function SignUp() {
                     <Text hidden={!(actionData?.captcha)} color={"red"}>{actionData?.captcha}</Text>
 
                     <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
-                    
+
                     <Stack align={"end"}>
                         <Button mt={16} type="submit" loading={transition.state === "submitting"}>Sign up</Button>
                     </Stack>

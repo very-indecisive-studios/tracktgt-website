@@ -1,8 +1,5 @@
 ﻿import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import {
-    checkPasswordResetCode,
-    setPasswordReset,
-} from "auth";
+import { checkPasswordResetCode, setPasswordReset, } from "auth";
 import { Button, Center, Container, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
 import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { z } from "zod";
@@ -15,15 +12,15 @@ interface LoaderData {
 export const loader: LoaderFunction = async ({ params, request }) => {
     const code = params.code ?? "";
     const isValid = await checkPasswordResetCode(code);
-    
+
     if (!isValid) {
         throw new Response("Not Found", {
             status: 404,
         });
     }
-    
+
     return json<LoaderData>({
-       code: code
+        code: code
     });
 }
 
@@ -55,13 +52,13 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     const { code, password } = parsedFormData.data;
-    
+
     const isSuccess = await setPasswordReset(code, password);
-    
+
     if (isSuccess) {
         return redirect("/account/login");
     }
-    
+
     return json<ActionData>({
         isFailed: true
     });
@@ -70,9 +67,9 @@ export const action: ActionFunction = async ({ request }) => {
 export default function PasswordResetCode() {
     const loaderData = useLoaderData<LoaderData>();
     const actionData = useActionData<ActionData>();
-    
+
     const transition = useTransition();
-    
+
     return (
         <Center sx={(theme) => ({
             width: "100vw",
@@ -81,15 +78,18 @@ export default function PasswordResetCode() {
             <Container size={"xs"}>
                 <Title mb={24} order={1}>Enter your new password</Title>
                 <Form method="post">
-                    <TextInput name="code" hidden defaultValue={loaderData.code} />
-                    
-                    <PasswordInput mt={16} name="password" label="Password" error={actionData?.password} />
-                    <PasswordInput mt={16} name="confirmPassword" label="Confirm Password" error={actionData?.confirmPassword} />
+                    <TextInput name="code" hidden defaultValue={loaderData.code}/>
 
-                    <Text hidden={!(actionData?.isFailed)} color={"red"}>Something wrong happened. Try again later.</Text>
+                    <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
+                    <PasswordInput mt={16} name="confirmPassword" label="Confirm Password"
+                                   error={actionData?.confirmPassword}/>
+
+                    <Text hidden={!(actionData?.isFailed)} color={"red"}>Something wrong happened. Try again
+                        later.</Text>
 
                     <Stack align={"end"}>
-                        <Button fullWidth mt={16} type="submit" loading={transition.state === "submitting"}>Reset password</Button>
+                        <Button fullWidth mt={16} type="submit" loading={transition.state === "submitting"}>Reset
+                            password</Button>
                     </Stack>
                 </Form>
             </Container>
