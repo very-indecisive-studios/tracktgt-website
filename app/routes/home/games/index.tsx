@@ -195,8 +195,6 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
     const fetcherEditor = useFetcher();
 
     useEffect(() => {
-        console.log(`initialPage ${initialPage}`)
-        console.log(`pageNo ${[pageNo]}`)
         fetcherTable.submit({ search: "true", page: pageNo.toString(), status: status }, { method: "get" });
     }, [pageNo])
 
@@ -208,9 +206,18 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
 
     useEffect(() => {
         if (fetcherTable.type == "done") {
-            setPageNo(fetcherTable.data.page);
             setPageData(fetcherTable.data.items);
             setTotalNoOfPages(fetcherTable.data.totalNoOfPages);
+            
+            if (pageNo > fetcherTable.data.totalNoOfPages) {
+                if (fetcherTable.data.totalNoOfPages > 0) {
+                    setPageNo(fetcherTable.data.totalNoOfPages);
+                    onPageChange(fetcherTable.data.totalNoOfPages);
+                } else {
+                    setPageNo(1);
+                    onPageChange(1);
+                }
+            }
         }
     }, [fetcherTable.type])
 
@@ -308,11 +315,21 @@ export default function Games() {
     let [searchParams, setSearchParams] = useSearchParams();
     let [tabIndex, setTabIndex] = useState(() => {
         const status = GameTrackingStatus[searchParams.get("status") as keyof typeof GameTrackingStatus];
-        return status ?? GameTrackingStatus.Playing;
+        return status ?? GameTrackingStatus.Completed;
     });
     let [page, setPage] = useState(() => {
-        return parseInt(searchParams.get("page") ?? "1");
+        const page = parseInt(searchParams.get("page") ?? "1");
+        return page < 0 ? 1 : page;
     });
+    
+    useEffect(() => {
+        if (!searchParams.has("status")) {
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.set("status", GameTrackingStatus[tabIndex]);
+            newSearchParams.set("page", page.toString());
+            setSearchParams(newSearchParams);
+        }
+    }, [searchParams])
 
     const onTabChange = (tabIndex: number) => {
         setTabIndex(tabIndex);
@@ -320,7 +337,7 @@ export default function Games() {
 
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set("status", GameTrackingStatus[tabIndex]);
-        newSearchParams.delete("page");
+        newSearchParams.set("page", "1");
         setSearchParams(newSearchParams);
     }
 
