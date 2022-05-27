@@ -20,7 +20,7 @@ import {
     RemoveGameTrackingCommand,
     UpdateGameTrackingCommand
 } from "backend";
-import { Link, useFetcher } from "@remix-run/react";
+import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/games/CoverImage";
 import { Check, Clock, Eye, PlayerPause, PlayerPlay } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
@@ -43,8 +43,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     let url = new URL(request.url);
     let queryData = {
+        search: url.searchParams.get("search"),
         page: url.searchParams.get("page"),
         status: url.searchParams.get("status")
+    }
+
+    // This is just the page loading not the table requesting.
+    // Return empty response.
+    if (!queryData.search) {
+        return null;
     }
 
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
@@ -171,34 +178,37 @@ export const action: ActionFunction = async ({ request }) => {
 
 interface GameTrackingStatusTableProps {
     status: string;
+    initialPage: number;
+    onPageChange: (pageNo: number) => void;
 }
 
-const GameTrackingStatusTable = ({ status }: GameTrackingStatusTableProps) => {
+const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrackingStatusTableProps) => {
     const theme = useMantineTheme();
-
     const isMobile = useMobileQuery();
     const modals = useModals();
 
     const [pageData, setPageData] = useState<GetAllGameTrackingsItemResult[]>([]);
-    const [page, setPage] = useState(1);
+    const [pageNo, setPageNo] = useState(initialPage);
     const [totalNoOfPages, setTotalNoOfPages] = useState(1);
 
     const fetcherTable = useFetcher<LoaderData>();
     const fetcherEditor = useFetcher();
 
     useEffect(() => {
-        fetcherTable.submit({ page: page.toString(), status: status }, { method: "get" });
-    }, [page])
+        console.log(`initialPage ${initialPage}`)
+        console.log(`pageNo ${[pageNo]}`)
+        fetcherTable.submit({ search: "true", page: pageNo.toString(), status: status }, { method: "get" });
+    }, [pageNo])
 
     useEffect(() => {
         if (fetcherEditor.type == "done") {
-            fetcherTable.submit({ page: page.toString(), status: status }, { method: "get" });
+            fetcherTable.submit({ search: "true", page: pageNo.toString(), status: status }, { method: "get" });
         }
     }, [fetcherEditor.type])
 
     useEffect(() => {
         if (fetcherTable.type == "done") {
-            setPage(fetcherTable.data.page);
+            setPageNo(fetcherTable.data.page);
             setPageData(fetcherTable.data.items);
             setTotalNoOfPages(fetcherTable.data.totalNoOfPages);
         }
@@ -285,33 +295,78 @@ const GameTrackingStatusTable = ({ status }: GameTrackingStatusTableProps) => {
                 </Center>}
 
             {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
-                <Pagination size={"sm"} total={totalNoOfPages} onChange={setPage} page={page}/>}
+                <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
+                    onPageChange(pageNo);
+                    setPageNo(pageNo);
+                }}/>}
         </Stack>
     );
 }
 
 export default function Games() {
     const isMobile = useMobileQuery();
+    let [searchParams, setSearchParams] = useSearchParams();
+    let [tabIndex, setTabIndex] = useState(() => {
+        const status = GameTrackingStatus[searchParams.get("status") as keyof typeof GameTrackingStatus];
+        return status ?? GameTrackingStatus.Playing;
+    });
+    let [page, setPage] = useState(() => {
+        return parseInt(searchParams.get("page") ?? "1");
+    });
+
+    const onTabChange = (tabIndex: number) => {
+        setTabIndex(tabIndex);
+        setPage(1);
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set("status", GameTrackingStatus[tabIndex]);
+        newSearchParams.delete("page");
+        setSearchParams(newSearchParams);
+    }
+
+    const onPageChange = (pageNo: number) => {
+        setPage(pageNo);
+
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set("page", pageNo.toString());
+        setSearchParams(newSearchParams);
+    }
 
     return (
         <Container py={16}>
             <Title mb={32} order={1}>Games</Title>
-            <Tabs grow variant={"outline"} styles={(theme) => ({
-                tabControl: {
-                    fontSize: theme.fontSizes.md
-                }
-            })}>
-                <Tabs.Tab label={isMobile ? "" : "Playing"} icon={<PlayerPlay size={18}/>}>
-                    <GameTrackingStatusTable status="Playing"/>
+            <Tabs grow
+                  variant={"outline"}
+                  active={tabIndex}
+                  onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
+                  styles={(theme) => ({
+                      tabControl: {
+                          fontSize: theme.fontSizes.md
+                      }
+                  })}>
+                <Tabs.Tab label={isMobile ? "" : "Completed"}
+                          icon={<Check size={18}/>}>
+                    <GameTrackingStatusTable onPageChange={onPageChange}
+                                             initialPage={page}
+                                             status={GameTrackingStatus[GameTrackingStatus.Completed]}/>
                 </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Paused"} icon={<PlayerPause size={18}/>}>
-                    <GameTrackingStatusTable status="Paused"/>
+                <Tabs.Tab label={isMobile ? "" : "Playing"}
+                          icon={<PlayerPlay size={18}/>}>
+                    <GameTrackingStatusTable onPageChange={onPageChange}
+                                             initialPage={page}
+                                             status={GameTrackingStatus[GameTrackingStatus.Playing]}/>
                 </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Planning"} icon={<Clock size={18}/>}>
-                    <GameTrackingStatusTable status="Planning"/>
+                <Tabs.Tab label={isMobile ? "" : "Paused"}
+                          icon={<PlayerPause size={18}/>}>
+                    <GameTrackingStatusTable onPageChange={onPageChange}
+                                             initialPage={page}
+                                             status={GameTrackingStatus[GameTrackingStatus.Paused]}/>
                 </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Completed"} icon={<Check size={18}/>}>
-                    <GameTrackingStatusTable status="Completed"/>
+                <Tabs.Tab label={isMobile ? "" : "Planning"}
+                          icon={<Clock size={18}/>}>
+                    <GameTrackingStatusTable onPageChange={onPageChange}
+                                             initialPage={page}
+                                             status={GameTrackingStatus[GameTrackingStatus.Planning]}/>
                 </Tabs.Tab>
             </Tabs>
         </Container>
