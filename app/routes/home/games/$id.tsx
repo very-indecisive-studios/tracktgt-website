@@ -1,4 +1,4 @@
-﻿import { Button, Chip, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
+﻿import { Badge, Button, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
 import {
@@ -220,7 +220,7 @@ export function GameHeader({
 
                 <Group mt={16}>
                     {platforms?.map(platform => (
-                        <Chip checked={false} size={"sm"} key={platform}>{platform}</Chip>))}
+                        <Badge color={"gray"} size={"lg"} key={platform}>{platform}</Badge>))}
                 </Group>
             </Stack>
         </>

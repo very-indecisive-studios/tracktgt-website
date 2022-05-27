@@ -15,7 +15,7 @@ import {
     useMantineTheme,
 } from '@mantine/core';
 import HomeNavbar from "~/components/home/HomeNavbar";
-import { Outlet, useCatch, useFetcher, useTransition } from "@remix-run/react";
+import { Link, Outlet, useCatch, useFetcher, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/home/SearchBar";
 import { hasValidAuthInfo, okWithUserSession, removeUserSession, requireAuthInfo } from "~/utils/session.server";
 import { refresh } from "auth";
@@ -113,7 +113,9 @@ const Shell = ({ children }: ShellProps) => {
                     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
                         <Grid columns={12} align={"center"}>
                             <Grid.Col span={3}>
-                                <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
+                                <Link to={"/home"}>
+                                    <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
+                                </Link>
                             </Grid.Col>
                             <Grid.Col span={6}>
                                 <SearchBar/>
