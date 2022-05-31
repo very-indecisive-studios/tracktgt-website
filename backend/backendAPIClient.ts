@@ -32,6 +32,125 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
+    book_GetBook(id: string | null): Promise<BackendAPIResponse<GetBookResult>> {
+        let url_ = this.baseUrl + "/api/book/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_GetBook(_response);
+        });
+    }
+
+    protected processBook_GetBook(response: Response): Promise<BackendAPIResponse<GetBookResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetBookResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetBookResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_SearchBooks(title: string | null | undefined): Promise<BackendAPIResponse<SearchBooksResult>> {
+        let url_ = this.baseUrl + "/api/book/search?";
+        if (title !== undefined && title !== null)
+            url_ += "title=" + encodeURIComponent("" + title) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_SearchBooks(_response);
+        });
+    }
+
+    protected processBook_SearchBooks(response: Response): Promise<BackendAPIResponse<SearchBooksResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SearchBooksResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<SearchBooksResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     game_AddGameTracking(addGameTrackingCommand: AddGameTrackingCommand): Promise<BackendAPIResponse<Unit>> {
         let url_ = this.baseUrl + "/api/game/track";
         url_ = url_.replace(/[?&]$/, "");
@@ -669,9 +788,14 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 }
 
-export class Unit implements IUnit {
+export class GetBookResult implements IGetBookResult {
+    remoteId?: string;
+    coverImageURL?: string;
+    title?: string;
+    summary?: string;
+    authors?: string[];
 
-    constructor(data?: IUnit) {
+    constructor(data?: IGetBookResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -681,22 +805,47 @@ export class Unit implements IUnit {
     }
 
     init(_data?: any) {
+        if (_data) {
+            this.remoteId = _data["remoteId"];
+            this.coverImageURL = _data["coverImageURL"];
+            this.title = _data["title"];
+            this.summary = _data["summary"];
+            if (Array.isArray(_data["authors"])) {
+                this.authors = [] as any;
+                for (let item of _data["authors"])
+                    this.authors!.push(item);
+            }
+        }
     }
 
-    static fromJS(data: any): Unit {
+    static fromJS(data: any): GetBookResult {
         data = typeof data === 'object' ? data : {};
-        let result = new Unit();
+        let result = new GetBookResult();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["remoteId"] = this.remoteId;
+        data["coverImageURL"] = this.coverImageURL;
+        data["title"] = this.title;
+        data["summary"] = this.summary;
+        if (Array.isArray(this.authors)) {
+            data["authors"] = [];
+            for (let item of this.authors)
+                data["authors"].push(item);
+        }
         return data;
     }
 }
 
-export interface IUnit {
+export interface IGetBookResult {
+    remoteId?: string;
+    coverImageURL?: string;
+    title?: string;
+    summary?: string;
+    authors?: string[];
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -749,6 +898,136 @@ export interface IProblemDetails {
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+}
+
+export class SearchBooksResult implements ISearchBooksResult {
+    items?: SearchBooksItemResult[];
+
+    constructor(data?: ISearchBooksResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(SearchBooksItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SearchBooksResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchBooksResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISearchBooksResult {
+    items?: SearchBooksItemResult[];
+}
+
+export class SearchBooksItemResult implements ISearchBooksItemResult {
+    remoteId?: string;
+    title?: string;
+    coverImageURL?: string;
+    authors?: string[];
+
+    constructor(data?: ISearchBooksItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.remoteId = _data["remoteId"];
+            this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
+            if (Array.isArray(_data["authors"])) {
+                this.authors = [] as any;
+                for (let item of _data["authors"])
+                    this.authors!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): SearchBooksItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchBooksItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["remoteId"] = this.remoteId;
+        data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
+        if (Array.isArray(this.authors)) {
+            data["authors"] = [];
+            for (let item of this.authors)
+                data["authors"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ISearchBooksItemResult {
+    remoteId?: string;
+    title?: string;
+    coverImageURL?: string;
+    authors?: string[];
+}
+
+export class Unit implements IUnit {
+
+    constructor(data?: IUnit) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): Unit {
+        data = typeof data === 'object' ? data : {};
+        let result = new Unit();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IUnit {
 }
 
 export class AddGameTrackingCommand implements IAddGameTrackingCommand {

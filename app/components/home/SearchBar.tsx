@@ -38,7 +38,7 @@ export default function SearchBar() {
     }, [location.pathname])
 
     return (
-        <Form hidden={!type} action={"/home/games/search"}>
+        <Form hidden={!type} action={`/home/${type}/search`}>
             <TextInput
                 name="title"
                 placeholder={"Search"}
