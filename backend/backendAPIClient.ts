@@ -32,6 +32,337 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
+    book_AddBookTracking(addBookTrackingCommand: AddBookTrackingCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/book/track";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(addBookTrackingCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_AddBookTracking(_response);
+        });
+    }
+
+    protected processBook_AddBookTracking(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_RemoveBookTracking(removeBookTrackingCommand: RemoveBookTrackingCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/book/track";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(removeBookTrackingCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_RemoveBookTracking(_response);
+        });
+    }
+
+    protected processBook_RemoveBookTracking(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_UpdateBookTracking(updateBookTrackingCommand: UpdateBookTrackingCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/book/track";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updateBookTrackingCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_UpdateBookTracking(_response);
+        });
+    }
+
+    protected processBook_UpdateBookTracking(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_GetAllBookTrackings(userRemoteId: string | null | undefined, bookStatus: BookTrackingStatus | null | undefined, sortByRecentlyModified: boolean | undefined, sortByChaptersRead: boolean | undefined, sortByFormat: boolean | undefined, sortByOwnership: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllBookTrackingsItemResult>> {
+        let url_ = this.baseUrl + "/api/book/track?";
+        if (userRemoteId !== undefined && userRemoteId !== null)
+            url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (bookStatus !== undefined && bookStatus !== null)
+            url_ += "BookStatus=" + encodeURIComponent("" + bookStatus) + "&";
+        if (sortByRecentlyModified === null)
+            throw new Error("The parameter 'sortByRecentlyModified' cannot be null.");
+        else if (sortByRecentlyModified !== undefined)
+            url_ += "SortByRecentlyModified=" + encodeURIComponent("" + sortByRecentlyModified) + "&";
+        if (sortByChaptersRead === null)
+            throw new Error("The parameter 'sortByChaptersRead' cannot be null.");
+        else if (sortByChaptersRead !== undefined)
+            url_ += "SortByChaptersRead=" + encodeURIComponent("" + sortByChaptersRead) + "&";
+        if (sortByFormat === null)
+            throw new Error("The parameter 'sortByFormat' cannot be null.");
+        else if (sortByFormat !== undefined)
+            url_ += "SortByFormat=" + encodeURIComponent("" + sortByFormat) + "&";
+        if (sortByOwnership === null)
+            throw new Error("The parameter 'sortByOwnership' cannot be null.");
+        else if (sortByOwnership !== undefined)
+            url_ += "SortByOwnership=" + encodeURIComponent("" + sortByOwnership) + "&";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "Page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_GetAllBookTrackings(_response);
+        });
+    }
+
+    protected processBook_GetAllBookTrackings(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetAllBookTrackingsItemResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedListResultOfGetAllBookTrackingsItemResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetAllBookTrackingsItemResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_GetBookTracking(userRemoteId: string | null, bookRemoteId: string | null): Promise<BackendAPIResponse<GetBookTrackingResult>> {
+        let url_ = this.baseUrl + "/api/book/track/{userRemoteId}/{bookRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        if (bookRemoteId === undefined || bookRemoteId === null)
+            throw new Error("The parameter 'bookRemoteId' must be defined.");
+        url_ = url_.replace("{bookRemoteId}", encodeURIComponent("" + bookRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_GetBookTracking(_response);
+        });
+    }
+
+    protected processBook_GetBookTracking(response: Response): Promise<BackendAPIResponse<GetBookTrackingResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetBookTrackingResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetBookTrackingResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     book_GetBook(id: string | null): Promise<BackendAPIResponse<GetBookResult>> {
         let url_ = this.baseUrl + "/api/book/{id}";
         if (id === undefined || id === null)
@@ -788,6 +1119,447 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 }
 
+export class Unit implements IUnit {
+
+    constructor(data?: IUnit) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): Unit {
+        data = typeof data === 'object' ? data : {};
+        let result = new Unit();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IUnit {
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+}
+
+export class AddBookTrackingCommand implements IAddBookTrackingCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+
+    constructor(data?: IAddBookTrackingCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.bookRemoteId = _data["bookRemoteId"];
+            this.chaptersRead = _data["chaptersRead"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): AddBookTrackingCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddBookTrackingCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["bookRemoteId"] = this.bookRemoteId;
+        data["chaptersRead"] = this.chaptersRead;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IAddBookTrackingCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+}
+
+export enum BookTrackingFormat {
+    Digital = 0,
+    Physical = 1,
+    None = 2,
+}
+
+export enum BookTrackingStatus {
+    Completed = 0,
+    Reading = 1,
+    Paused = 2,
+    Planning = 3,
+}
+
+export enum BookTrackingOwnership {
+    Owned = 0,
+    Loan = 1,
+    Wishlist = 2,
+}
+
+export class RemoveBookTrackingCommand implements IRemoveBookTrackingCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+
+    constructor(data?: IRemoveBookTrackingCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.bookRemoteId = _data["bookRemoteId"];
+        }
+    }
+
+    static fromJS(data: any): RemoveBookTrackingCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RemoveBookTrackingCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["bookRemoteId"] = this.bookRemoteId;
+        return data;
+    }
+}
+
+export interface IRemoveBookTrackingCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+}
+
+export class UpdateBookTrackingCommand implements IUpdateBookTrackingCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+
+    constructor(data?: IUpdateBookTrackingCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.bookRemoteId = _data["bookRemoteId"];
+            this.chaptersRead = _data["chaptersRead"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): UpdateBookTrackingCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateBookTrackingCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["bookRemoteId"] = this.bookRemoteId;
+        data["chaptersRead"] = this.chaptersRead;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IUpdateBookTrackingCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+}
+
+export class PagedListResultOfGetAllBookTrackingsItemResult implements IPagedListResultOfGetAllBookTrackingsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllBookTrackingsItemResult[];
+
+    constructor(data?: IPagedListResultOfGetAllBookTrackingsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.page = _data["page"];
+            this.totalPages = _data["totalPages"];
+            this.pageSize = _data["pageSize"];
+            this.currentPageSize = _data["currentPageSize"];
+            this.currentStartIndex = _data["currentStartIndex"];
+            this.currentEndIndex = _data["currentEndIndex"];
+            this.totalCount = _data["totalCount"];
+            this.hasPrevious = _data["hasPrevious"];
+            this.hasNext = _data["hasNext"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetAllBookTrackingsItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedListResultOfGetAllBookTrackingsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedListResultOfGetAllBookTrackingsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["totalPages"] = this.totalPages;
+        data["pageSize"] = this.pageSize;
+        data["currentPageSize"] = this.currentPageSize;
+        data["currentStartIndex"] = this.currentStartIndex;
+        data["currentEndIndex"] = this.currentEndIndex;
+        data["totalCount"] = this.totalCount;
+        data["hasPrevious"] = this.hasPrevious;
+        data["hasNext"] = this.hasNext;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPagedListResultOfGetAllBookTrackingsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllBookTrackingsItemResult[];
+}
+
+export class GetAllBookTrackingsItemResult implements IGetAllBookTrackingsItemResult {
+    bookRemoteId?: string;
+    title?: string;
+    coverImageURL?: string;
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+
+    constructor(data?: IGetAllBookTrackingsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bookRemoteId = _data["bookRemoteId"];
+            this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
+            this.chaptersRead = _data["chaptersRead"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): GetAllBookTrackingsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAllBookTrackingsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bookRemoteId"] = this.bookRemoteId;
+        data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
+        data["chaptersRead"] = this.chaptersRead;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IGetAllBookTrackingsItemResult {
+    bookRemoteId?: string;
+    title?: string;
+    coverImageURL?: string;
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+}
+
+export class GetBookTrackingResult implements IGetBookTrackingResult {
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+
+    constructor(data?: IGetBookTrackingResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.chaptersRead = _data["chaptersRead"];
+            this.format = _data["format"];
+            this.status = _data["status"];
+            this.ownership = _data["ownership"];
+        }
+    }
+
+    static fromJS(data: any): GetBookTrackingResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetBookTrackingResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["chaptersRead"] = this.chaptersRead;
+        data["format"] = this.format;
+        data["status"] = this.status;
+        data["ownership"] = this.ownership;
+        return data;
+    }
+}
+
+export interface IGetBookTrackingResult {
+    chaptersRead?: number;
+    format?: BookTrackingFormat;
+    status?: BookTrackingStatus;
+    ownership?: BookTrackingOwnership;
+}
+
 export class GetBookResult implements IGetBookResult {
     remoteId?: string;
     coverImageURL?: string;
@@ -846,58 +1618,6 @@ export interface IGetBookResult {
     title?: string;
     summary?: string;
     authors?: string[];
-}
-
-export class ProblemDetails implements IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    constructor(data?: IProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            this.detail = _data["detail"];
-            this.instance = _data["instance"];
-        }
-    }
-
-    static fromJS(data: any): ProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        data["detail"] = this.detail;
-        data["instance"] = this.instance;
-        return data;
-    }
-}
-
-export interface IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
 }
 
 export class SearchBooksResult implements ISearchBooksResult {
@@ -998,36 +1718,6 @@ export interface ISearchBooksItemResult {
     title?: string;
     coverImageURL?: string;
     authors?: string[];
-}
-
-export class Unit implements IUnit {
-
-    constructor(data?: IUnit) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): Unit {
-        data = typeof data === 'object' ? data : {};
-        let result = new Unit();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface IUnit {
 }
 
 export class AddGameTrackingCommand implements IAddGameTrackingCommand {
