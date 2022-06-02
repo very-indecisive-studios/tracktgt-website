@@ -1,25 +1,12 @@
-﻿import { Badge, Button, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+﻿import { Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import {
-    AddGameTrackingCommand,
     backendAPIClientInstance,
-    GameTrackingFormat,
-    GameTrackingOwnership,
-    GameTrackingStatus,
-    GetBookResult,
-    GetGameResult,
-    GetGameTrackingsItemResult,
-    RemoveGameTrackingCommand,
-    UpdateGameTrackingCommand,
+    GetBookResult
 } from "backend";
-import { Edit, Plus, Star } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
-import { useModals } from "@mantine/modals";
-import { showGameTrackingsSelectorModal, showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
-import { z } from "zod";
-import { badRequest } from "~/utils/response.server";
 
 interface LoaderData {
     book: GetBookResult;
@@ -38,17 +25,17 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     });
 }
 
-interface GameHeaderProps {
+interface BookHeaderProps {
     coverImageURL: string | undefined;
     title: string | undefined;
     authors: string[] | undefined;
 }
 
-export function GameHeader({
+export function BookHeader({
    coverImageURL,
    title,
    authors,
-}: GameHeaderProps) {
+}: BookHeaderProps) {
     return (
         <>
             <Stack mr={12}>
@@ -73,7 +60,7 @@ export function GameHeader({
 export default function Book() {
     const loaderData = useLoaderData<LoaderData>();
 
-    const bookHeader = <GameHeader coverImageURL={loaderData.book.coverImageURL}
+    const bookHeader = <BookHeader coverImageURL={loaderData.book.coverImageURL}
                                    title={loaderData.book.title}
                                    authors={loaderData.book.authors} />
 
