@@ -1,7 +1,7 @@
 ﻿import {
     ActionIcon,
     Center,
-    Container, Loader, Pagination, Stack, Table, Tabs, Text,
+    Container, Loader, LoadingOverlay, Pagination, Stack, Table, Tabs, Text,
     Title, useMantineTheme,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
@@ -210,22 +210,23 @@ const BookTrackingStatusTable = ({ status, initialPage, onPageChange }: BookTrac
 
     return (
         <Stack py={16} sx={(theme) => ({
-            overflowX: "auto"
+            overflowX: "auto",
+            position: "relative",
+            height: "600px"
         })}>
-            <Center sx={(theme) => ({
-                height: "8px",
-            })}>
-                {fetcherTable.type === "loaderSubmission" && <Loader variant={"dots"}/>}
-            </Center>
-
+            <LoadingOverlay overlayOpacity={0.8} visible={
+                fetcherTable.type === "init"
+                || fetcherTable.type === "loaderSubmission"
+                || fetcherEditor.state === "submitting"} />
+            
             <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
                 <thead>
                 <tr>
                     <th></th>
                     <th>Title</th>
+                    <th>Chapters Read</th>
                     {!isMobile &&
                         (<>
-                            <th>Chapters Read</th>
                             <th>Format</th>
                             <th>Status</th>
                             <th>Ownership</th>
@@ -252,9 +253,9 @@ const BookTrackingStatusTable = ({ status, initialPage, onPageChange }: BookTrac
                                 </Text>
                             </Link>
                         </td>
+                        <td>{bt.chaptersRead}</td>
                         {!isMobile &&
                             <>
-                                <td>{bt.chaptersRead}</td>
                                 <td>{BookTrackingFormat[bt.format!!]}</td>
                                 <td>{BookTrackingStatus[bt.status!!]}</td>
                                 <td>{BookTrackingOwnership[bt.ownership!!]}</td>
