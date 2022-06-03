@@ -1,18 +1,20 @@
-﻿import { Badge, Card, Container, Group, Image, Text, Title } from "@mantine/core";
+﻿import { Badge, Card, Center, Container, Group, Image, Stack, Text, Title } from "@mantine/core";
 import React from "react";
 import { json, LoaderFunction } from "@remix-run/node";
-import { backendAPIClientInstance, GetAllGameTrackingsItemResult } from "backend";
+import { backendAPIClientInstance, GetAllBookTrackingsItemResult, GetAllGameTrackingsItemResult } from "backend";
 import { requireUserId } from "~/utils/session.server";
 import { Link, useLoaderData } from "@remix-run/react";
+import { MoodSad } from "tabler-icons-react";
 
 interface LoaderData {
     games: GetAllGameTrackingsItemResult[];
+    books: GetAllBookTrackingsItemResult[];
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
     const userId = await requireUserId(request);
 
-    const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetAllGameTrackings(
+    const getAllGameTrackingsResponse = await backendAPIClientInstance.game_GetAllGameTrackings(
         userId,
         null,
         true,
@@ -24,8 +26,20 @@ export const loader: LoaderFunction = async ({ request }) => {
         4
     );
 
+    const getBookTrackingsResponse = await backendAPIClientInstance.book_GetAllBookTrackings(
+        userId,
+        null,
+        true,
+        false,
+        false,
+        false,
+        1,
+        4
+    );
+
     return json<LoaderData>({
-        games: getGameTrackingsBackendAPIResponse.result.items ?? []
+        games: getAllGameTrackingsResponse.result.items ?? [],
+        books: getBookTrackingsResponse.result.items ?? []
     });
 }
 
@@ -33,7 +47,7 @@ interface MediaTrackingCardProps {
     link: string;
     coverImageURL: string;
     title: string;
-    tag: string;
+    tag?: string | undefined;
 }
 
 function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCardProps) {
@@ -44,11 +58,11 @@ function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCar
                 width: 200
             })}>
                 <Card.Section>
-                    <Image src={coverImageURL} height={220} fit={"cover"}/>
+                    <Image src={coverImageURL} height={tag ? 220 : 250} fit={"cover"}/>
                 </Card.Section>
 
                 <Text mt={12} size={"md"} sx={() => ({
-                    width: "10ch",
+                    width: "14ch",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -56,9 +70,26 @@ function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCar
                     {title}
                 </Text>
 
-                <Badge color={"gray"} size={"sm"}>{tag}</Badge>
+                {tag && <Badge color={"gray"} size={"sm"}>{tag}</Badge>}
             </Card>
         </Link>
+    );
+}
+
+interface EmptyProps {
+    type: string;
+}
+
+function Empty({ type }: EmptyProps) {
+    return (
+        <Container py={32} sx={(theme) => ({
+            color: theme.colors.gray[7]
+        })}>
+            <Stack align={"center"}>
+                    <MoodSad size={96}/>
+                    <Text>You have not tracked any {type} yet.</Text>
+            </Stack>
+        </Container>
     );
 }
 
@@ -69,7 +100,7 @@ export default function Home() {
         <Container py={16}>
             <Title mb={32} order={1}>Dashboard</Title>
 
-            <Title order={3} sx={(theme) => ({
+            <Title order={2} sx={(theme) => ({
                 color: theme.colors.gray[6]
             })}>
                 Recent games
@@ -78,12 +109,33 @@ export default function Home() {
                 flexWrap: "nowrap",
                 overflowX: "auto"
             })}>
+                {loaderData.games.length === 0 && <Empty type={"games"} />}
+
                 {loaderData.games.map((gt) => (
                     <MediaTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
                                        link={`/home/games/${gt.gameRemoteId}`}
                                        title={gt.title ?? ""}
                                        coverImageURL={gt.coverImageURL ?? ""}
-                                       tag={gt.platform ?? ""}/>
+                                       tag={gt.platform ?? ""} />
+                ))}
+            </Group>
+
+            <Title mt={48} order={2} sx={(theme) => ({
+                color: theme.colors.gray[6]
+            })}>
+                Recent books
+            </Title>
+            <Group py={16} mt={16} sx={() => ({
+                flexWrap: "nowrap",
+                overflowX: "auto"
+            })}>
+                {loaderData.books.length === 0 && <Empty type={"books"} />}
+                
+                {loaderData.books.map((bt) => (
+                    <MediaTrackingCard key={`${bt.bookRemoteId}`}
+                                       link={`/home/books/${bt.bookRemoteId}`}
+                                       title={bt.title ?? ""}
+                                       coverImageURL={bt.coverImageURL ?? ""} />
                 ))}
             </Group>
         </Container>

@@ -2,7 +2,7 @@
     ActionIcon,
     Center,
     Container,
-    Loader,
+    Loader, LoadingOverlay,
     Pagination,
     Stack,
     Table,
@@ -223,13 +223,14 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
 
     return (
         <Stack py={16} sx={(theme) => ({
-            overflowX: "auto"
+            overflowX: "auto",
+            position: "relative",
+            height: "600px"
         })}>
-            <Center sx={(theme) => ({
-                height: "8px",
-            })}>
-                {fetcherTable.type === "loaderSubmission" && <Loader variant={"dots"}/>}
-            </Center>
+            <LoadingOverlay overlayOpacity={0.8} visible={
+                fetcherTable.type === "init"
+                || fetcherTable.type === "loaderSubmission"
+                || fetcherEditor.state === "submitting"} />
 
             <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
                 <thead>
