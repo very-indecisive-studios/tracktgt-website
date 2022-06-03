@@ -14,7 +14,7 @@ import {
 } from "backend";
 import { Edit, Plus, Star } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
-import CoverImage from "~/components/home/games/CoverImage";
+import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
 import { showGameTrackingsSelectorModal, showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
 import { z } from "zod";
