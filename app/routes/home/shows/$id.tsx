@@ -147,7 +147,7 @@ interface ShowHeaderProps {
     coverImageURL: string | undefined;
     title: string | undefined;
     showType: ShowType | undefined;
-    hasGameTracking: boolean;
+    hasShowTracking: boolean;
     onAddClick: () => void;
     onEditClick: () => void;
 }
@@ -155,8 +155,8 @@ interface ShowHeaderProps {
 export function ShowHeader({
                                coverImageURL,
                                title,
-                               showType, 
-                               hasGameTracking, 
+                               showType,
+                               hasShowTracking, 
                                onAddClick, 
                                onEditClick
                            }: ShowHeaderProps) {
@@ -167,14 +167,14 @@ export function ShowHeader({
             <Stack mr={12}>
                 <CoverImage src={coverImageURL} width={200} height={300}/>
 
-                {!hasGameTracking &&
+                {!hasShowTracking &&
                     <Button color={"indigo"}
                             onClick={onAddClick}
                             leftIcon={<Plus size={20}/>}>
                         Create tracking
                     </Button>}
 
-                {hasGameTracking &&
+                {hasShowTracking &&
                     <Button color={"orange"}
                             onClick={onEditClick}
                             leftIcon={<Edit size={20}/>}>

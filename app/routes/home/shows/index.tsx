@@ -254,7 +254,7 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                                 modals,
                                 {
                                     title: st.title,
-                                    remoteId: st.showRemoteId.toString(),
+                                    remoteId: st.showRemoteId,
                                 },
                                 st,
                                 () => { },

@@ -10,7 +10,7 @@ import { ModalsContextProps } from "@mantine/modals/lib/context";
 
 interface Show {
     title?: string;
-    remoteId?: string;
+    remoteId?: number;
 }
 
 interface ShowTracking {
