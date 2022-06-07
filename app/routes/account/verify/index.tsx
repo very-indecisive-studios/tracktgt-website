@@ -39,6 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 interface ActionData {
     isVerified?: boolean;
     isResend?: boolean;
+    isResendSuccessful?: boolean;
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -70,9 +71,9 @@ export const action: ActionFunction = async ({ request }) => {
 
     const { type } = parsedFormData.data;
     if (type === "resend") {
-        const isResend = await sendUserVerificationEmail(authInfo.idToken);
+        const isResendSuccessful = await sendUserVerificationEmail(authInfo.idToken);
 
-        return jsonWithUserSession<ActionData>(authInfo, { isResend: isResend });
+        return jsonWithUserSession<ActionData>(authInfo, { isResend: true, isResendSuccessful: isResendSuccessful });
     }
 
     const hasUserVerified = await checkUserVerification(authInfo.idToken);
@@ -147,7 +148,9 @@ export default function Verify() {
 
                     {(actionData?.isResend ?? false) &&
                         <Text color={"orange"}>
-                            We have resent email verification. Please check your spam as well.
+                            {actionData?.isResendSuccessful ? 
+                                "We have resent email verification. Please check your spam as well." :
+                                "We are unable to resend email verification. Try again later."}
                         </Text>}
 
                     <Group>
