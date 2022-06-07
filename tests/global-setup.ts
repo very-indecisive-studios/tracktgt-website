@@ -1,6 +1,18 @@
+import dotenv from 'dotenv';
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
+    dotenv.config({ path: "./.test.env" });
+    
+    const email = process.env.TEST_ACCOUNT_EMAIL;
+    if (!email) {
+        throw new Error("TEST_ACCOUNT_EMAIL must be set");
+    }
+    const pass = process.env.TEST_ACCOUNT_PASS;
+    if (!pass) {
+        throw new Error("TEST_ACCOUNT_PASS must be set");
+    }
+    
     const { baseURL } = config.projects[0].use;
     
     const browser = await chromium.launch();
@@ -11,15 +23,15 @@ async function globalSetup(config: FullConfig) {
 
     // Click input[name="email"]
     await page.locator('input[name="email"]').click();
-
+    
     // Fill input[name="email"]
-    await page.locator('input[name="email"]').fill('veryindecisivestudios+test@gmail.com');
+    await page.locator('input[name="email"]').fill(email);
 
     // Click input[name="password"]
     await page.locator('input[name="password"]').click();
 
     // Fill input[name="password"]
-    await page.locator('input[name="password"]').fill('testme99');
+    await page.locator('input[name="password"]').fill(pass);
 
     // Click div[role="checkbox"]
     await page.frameLocator('text=Email addressPasswordForget password?Login >> iframe').locator('div[role="checkbox"]').click();

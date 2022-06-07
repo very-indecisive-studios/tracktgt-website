@@ -40,6 +40,7 @@
     "@types/react-dom": "^18.0.4",
     "@types/three": "^0.140.0",
     "concurrently": "^7.2.1",
+    "dotenv": "^16.0.1",
     "eslint": "^8.16.0",
     "msw": "^0.42.0",
     "typescript": "^4.6.4"
