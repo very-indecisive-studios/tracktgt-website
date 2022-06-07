@@ -7,7 +7,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
-    "test": "npx playwright test --project=chromium",
+    "test": "npx playwright test",
     "test:gen": "concurrently --kill-others \"npx playwright codegen localhost:3000\" \"npm run dev\""
   },
   "dependencies": {
