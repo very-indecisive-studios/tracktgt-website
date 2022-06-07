@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe("Home > User", () => {
-    // Login before each test.
     test("User name shown", async ({ page }) => {
         // Go to /account/login
         await page.goto('/account/login');

@@ -1,47 +1,23 @@
 import { test, expect } from '@playwright/test';
 
 test.describe("Home > Index", () => {
-    // Login before each test.
-    test.beforeEach(async ({ page }) => {
-        // Go to /account/login
-        await page.goto('/account/login');
-
-        // Click input[name="email"]
-        await page.locator('input[name="email"]').click();
-
-        // Fill input[name="email"]
-        await page.locator('input[name="email"]').fill('veryindecisivestudios+test@gmail.com');
-
-        // Click input[name="password"]
-        await page.locator('input[name="password"]').click();
-
-        // Fill input[name="password"]
-        await page.locator('input[name="password"]').fill('testme99');
-
-        // Click div[role="checkbox"]
-        await page.frameLocator('text=Email addressPasswordForget password?Login >> iframe').locator('div[role="checkbox"]').click();
-        await page.waitForTimeout(2000);
-
-        // Click button:has-text("Login")
-        await Promise.all([
-            page.waitForNavigation(),
-            page.locator('button:has-text("Login")').click()
-        ]);
-
-        await page.waitForURL("/home");
-    });
+    // Auth before each test.
+    test.use({ storageState: 'storageState.json' });
     
     test('Dashboard is shown', async ({ page }) => {
+        await page.goto("/home", { waitUntil: "networkidle" });
+
         await expect(page.locator("h1:has-text(\"Dashboard\")")).toBeVisible();
     });
 
     test('No recent games are shown', async ({ page }) => {
+        await page.goto("/home", { waitUntil: "networkidle" });
+
         await expect(page.locator("text=You have not tracked any games yet")).toBeVisible();
     });
 
     test('Recent games are shown', async ({ page }) => {
         /* Add game */
-        
         await page.goto('/home/games/114795', { waitUntil: "networkidle" });
         await expect(page).toHaveURL('/home/games/114795');
         // Click button:has-text("Create tracking") >> nth=1
@@ -79,6 +55,8 @@ test.describe("Home > Index", () => {
     });
 
     test('No recent books are shown', async ({ page }) => {
+        await page.goto("/home", { waitUntil: "networkidle" });
+
         await expect(page.locator("text=You have not tracked any books yet")).toBeVisible();
     });
 
@@ -98,6 +76,7 @@ test.describe("Home > Index", () => {
         await expect(page).toHaveURL('/home');
         await expect(page.locator("text=Atomic Habits")).toBeVisible();
 
+        /* Clean up */
         await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
         // Click button:has-text("Edit tracking") >> nth=1
@@ -107,7 +86,6 @@ test.describe("Home > Index", () => {
         // Click button:has-text("Yes, I am sure")
         await page.locator('button:has-text("Yes, I am sure")').click();
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
-
     });
 });
 
