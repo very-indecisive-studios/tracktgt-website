@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe("Books > ID", () => {
+test.describe("Books > Index", () => {
     // Auth before each test.
     test.use({ storageState: 'storageState.json' });
 

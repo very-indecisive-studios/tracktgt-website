@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe("Games > ID", () => {
+test.describe("Games > Index", () => {
     // Auth before each test.
     test.use({ storageState: 'storageState.json' });
 
@@ -28,7 +28,11 @@ test.describe("Games > ID", () => {
         await page.locator('button[role="tab"]:has-text("Completed")').click();
         
         // Check URL changes
-        await expect(page).toHaveURL("/home/games?status=Completed&page=1");
+        const url = new URL(page.url());
+        const status = url.searchParams.get("status");
+        const pageNo = url.searchParams.get("page");
+        await expect(status).toBe("Completed");
+        await expect(pageNo).toBe("1");
         
         // Check if table has the game added earlier
         await page.locator("text=Apex Legends").waitFor();
@@ -73,7 +77,11 @@ test.describe("Games > ID", () => {
         await page.locator('button[role="tab"]:has-text("Playing")').click();
         
         // Check URL changes
-        await expect(page).toHaveURL("/home/games?status=Playing&page=1");
+        const url = new URL(page.url());
+        const status = url.searchParams.get("status");
+        const pageNo = url.searchParams.get("page");
+        await expect(status).toBe("Playing");
+        await expect(pageNo).toBe("1");
 
         // Check if table has the game added earlier
         await page.locator("text=Apex Legends").waitFor();
@@ -118,7 +126,11 @@ test.describe("Games > ID", () => {
         await page.locator('button[role="tab"]:has-text("Paused")').click();
 
         // Check URL changes
-        await expect(page).toHaveURL("/home/games?status=Paused&page=1");
+        const url = new URL(page.url());
+        const status = url.searchParams.get("status");
+        const pageNo = url.searchParams.get("page");
+        await expect(status).toBe("Paused");
+        await expect(pageNo).toBe("1");
 
         // Check if table has the game added earlier
         await page.locator("text=Apex Legends").waitFor();
@@ -163,7 +175,11 @@ test.describe("Games > ID", () => {
         await page.locator('button[role="tab"]:has-text("Planning")').click();
 
         // Check URL changes
-        await expect(page).toHaveURL("/home/games?status=Planning&page=1");
+        const url = new URL(page.url());
+        const status = url.searchParams.get("status");
+        const pageNo = url.searchParams.get("page");
+        await expect(status).toBe("Planning");
+        await expect(pageNo).toBe("1");
 
         // Check if table has the game added earlier
         await page.locator("text=Apex Legends").waitFor();
