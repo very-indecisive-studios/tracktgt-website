@@ -12,7 +12,8 @@ test.describe("Games > ID", () => {
         // Click button:has-text("Add")
         await page.locator('button:has-text("Add")').click();
         await expect(page).toHaveURL('/home/games/114795');
-        
+
+        await page.goto("/home", { waitUntil: "networkidle" });
         await page.goto("/home/games/114795", { waitUntil: "networkidle" });
         await expect(await page.locator('button:has-text("Edit tracking")').count()).toBeTruthy();
     });
@@ -26,6 +27,7 @@ test.describe("Games > ID", () => {
         await page.locator('button:has-text("Save")').click();
         await expect(page).toHaveURL('/home/games/114795');
 
+        await page.goto("/home", { waitUntil: "networkidle" });
         await page.goto("/home/games/114795", { waitUntil: "networkidle" });
         await page.locator('button:has-text("Edit tracking")').nth(1).click();
         await page.locator('h5:has-text("PC")').click();
@@ -41,6 +43,7 @@ test.describe("Games > ID", () => {
         await page.locator('button:has-text("Yes, I am sure")').click();
         await expect(page).toHaveURL('/home/games/114795');
 
+        await page.goto("/home", { waitUntil: "networkidle" });
         await page.goto("/home/games/114795", { waitUntil: "networkidle" });
         await expect(await page.locator('button:has-text("Edit tracking")').count()).toBeFalsy();
     });
