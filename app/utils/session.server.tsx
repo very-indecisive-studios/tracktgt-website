@@ -110,7 +110,7 @@ export async function redirectWithUserSession(authInfo: AuthInfo, redirectTo: st
 
 export async function removeUserSession(request: Request) {
     let session = await getSession(request.headers.get("Cookie"));
-    return redirect("/account/login", {
+    return redirect("/", {
         headers: { "Set-Cookie": await destroySession(session) },
     });
 }
