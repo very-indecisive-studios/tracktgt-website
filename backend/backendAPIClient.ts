@@ -936,6 +936,508 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<SearchGamesResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
+    show_AddShowTracking(addShowTrackingCommand: AddShowTrackingCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/show/track";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(addShowTrackingCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_AddShowTracking(_response);
+        });
+    }
+
+    protected processShow_AddShowTracking(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_RemoveShowTracking(removeShowTrackingCommand: RemoveShowTrackingCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/show/track";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(removeShowTrackingCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_RemoveShowTracking(_response);
+        });
+    }
+
+    protected processShow_RemoveShowTracking(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_UpdateShowTracking(updateShowTrackingCommand: UpdateShowTrackingCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/show/track";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updateShowTrackingCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_UpdateShowTracking(_response);
+        });
+    }
+
+    protected processShow_UpdateShowTracking(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_GetAllShowTrackings(userRemoteId: string | null | undefined, status: ShowTrackingStatus | null | undefined, sortByRecentlyModified: boolean | undefined, sortByEpisodesWatched: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllShowTrackingsItemResult>> {
+        let url_ = this.baseUrl + "/api/show/track?";
+        if (userRemoteId !== undefined && userRemoteId !== null)
+            url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (status !== undefined && status !== null)
+            url_ += "Status=" + encodeURIComponent("" + status) + "&";
+        if (sortByRecentlyModified === null)
+            throw new Error("The parameter 'sortByRecentlyModified' cannot be null.");
+        else if (sortByRecentlyModified !== undefined)
+            url_ += "SortByRecentlyModified=" + encodeURIComponent("" + sortByRecentlyModified) + "&";
+        if (sortByEpisodesWatched === null)
+            throw new Error("The parameter 'sortByEpisodesWatched' cannot be null.");
+        else if (sortByEpisodesWatched !== undefined)
+            url_ += "SortByEpisodesWatched=" + encodeURIComponent("" + sortByEpisodesWatched) + "&";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "Page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_GetAllShowTrackings(_response);
+        });
+    }
+
+    protected processShow_GetAllShowTrackings(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetAllShowTrackingsItemResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedListResultOfGetAllShowTrackingsItemResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetAllShowTrackingsItemResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_GetShowTracking(userRemoteId: string | null, showRemoteId: number): Promise<BackendAPIResponse<GetShowTrackingResult>> {
+        let url_ = this.baseUrl + "/api/show/track/{userRemoteId}/{showRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        if (showRemoteId === undefined || showRemoteId === null)
+            throw new Error("The parameter 'showRemoteId' must be defined.");
+        url_ = url_.replace("{showRemoteId}", encodeURIComponent("" + showRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_GetShowTracking(_response);
+        });
+    }
+
+    protected processShow_GetShowTracking(response: Response): Promise<BackendAPIResponse<GetShowTrackingResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetShowTrackingResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetShowTrackingResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_GetSeries(id: number): Promise<BackendAPIResponse<GetShowResult>> {
+        let url_ = this.baseUrl + "/api/show/series/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_GetSeries(_response);
+        });
+    }
+
+    protected processShow_GetSeries(response: Response): Promise<BackendAPIResponse<GetShowResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetShowResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetShowResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_GetMovie(id: number): Promise<BackendAPIResponse<GetShowResult>> {
+        let url_ = this.baseUrl + "/api/show/movie/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_GetMovie(_response);
+        });
+    }
+
+    protected processShow_GetMovie(response: Response): Promise<BackendAPIResponse<GetShowResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetShowResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetShowResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    show_SearchShows(title: string | null | undefined): Promise<BackendAPIResponse<SearchShowsResult>> {
+        let url_ = this.baseUrl + "/api/show/search?";
+        if (title !== undefined && title !== null)
+            url_ += "title=" + encodeURIComponent("" + title) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processShow_SearchShows(_response);
+        });
+    }
+
+    protected processShow_SearchShows(response: Response): Promise<BackendAPIResponse<SearchShowsResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SearchShowsResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<SearchShowsResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     user_RegisterUser(command: RegisterUserCommand): Promise<BackendAPIResponse<Unit>> {
         let url_ = this.baseUrl + "/api/user/register";
         url_ = url_.replace(/[?&]$/, "");
@@ -2318,6 +2820,482 @@ export interface ISearchGamesItemResult {
     title?: string;
     coverImageURL?: string;
     platforms?: string[];
+}
+
+export class AddShowTrackingCommand implements IAddShowTrackingCommand {
+    userRemoteId?: string;
+    showRemoteId?: number;
+    episodesWatched?: number;
+    showType?: ShowType;
+    status?: ShowTrackingStatus;
+
+    constructor(data?: IAddShowTrackingCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.showRemoteId = _data["showRemoteId"];
+            this.episodesWatched = _data["episodesWatched"];
+            this.showType = _data["showType"];
+            this.status = _data["status"];
+        }
+    }
+
+    static fromJS(data: any): AddShowTrackingCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddShowTrackingCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["showRemoteId"] = this.showRemoteId;
+        data["episodesWatched"] = this.episodesWatched;
+        data["showType"] = this.showType;
+        data["status"] = this.status;
+        return data;
+    }
+}
+
+export interface IAddShowTrackingCommand {
+    userRemoteId?: string;
+    showRemoteId?: number;
+    episodesWatched?: number;
+    showType?: ShowType;
+    status?: ShowTrackingStatus;
+}
+
+export enum ShowType {
+    Movie = 0,
+    Series = 1,
+}
+
+export enum ShowTrackingStatus {
+    Completed = 0,
+    Watching = 1,
+    Paused = 2,
+    Planning = 3,
+}
+
+export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
+    userRemoteId?: string;
+    showRemoteId?: number;
+
+    constructor(data?: IRemoveShowTrackingCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.showRemoteId = _data["showRemoteId"];
+        }
+    }
+
+    static fromJS(data: any): RemoveShowTrackingCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RemoveShowTrackingCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["showRemoteId"] = this.showRemoteId;
+        return data;
+    }
+}
+
+export interface IRemoveShowTrackingCommand {
+    userRemoteId?: string;
+    showRemoteId?: number;
+}
+
+export class UpdateShowTrackingCommand implements IUpdateShowTrackingCommand {
+    userRemoteId?: string;
+    showRemoteId?: number;
+    episodesWatched?: number;
+    status?: ShowTrackingStatus;
+
+    constructor(data?: IUpdateShowTrackingCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.showRemoteId = _data["showRemoteId"];
+            this.episodesWatched = _data["episodesWatched"];
+            this.status = _data["status"];
+        }
+    }
+
+    static fromJS(data: any): UpdateShowTrackingCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateShowTrackingCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["showRemoteId"] = this.showRemoteId;
+        data["episodesWatched"] = this.episodesWatched;
+        data["status"] = this.status;
+        return data;
+    }
+}
+
+export interface IUpdateShowTrackingCommand {
+    userRemoteId?: string;
+    showRemoteId?: number;
+    episodesWatched?: number;
+    status?: ShowTrackingStatus;
+}
+
+export class PagedListResultOfGetAllShowTrackingsItemResult implements IPagedListResultOfGetAllShowTrackingsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllShowTrackingsItemResult[];
+
+    constructor(data?: IPagedListResultOfGetAllShowTrackingsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.page = _data["page"];
+            this.totalPages = _data["totalPages"];
+            this.pageSize = _data["pageSize"];
+            this.currentPageSize = _data["currentPageSize"];
+            this.currentStartIndex = _data["currentStartIndex"];
+            this.currentEndIndex = _data["currentEndIndex"];
+            this.totalCount = _data["totalCount"];
+            this.hasPrevious = _data["hasPrevious"];
+            this.hasNext = _data["hasNext"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetAllShowTrackingsItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedListResultOfGetAllShowTrackingsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedListResultOfGetAllShowTrackingsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["totalPages"] = this.totalPages;
+        data["pageSize"] = this.pageSize;
+        data["currentPageSize"] = this.currentPageSize;
+        data["currentStartIndex"] = this.currentStartIndex;
+        data["currentEndIndex"] = this.currentEndIndex;
+        data["totalCount"] = this.totalCount;
+        data["hasPrevious"] = this.hasPrevious;
+        data["hasNext"] = this.hasNext;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPagedListResultOfGetAllShowTrackingsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllShowTrackingsItemResult[];
+}
+
+export class GetAllShowTrackingsItemResult implements IGetAllShowTrackingsItemResult {
+    showRemoteId?: number;
+    title?: string;
+    coverImageURL?: string;
+    episodesWatched?: number;
+    showType?: ShowType;
+    status?: ShowTrackingStatus;
+
+    constructor(data?: IGetAllShowTrackingsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.showRemoteId = _data["showRemoteId"];
+            this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
+            this.episodesWatched = _data["episodesWatched"];
+            this.showType = _data["showType"];
+            this.status = _data["status"];
+        }
+    }
+
+    static fromJS(data: any): GetAllShowTrackingsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAllShowTrackingsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["showRemoteId"] = this.showRemoteId;
+        data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
+        data["episodesWatched"] = this.episodesWatched;
+        data["showType"] = this.showType;
+        data["status"] = this.status;
+        return data;
+    }
+}
+
+export interface IGetAllShowTrackingsItemResult {
+    showRemoteId?: number;
+    title?: string;
+    coverImageURL?: string;
+    episodesWatched?: number;
+    showType?: ShowType;
+    status?: ShowTrackingStatus;
+}
+
+export class GetShowTrackingResult implements IGetShowTrackingResult {
+    episodesWatched?: number;
+    showType?: ShowType;
+    status?: ShowTrackingStatus;
+
+    constructor(data?: IGetShowTrackingResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.episodesWatched = _data["episodesWatched"];
+            this.showType = _data["showType"];
+            this.status = _data["status"];
+        }
+    }
+
+    static fromJS(data: any): GetShowTrackingResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetShowTrackingResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["episodesWatched"] = this.episodesWatched;
+        data["showType"] = this.showType;
+        data["status"] = this.status;
+        return data;
+    }
+}
+
+export interface IGetShowTrackingResult {
+    episodesWatched?: number;
+    showType?: ShowType;
+    status?: ShowTrackingStatus;
+}
+
+export class GetShowResult implements IGetShowResult {
+    remoteId?: number;
+    coverImageURL?: string;
+    title?: string;
+    summary?: string;
+    showType?: ShowType;
+
+    constructor(data?: IGetShowResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.remoteId = _data["remoteId"];
+            this.coverImageURL = _data["coverImageURL"];
+            this.title = _data["title"];
+            this.summary = _data["summary"];
+            this.showType = _data["showType"];
+        }
+    }
+
+    static fromJS(data: any): GetShowResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetShowResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["remoteId"] = this.remoteId;
+        data["coverImageURL"] = this.coverImageURL;
+        data["title"] = this.title;
+        data["summary"] = this.summary;
+        data["showType"] = this.showType;
+        return data;
+    }
+}
+
+export interface IGetShowResult {
+    remoteId?: number;
+    coverImageURL?: string;
+    title?: string;
+    summary?: string;
+    showType?: ShowType;
+}
+
+export class SearchShowsResult implements ISearchShowsResult {
+    items?: SearchShowsItemResult[];
+
+    constructor(data?: ISearchShowsResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(SearchShowsItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SearchShowsResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchShowsResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISearchShowsResult {
+    items?: SearchShowsItemResult[];
+}
+
+export class SearchShowsItemResult implements ISearchShowsItemResult {
+    remoteId?: number;
+    title?: string;
+    coverImageURL?: string;
+    showType?: ShowType;
+
+    constructor(data?: ISearchShowsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.remoteId = _data["remoteId"];
+            this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
+            this.showType = _data["showType"];
+        }
+    }
+
+    static fromJS(data: any): SearchShowsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchShowsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["remoteId"] = this.remoteId;
+        data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
+        data["showType"] = this.showType;
+        return data;
+    }
+}
+
+export interface ISearchShowsItemResult {
+    remoteId?: number;
+    title?: string;
+    coverImageURL?: string;
+    showType?: ShowType;
 }
 
 export class RegisterUserCommand implements IRegisterUserCommand {
