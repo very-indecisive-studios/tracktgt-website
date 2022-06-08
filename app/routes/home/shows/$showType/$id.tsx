@@ -1,23 +1,23 @@
-﻿import { Button, Container, Group, MediaQuery, Stack, Text, Title, } from "@mantine/core";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+﻿import {Button, Container, Group, MediaQuery, Stack, Text, Title,} from "@mantine/core";
+import {ActionFunction, json, LoaderFunction} from "@remix-run/node";
+import {useLoaderData, useSubmit} from "@remix-run/react";
 import {
     AddShowTrackingCommand,
     backendAPIClientInstance,
-    ShowTrackingStatus,
-    ShowType,
     GetShowResult,
     GetShowTrackingResult,
     RemoveShowTrackingCommand,
+    ShowTrackingStatus,
+    ShowType,
     UpdateShowTrackingCommand
 } from "backend";
-import { requireUserId } from "~/utils/session.server";
+import {requireUserId} from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
-import { z } from "zod";
-import { badRequest } from "~/utils/response.server";
-import { Edit, Plus } from "tabler-icons-react";
-import { showTrackShowEditorModal } from "~/components/home/shows/TrackShowEditorModal";
-import { useModals } from "@mantine/modals";
+import {z} from "zod";
+import {badRequest} from "~/utils/response.server";
+import {Edit, Plus} from "tabler-icons-react";
+import {showTrackShowEditorModal} from "~/components/home/shows/TrackShowEditorModal";
+import {useModals} from "@mantine/modals";
 
 interface LoaderData {
     show: GetShowResult;
@@ -26,8 +26,15 @@ interface LoaderData {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
     const showId: number = parseInt(params.id ?? "0");
-
-    const getShowResponse = await backendAPIClientInstance.show_GetMovie(showId);
+    let getShowResponse;
+    
+    if (params.showType == "series"){
+        getShowResponse = await backendAPIClientInstance.show_GetSeries(showId);
+    }
+    else {
+        getShowResponse = await backendAPIClientInstance.show_GetMovie(showId);
+    }
+    
     const show = getShowResponse.result;
 
     const userId = await requireUserId(request);
@@ -45,7 +52,6 @@ const handleDelete = async (request: Request) => {
 
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     let formData = Object.fromEntries(await request.formData())
-
     // Validate form.
     const formDataSchema = z
         .object({
@@ -57,7 +63,7 @@ const handleDelete = async (request: Request) => {
     if (!parsedFormData.success) {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
-
+    
     await backendAPIClientInstance.show_RemoveShowTracking(new RemoveShowTrackingCommand({
         showRemoteId: parsedFormData.data.showRemoteId,
         userRemoteId: userId
@@ -190,7 +196,7 @@ export function ShowHeader({
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {showType}
+                    {(ShowType[showType!!])}
                 </Title>
             </Stack>
         </>

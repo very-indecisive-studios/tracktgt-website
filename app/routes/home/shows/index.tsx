@@ -214,12 +214,11 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                 <tr>
                     <th></th>
                     <th>Title</th>
-                    <th>Chapters Read</th>
+                    <th>Episodes Watched</th>
                     {!isMobile &&
                         (<>
-                            <th>Format</th>
                             <th>Status</th>
-                            <th>Ownership</th>
+                            <th>Show Type</th>
                         </>)}
                     <th></th>
                 </tr>
@@ -232,7 +231,7 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                         </td>
                         <td>
                             <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/shows/${st.showRemoteId}`}>
+                                  to={`/home/shows/${(ShowType[st.showType!!]).toLowerCase()}/${st.showRemoteId}`}>
                                 <Text sx={(theme) => ({
                                     width: isMobile ? "10ch" : "20ch",
                                     overflow: "hidden",
@@ -255,6 +254,7 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                                 {
                                     title: st.title,
                                     remoteId: st.showRemoteId,
+                                    showType: st.showType
                                 },
                                 st,
                                 () => { },
@@ -339,8 +339,8 @@ export default function Shows() {
                                              initialPage={page}
                                              status={ShowTrackingStatus[ShowTrackingStatus.Completed]}/>
                 </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Reading"}
-                          icon={<Eyeglass2 size={18}/>}>
+                <Tabs.Tab label={isMobile ? "" : "Watching"}
+                          icon={<Eye size={18}/>}>
                     <ShowTrackingStatusTable onPageChange={onPageChange}
                                              initialPage={page}
                                              status={ShowTrackingStatus[ShowTrackingStatus.Watching]}/>

@@ -29,7 +29,7 @@ interface SearchResultItemProps {
 function SearchResultItem({ id, title, coverImageURL, showType }: SearchResultItemProps) {
     return (
         <div style={{ width: "100%", margin: 'auto' }}>
-            <Link to={`/home/shows/${id}`} style={{ textDecoration: "none" }}>
+            <Link to={`/home/shows/${(ShowType[showType]).toLowerCase()}/${id}`} style={{ textDecoration: "none" }}>
                 <Card shadow="xs" p="lg">
                     <Group align={"end"}>
                         <CoverImage src={coverImageURL} width={100} height={150}/>
@@ -37,7 +37,7 @@ function SearchResultItem({ id, title, coverImageURL, showType }: SearchResultIt
                         <Stack ml={8}>
                             <Title order={3}>{title}</Title>
                             <Text>
-                                {showType.toString()}
+                                {(ShowType[showType])}
                             </Text>
                         </Stack>
                     </Group>

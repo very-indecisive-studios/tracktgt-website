@@ -11,12 +11,12 @@ import { ModalsContextProps } from "@mantine/modals/lib/context";
 interface Show {
     title?: string;
     remoteId?: number;
+    showType?: ShowType;
 }
 
 interface ShowTracking {
     episodesWatched?: number;
     status?: ShowTrackingStatus;
-    showType?: ShowType;
 }
 
 function showDeleteConfirmModal(
@@ -32,11 +32,12 @@ function showDeleteConfirmModal(
                 e.preventDefault();
                 onDelete(new FormData(e.currentTarget));
             }}>
+                <TextInput name={"showRemoteId"} hidden defaultValue={show.remoteId}/>
+                <TextInput name={"showType"} defaultValue={show.showType?.toString()} hidden={true}/>
                 <Text>
                     Are you sure you want to remove tracking for <b>{show.title ?? "this show"}</b>?
                     This is an irreversable action!
                 </Text>
-                <TextInput name={"showRemoteId"} defaultValue={show.remoteId} hidden={true}/>
                 <Group position={"right"} mt={32}>
                     <Button variant={"outline"} onClick={() => modalsContext.closeModal(id)}>
                         Cancel
@@ -90,18 +91,14 @@ export function showTrackShowEditorModal(
                 }
             }}>
                 <TextInput name="showRemoteId" hidden defaultValue={show.remoteId}/>
-                <NumberInput name="chaptersRead" label="Chapters read"
+                <TextInput name="showType" hidden defaultValue={show.showType?.toString()}/>
+                <NumberInput name="episodesWatched" label="Episodes Watched"
                              defaultValue={selectedShowTracking?.episodesWatched ?? 0}/>
                 <Select name="status"
                         label="Status"
                         mt={16}
                         defaultValue={selectedShowTracking?.status?.toString() ?? showStatuses[0].value}
                         data={showStatuses}/>
-                <Select name="showType"
-                        label="Show Type"
-                        mt={16}
-                        defaultValue={selectedShowTracking?.showType?.toString() ?? showTypes[0].value}
-                        data={showTypes}/>
                 <Group mt={32} grow>
                     <Group position={"left"}>
                         {selectedShowTracking &&
