@@ -83,7 +83,7 @@ const handleDelete = async (request: Request) => {
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
-            showRemoteId: z.preprocess(preProcessToNumber, z.number()),
+            showRemoteId: z.string(),
         });
 
     const parsedFormData = formDataSchema.safeParse(formData);
@@ -104,19 +104,14 @@ const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue })
     const showStatusesLength = Object.keys(ShowTrackingStatus)
         .filter((s) => isNaN(Number(s)))
         .length;
-
-    const showTypesLength = Object.keys(ShowType)
-        .filter((s) => isNaN(Number(s)))
-        .length;
     
     // Validate form.
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
-            showRemoteId: z.preprocess(preProcessToNumber, z.number()),
+            showRemoteId: z.string(),
             episodesWatched: z.preprocess(preProcessToNumber, z.number().gte(0)),
             status: z.preprocess(preProcessToNumber, z.number().min(0).max(showStatusesLength - 1)),
-            showType: z.preprocess(preProcessToNumber, z.number().min(0).max(showTypesLength - 1))
         });
 
     return formDataSchema.safeParse(formData);
@@ -231,7 +226,7 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                         </td>
                         <td>
                             <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/shows/${(ShowType[st.showType!!]).toLowerCase()}/${st.showRemoteId}`}>
+                                  to={`/home/shows/${st.showRemoteId}`}>
                                 <Text sx={(theme) => ({
                                     width: isMobile ? "10ch" : "20ch",
                                     overflow: "hidden",
@@ -254,7 +249,6 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                                 {
                                     title: st.title,
                                     remoteId: st.showRemoteId,
-                                    showType: st.showType
                                 },
                                 st,
                                 () => { },

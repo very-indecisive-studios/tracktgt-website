@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 interface SearchResultItemProps {
-    id: number;
+    id: string;
     title: string;
     coverImageURL: string | undefined;
     showType: ShowType;
@@ -29,7 +29,7 @@ interface SearchResultItemProps {
 function SearchResultItem({ id, title, coverImageURL, showType }: SearchResultItemProps) {
     return (
         <div style={{ width: "100%", margin: 'auto' }}>
-            <Link to={`/home/shows/${(ShowType[showType]).toLowerCase()}/${id}`} style={{ textDecoration: "none" }}>
+            <Link to={`/home/shows/${id}`} style={{ textDecoration: "none" }}>
                 <Card shadow="xs" p="lg">
                     <Group align={"end"}>
                         <CoverImage src={coverImageURL} width={100} height={150}/>
@@ -58,7 +58,7 @@ export default function Search() {
             <Stack>
                 {loaderData.items.map(s => (
                     <SearchResultItem key={s.remoteId ?? ""}
-                                      id={s.remoteId ?? 0}
+                                      id={s.remoteId ?? ""}
                                       title={s.title ?? ""}
                                       coverImageURL={s.coverImageURL}
                                       showType={s.showType ?? ShowType.Movie}
