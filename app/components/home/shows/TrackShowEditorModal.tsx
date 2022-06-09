@@ -1,16 +1,13 @@
-﻿import { Form } from "@remix-run/react";
-import { Button, Group, NumberInput, Select, Text, TextInput } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { Pencil, PlaylistAdd, TrashX } from "tabler-icons-react";
-import {
-    ShowTrackingStatus,
-    ShowType
-} from "backend";
-import { ModalsContextProps } from "@mantine/modals/lib/context";
+﻿import {Form} from "@remix-run/react";
+import {Button, Group, NumberInput, Select, Text, TextInput} from "@mantine/core";
+import {showNotification} from "@mantine/notifications";
+import {Pencil, PlaylistAdd, TrashX} from "tabler-icons-react";
+import {ShowTrackingStatus, ShowType} from "backend";
+import {ModalsContextProps} from "@mantine/modals/lib/context";
 
 interface Show {
     title?: string;
-    remoteId?: number;
+    remoteId?: string;
     showType?: ShowType;
 }
 
@@ -33,7 +30,6 @@ function showDeleteConfirmModal(
                 onDelete(new FormData(e.currentTarget));
             }}>
                 <TextInput name={"showRemoteId"} hidden defaultValue={show.remoteId}/>
-                <TextInput name={"showType"} defaultValue={show.showType?.toString()} hidden={true}/>
                 <Text>
                     Are you sure you want to remove tracking for <b>{show.title ?? "this show"}</b>?
                     This is an irreversable action!
@@ -91,9 +87,9 @@ export function showTrackShowEditorModal(
                 }
             }}>
                 <TextInput name="showRemoteId" hidden defaultValue={show.remoteId}/>
-                <TextInput name="showType" hidden defaultValue={show.showType?.toString()}/>
                 <NumberInput name="episodesWatched" label="Episodes Watched"
-                             defaultValue={selectedShowTracking?.episodesWatched ?? 0}/>
+                             defaultValue={selectedShowTracking?.episodesWatched ?? 0}
+                             max={show.showType == ShowType.Movie ? 1 : 999999}/>
                 <Select name="status"
                         label="Status"
                         mt={16}
