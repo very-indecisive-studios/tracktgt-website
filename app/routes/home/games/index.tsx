@@ -22,7 +22,7 @@ import {
 } from "backend";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Eye, PlayerPause, PlayerPlay } from "tabler-icons-react";
+import { Check, Clock, Edit, PlayerPause, PlayerPlay } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
@@ -290,7 +290,7 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
                                 (formData) => fetcherEditor.submit(formData, { method: "put" }),
                                 (formData) => fetcherEditor.submit(formData, { method: "delete" })
                             )}>
-                                <Eye/>
+                                <Edit/>
                             </ActionIcon>
                         </td>
                     </tr>))}

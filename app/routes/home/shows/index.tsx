@@ -20,7 +20,7 @@ import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Eye, Eyeglass2, PlayerPause } from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, PlayerPause } from "tabler-icons-react";
 import { showTrackShowEditorModal } from "~/components/home/shows/TrackShowEditorModal";
 
 interface LoaderData {
@@ -255,7 +255,7 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
                                 (formData) => fetcherEditor.submit(formData, { method: "put" }),
                                 (formData) => fetcherEditor.submit(formData, { method: "delete" })
                             )}>
-                                <Eye/>
+                                <Edit/>
                             </ActionIcon>
                         </td>
                     </tr>))}
