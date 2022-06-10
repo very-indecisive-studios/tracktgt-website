@@ -1,7 +1,7 @@
 node_modules
 
 .cache
-.env
+*.env
 .vercel
 .output
 
@@ -11,3 +11,7 @@ node_modules
 /api/index.js.map
 
 .idea
+/test-results/
+/playwright-report/
+/playwright/.cache/
+storageState.json
