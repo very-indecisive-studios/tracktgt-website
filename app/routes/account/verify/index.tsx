@@ -13,6 +13,7 @@ import {
 import { checkUserVerification, refresh, sendUserVerificationEmail } from "auth";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
+import { useEffect, useState } from "react";
 
 export const loader: LoaderFunction = async ({ request }) => {
     let authInfo = await requireAuthInfo(request);
@@ -38,6 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 interface ActionData {
     isVerified?: boolean;
     isResend?: boolean;
+    isResendSuccessful?: boolean;
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -69,9 +71,9 @@ export const action: ActionFunction = async ({ request }) => {
 
     const { type } = parsedFormData.data;
     if (type === "resend") {
-        const isResend = await sendUserVerificationEmail(authInfo.idToken);
+        const isResendSuccessful = await sendUserVerificationEmail(authInfo.idToken);
 
-        return jsonWithUserSession<ActionData>(authInfo, { isResend: isResend });
+        return jsonWithUserSession<ActionData>(authInfo, { isResend: true, isResendSuccessful: isResendSuccessful });
     }
 
     const hasUserVerified = await checkUserVerification(authInfo.idToken);
@@ -95,6 +97,34 @@ export default function Verify() {
     const actionData = useActionData<ActionData>();
     const submit = useSubmit();
     const transition = useTransition();
+    
+    const RESEND_LOCALSTORAGE_KEY = "RESEND_COOLDOWN";
+    const RESEND_COOLDOWN_SECONDS = 120;
+    const [resendCooldownIntervalId, setResendCooldownIntervalId] = useState(-1);
+    const [resendCooldown, setResendCooldown] = useState(RESEND_COOLDOWN_SECONDS);
+    useEffect(() => {
+        const prevCooldown = window.localStorage.getItem(RESEND_LOCALSTORAGE_KEY);
+        if (prevCooldown) {
+            setResendCooldown(parseInt(prevCooldown));
+        }
+    }, []);
+    useEffect(() => {
+        if (resendCooldown === RESEND_COOLDOWN_SECONDS || resendCooldownIntervalId < 0) {
+            setResendCooldownIntervalId(window.setInterval(() => {
+                setResendCooldown((value) =>  {
+                    const newValue = value - 1;
+                    
+                    window.localStorage.setItem(RESEND_LOCALSTORAGE_KEY, newValue.toString());
+                    
+                    return newValue;
+                });
+            }, 1000));
+        } 
+        
+        if (resendCooldown === 0) {
+            window.clearInterval(resendCooldownIntervalId);
+        }
+    }, [resendCooldown]);
 
     return (
         <Center sx={(theme) => ({
@@ -110,14 +140,32 @@ export default function Verify() {
                         We need to verify your account before continuing.
                         <br/> Check your email and click on the verification link sent to you.
                     </Text>
-                    <Text color={(actionData?.isVerified ?? true) ? "" : "red"}>
-                        {(actionData?.isVerified ?? true) ? "Once completed, press on the button below." : "You are still not verified. Try again."}
-                    </Text>
+
+                    {!(actionData?.isVerified ?? true) && 
+                        <Text color={"red"}>
+                            You are still not verified. Try again.
+                        </Text>}
+
+                    {(actionData?.isResend ?? false) &&
+                        <Text color={"orange"}>
+                            {actionData?.isResendSuccessful ? 
+                                "We have resent email verification. Please check your spam as well." :
+                                "We are unable to resend email verification. Try again later."}
+                        </Text>}
 
                     <Group>
+                        <Button color={"red"} onClick={() => {
+                            submit(null, { method: "post", action: "/account/logout" });
+                        }} disabled={transition.state === "submitting"}>
+                            Logout
+                        </Button>
+                        
                         <Button variant={"outline"} onClick={() => {
                             submit({ type: "resend" }, { method: "post" })
-                        }} disabled={transition.state === "submitting"}>Resend</Button>
+                            setResendCooldown(RESEND_COOLDOWN_SECONDS);
+                        }} disabled={transition.state === "submitting" || resendCooldown > 0}>
+                            Resend{ resendCooldown > 0 ? ` (${resendCooldown}s)` : "" }
+                        </Button>
 
                         <Form method={"post"}>
                             <Button type={"submit"} disabled={transition.state === "submitting"}>Done</Button>
