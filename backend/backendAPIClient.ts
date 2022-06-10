@@ -1501,7 +1501,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 
     user_GetUser(userRemoteId: string | null): Promise<BackendAPIResponse<GetUserResult>> {
-        let url_ = this.baseUrl + "/api/user/user/{userRemoteId}";
+        let url_ = this.baseUrl + "/api/user/{userRemoteId}";
         if (userRemoteId === undefined || userRemoteId === null)
             throw new Error("The parameter 'userRemoteId' must be defined.");
         url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
