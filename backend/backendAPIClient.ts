@@ -1196,7 +1196,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<PagedListResultOfGetAllShowTrackingsItemResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    show_GetShowTracking(userRemoteId: string | null, showRemoteId: number): Promise<BackendAPIResponse<GetShowTrackingResult>> {
+    show_GetShowTracking(userRemoteId: string | null, showRemoteId: string | null): Promise<BackendAPIResponse<GetShowTrackingResult>> {
         let url_ = this.baseUrl + "/api/show/track/{userRemoteId}/{showRemoteId}";
         if (userRemoteId === undefined || userRemoteId === null)
             throw new Error("The parameter 'userRemoteId' must be defined.");
@@ -1259,8 +1259,8 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<GetShowTrackingResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    show_GetSeries(id: number): Promise<BackendAPIResponse<GetShowResult>> {
-        let url_ = this.baseUrl + "/api/show/series/{id}";
+    show_GetShow(id: string | null): Promise<BackendAPIResponse<GetShowResult>> {
+        let url_ = this.baseUrl + "/api/show/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1276,71 +1276,11 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.processShow_GetSeries(_response);
+            return this.processShow_GetShow(_response);
         });
     }
 
-    protected processShow_GetSeries(response: Response): Promise<BackendAPIResponse<GetShowResult>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetShowResult.fromJS(resultData200);
-            return new BackendAPIResponse(status, _headers, result200);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status === 401) {
-            return response.text().then((_responseText) => {
-            let result401: any = null;
-            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
-            });
-        } else if (status === 403) {
-            return response.text().then((_responseText) => {
-            let result403: any = null;
-            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result403 = ProblemDetails.fromJS(resultData403);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<BackendAPIResponse<GetShowResult>>(new BackendAPIResponse(status, _headers, null as any));
-    }
-
-    show_GetMovie(id: number): Promise<BackendAPIResponse<GetShowResult>> {
-        let url_ = this.baseUrl + "/api/show/movie/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.http.fetch(url_, transformedOptions_);
-        }).then((_response: Response) => {
-            return this.processShow_GetMovie(_response);
-        });
-    }
-
-    protected processShow_GetMovie(response: Response): Promise<BackendAPIResponse<GetShowResult>> {
+    protected processShow_GetShow(response: Response): Promise<BackendAPIResponse<GetShowResult>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -2824,7 +2764,7 @@ export interface ISearchGamesItemResult {
 
 export class AddShowTrackingCommand implements IAddShowTrackingCommand {
     userRemoteId?: string;
-    showRemoteId?: number;
+    showRemoteId?: string;
     episodesWatched?: number;
     showType?: ShowType;
     status?: ShowTrackingStatus;
@@ -2868,7 +2808,7 @@ export class AddShowTrackingCommand implements IAddShowTrackingCommand {
 
 export interface IAddShowTrackingCommand {
     userRemoteId?: string;
-    showRemoteId?: number;
+    showRemoteId?: string;
     episodesWatched?: number;
     showType?: ShowType;
     status?: ShowTrackingStatus;
@@ -2888,7 +2828,8 @@ export enum ShowTrackingStatus {
 
 export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
     userRemoteId?: string;
-    showRemoteId?: number;
+    showRemoteId?: string;
+    showType?: ShowType;
 
     constructor(data?: IRemoveShowTrackingCommand) {
         if (data) {
@@ -2903,6 +2844,7 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
         if (_data) {
             this.userRemoteId = _data["userRemoteId"];
             this.showRemoteId = _data["showRemoteId"];
+            this.showType = _data["showType"];
         }
     }
 
@@ -2917,18 +2859,20 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
         data = typeof data === 'object' ? data : {};
         data["userRemoteId"] = this.userRemoteId;
         data["showRemoteId"] = this.showRemoteId;
+        data["showType"] = this.showType;
         return data;
     }
 }
 
 export interface IRemoveShowTrackingCommand {
     userRemoteId?: string;
-    showRemoteId?: number;
+    showRemoteId?: string;
+    showType?: ShowType;
 }
 
 export class UpdateShowTrackingCommand implements IUpdateShowTrackingCommand {
     userRemoteId?: string;
-    showRemoteId?: number;
+    showRemoteId?: string;
     episodesWatched?: number;
     status?: ShowTrackingStatus;
 
@@ -2969,7 +2913,7 @@ export class UpdateShowTrackingCommand implements IUpdateShowTrackingCommand {
 
 export interface IUpdateShowTrackingCommand {
     userRemoteId?: string;
-    showRemoteId?: number;
+    showRemoteId?: string;
     episodesWatched?: number;
     status?: ShowTrackingStatus;
 }
@@ -3055,7 +2999,7 @@ export interface IPagedListResultOfGetAllShowTrackingsItemResult {
 }
 
 export class GetAllShowTrackingsItemResult implements IGetAllShowTrackingsItemResult {
-    showRemoteId?: number;
+    showRemoteId?: string;
     title?: string;
     coverImageURL?: string;
     episodesWatched?: number;
@@ -3102,7 +3046,7 @@ export class GetAllShowTrackingsItemResult implements IGetAllShowTrackingsItemRe
 }
 
 export interface IGetAllShowTrackingsItemResult {
-    showRemoteId?: number;
+    showRemoteId?: string;
     title?: string;
     coverImageURL?: string;
     episodesWatched?: number;
@@ -3155,7 +3099,7 @@ export interface IGetShowTrackingResult {
 }
 
 export class GetShowResult implements IGetShowResult {
-    remoteId?: number;
+    remoteId?: string;
     coverImageURL?: string;
     title?: string;
     summary?: string;
@@ -3199,7 +3143,7 @@ export class GetShowResult implements IGetShowResult {
 }
 
 export interface IGetShowResult {
-    remoteId?: number;
+    remoteId?: string;
     coverImageURL?: string;
     title?: string;
     summary?: string;
@@ -3251,7 +3195,7 @@ export interface ISearchShowsResult {
 }
 
 export class SearchShowsItemResult implements ISearchShowsItemResult {
-    remoteId?: number;
+    remoteId?: string;
     title?: string;
     coverImageURL?: string;
     showType?: ShowType;
@@ -3292,7 +3236,7 @@ export class SearchShowsItemResult implements ISearchShowsItemResult {
 }
 
 export interface ISearchShowsItemResult {
-    remoteId?: number;
+    remoteId?: string;
     title?: string;
     coverImageURL?: string;
     showType?: ShowType;

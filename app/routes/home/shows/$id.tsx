@@ -25,15 +25,9 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-    const showId: number = parseInt(params.id ?? "0");
-    let getShowResponse;
+    const showId = params.id ?? "0";
     
-    if (params.showType == "series"){
-        getShowResponse = await backendAPIClientInstance.show_GetSeries(showId);
-    }
-    else {
-        getShowResponse = await backendAPIClientInstance.show_GetMovie(showId);
-    }
+    const getShowResponse = await backendAPIClientInstance.show_GetShow(showId);
     
     const show = getShowResponse.result;
 
@@ -55,7 +49,7 @@ const handleDelete = async (request: Request) => {
     // Validate form.
     const formDataSchema = z
         .object({
-            showRemoteId: z.preprocess(preProcessToNumber, z.number())
+            showRemoteId: z.string()
         });
 
     const parsedFormData = formDataSchema.safeParse(formData);
@@ -77,18 +71,13 @@ const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue })
         .filter((s) => isNaN(Number(s)))
         .length;
 
-    const showTypesLength = Object.keys(ShowType)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
     // Validate form.
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
-            showRemoteId: z.preprocess(preProcessToNumber, z.number()),
+            showRemoteId: z.string(),
             episodesWatched: z.preprocess(preProcessToNumber, z.number().gte(0)),
-            status: z.preprocess(preProcessToNumber, z.number().min(0).max(showStatusesLength - 1)),
-            showType: z.preprocess(preProcessToNumber, z.number().min(0).max(showTypesLength - 1))
+            status: z.preprocess(preProcessToNumber, z.number().min(0).max(showStatusesLength - 1))
         });
 
     return formDataSchema.safeParse(formData);
@@ -109,8 +98,7 @@ const handlePost = async (request: Request) => {
         showRemoteId: parsedFormData.data.showRemoteId,
         userRemoteId: userId,
         episodesWatched: parsedFormData.data.episodesWatched,
-        status: parsedFormData.data.status,
-        showType: parsedFormData.data.showType
+        status: parsedFormData.data.status
     }));
 
     return null;
