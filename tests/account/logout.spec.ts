@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe("Logout", () => {
-    test('Logging out redirect to login', async ({ page }) => {
+    test('Logging out redirect to landing page', async ({ page }) => {
         // Go to /account/login
         await page.goto('/account/login');
 
@@ -38,8 +38,8 @@ test.describe("Logout", () => {
             page.locator('button[role="menuitem"]:has-text("Logout")').click()
         ]);
 
-        await page.waitForURL("/account/login");
-        await expect(page).toHaveURL("/account/login");
+        await page.waitForURL("/");
+        await expect(page).toHaveURL("/");
     });
 });
 

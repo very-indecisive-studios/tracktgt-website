@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test.describe("Books > Index", () => {
+test.describe("Shows > Index", () => {
     // Auth before each test.
     test.use({ storageState: 'storageState.json' });
 
-    test("Completed book in completed books table", async ({ page }) => {
-        /* Adding book */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+    test("Completed show in completed shows table", async ({ page }) => {
+        /* Adding show */
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
         
         // Open track editor modal
         await page.locator('button:has-text("Create tracking")').nth(1).click();
@@ -15,11 +15,11 @@ test.describe("Books > Index", () => {
         await page.locator("input[name='status'] + div input").click();
         await page.locator("text=Completed").click();
         
-        // Add the book
+        // Add the show
         await page.locator('button:has-text("Add")').click();
         
-        /* Check book in table */
-        await page.goto('/home/books', { waitUntil: "networkidle" });
+        /* Check show in table */
+        await page.goto('/home/shows', { waitUntil: "networkidle" });
 
         // Select the tab
         await page.locator('button[role="tab"]:has-text("Completed")').click();
@@ -31,12 +31,12 @@ test.describe("Books > Index", () => {
         await expect(status).toBe("Completed");
         await expect(pageNo).toBe("1");
         
-        // Check if table has the book added earlier
-        await page.locator("text=Atomic Habits").waitFor();
-        await expect(await page.locator("text=Atomic Habits").count()).toBe(1);
+        // Check if table has the show added earlier
+        await page.locator("text=SPY x FAMILY").waitFor();
+        await expect(await page.locator("text=SPY x FAMILY").count()).toBe(1);
 
         /* Clean up */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Edit tracking")').nth(1).click();
@@ -46,39 +46,39 @@ test.describe("Books > Index", () => {
         await page.locator('button:has-text("Yes, I am sure")').click();
     });
 
-    test("Reading book in reading books table", async ({ page }) => {
-        /* Adding book */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+    test("Watching show in watching shows table", async ({ page }) => {
+        /* Adding show */
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Create tracking")').nth(1).click();
 
         // Set the status
         await page.locator("input[name='status'] + div input").click();
-        await page.locator("text=Reading").click();
+        await page.locator("text=Watching").click();
 
-        // Add the book
+        // Add the show
         await page.locator('button:has-text("Add")').click();
 
-        /* Check book in table */
-        await page.goto('/home/books', { waitUntil: "networkidle" });
+        /* Check show in table */
+        await page.goto('/home/shows', { waitUntil: "networkidle" });
 
         // Select the tab
-        await page.locator('button[role="tab"]:has-text("Reading")').click();
+        await page.locator('button[role="tab"]:has-text("Watching")').click();
 
         // Check URL changes
         const url = new URL(page.url());
         const status = url.searchParams.get("status");
         const pageNo = url.searchParams.get("page");
-        await expect(status).toBe("Reading");
+        await expect(status).toBe("Watching");
         await expect(pageNo).toBe("1");
 
-        // Check if table has the book added earlier
-        await page.locator("text=Atomic Habits").waitFor();
-        await expect(await page.locator("text=Atomic Habits").count()).toBe(1);
+        // Check if table has the show added earlier
+        await page.locator("text=SPY x FAMILY").waitFor();
+        await expect(await page.locator("text=SPY x FAMILY").count()).toBe(1);
 
         /* Clean up */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Edit tracking")').nth(1).click();
@@ -88,9 +88,9 @@ test.describe("Books > Index", () => {
         await page.locator('button:has-text("Yes, I am sure")').click();
     });
 
-    test("Paused book in paused books table", async ({ page }) => {
-        /* Adding book */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+    test("Paused show in paused shows table", async ({ page }) => {
+        /* Adding show */
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Create tracking")').nth(1).click();
@@ -99,11 +99,11 @@ test.describe("Books > Index", () => {
         await page.locator("input[name='status'] + div input").click();
         await page.locator("text=Paused").click();
 
-        // Add the book
+        // Add the show
         await page.locator('button:has-text("Add")').click();
 
-        /* Check book in table */
-        await page.goto('/home/books', { waitUntil: "networkidle" });
+        /* Check show in table */
+        await page.goto('/home/shows', { waitUntil: "networkidle" });
 
         // Select the tab
         await page.locator('button[role="tab"]:has-text("Paused")').click();
@@ -115,12 +115,12 @@ test.describe("Books > Index", () => {
         await expect(status).toBe("Paused");
         await expect(pageNo).toBe("1");
 
-        // Check if table has the book added earlier
-        await page.locator("text=Atomic Habits").waitFor();
-        await expect(await page.locator("text=Atomic Habits").count()).toBe(1);
+        // Check if table has the show added earlier
+        await page.locator("text=SPY x FAMILY").waitFor();
+        await expect(await page.locator("text=SPY x FAMILY").count()).toBe(1);
 
         /* Clean up */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Edit tracking")').nth(1).click();
@@ -130,9 +130,9 @@ test.describe("Books > Index", () => {
         await page.locator('button:has-text("Yes, I am sure")').click();
     });
 
-    test("Planning book in planning books table", async ({ page }) => {
-        /* Adding book */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+    test("Planning show in planning shows table", async ({ page }) => {
+        /* Adding show */
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Create tracking")').nth(1).click();
@@ -141,11 +141,11 @@ test.describe("Books > Index", () => {
         await page.locator("input[name='status'] + div input").click();
         await page.locator("text=Planning").click();
 
-        // Add the book
+        // Add the show
         await page.locator('button:has-text("Add")').click();
 
-        /* Check book in table */
-        await page.goto('/home/books', { waitUntil: "networkidle" });
+        /* Check show in table */
+        await page.goto('/home/shows', { waitUntil: "networkidle" });
 
         // Select the tab
         await page.locator('button[role="tab"]:has-text("Planning")').click();
@@ -157,12 +157,12 @@ test.describe("Books > Index", () => {
         await expect(status).toBe("Planning");
         await expect(pageNo).toBe("1");
 
-        // Check if table has the book added earlier
-        await page.locator("text=Atomic Habits").waitFor();
-        await expect(await page.locator("text=Atomic Habits").count()).toBe(1);
+        // Check if table has the show added earlier
+        await page.locator("text=SPY x FAMILY").waitFor();
+        await expect(await page.locator("text=SPY x FAMILY").count()).toBe(1);
 
         /* Clean up */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Edit tracking")').nth(1).click();
@@ -172,9 +172,9 @@ test.describe("Books > Index", () => {
         await page.locator('button:has-text("Yes, I am sure")').click();
     });
 
-    test("Edit book from table", async ({ page }) => {
-        /* Adding book */
-        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+    test("Edit show from table", async ({ page }) => {
+        /* Adding show */
+        await page.goto('/home/shows/s_120089', { waitUntil: "networkidle" });
 
         // Open track editor modal
         await page.locator('button:has-text("Create tracking")').nth(1).click();
@@ -183,49 +183,49 @@ test.describe("Books > Index", () => {
         await page.locator("input[name='status'] + div input").click();
         await page.locator("text=Planning").click();
 
-        // Add the book
+        // Add the show
         await page.locator('button:has-text("Add")').click();
 
         // Wait for the page to update
-        await page.waitForURL('/home/books/XfFvDwAAQBAJ');
+        await page.waitForURL('/home/shows/s_120089');
 
-        /* Edit book from table */
-        await page.goto('/home/books', { waitUntil: "networkidle" });
+        /* Edit show from table */
+        await page.goto('/home/shows', { waitUntil: "networkidle" });
 
         // Select the tab
         await page.locator('button[role="tab"]:has-text("Planning")').click();
         
-        // Edit book from table
-        await page.locator("text=Atomic Habits").waitFor();
+        // Edit show from table
+        await page.locator("text=SPY x FAMILY").waitFor();
 
-        // Select eye button to open editor modal
+        // Select edit button to open editor modal
         await page.locator('td button').click();
-        await page.locator('input[name="chaptersRead"]').fill("10");
+        await page.locator('input[name="episodesWatched"]').fill("10");
         await page.locator('button:has-text("Save")').click()
 
-        // Check book has edit
-        await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
+        // Check show has edit
+        await page.goto("/home/shows/s_120089", { waitUntil: "networkidle" });
         await page.locator('button:has-text("Edit tracking")').nth(1).click();
-        await expect(await page.locator('input[name="chaptersRead"]').inputValue()).toBe("10");
+        await expect(await page.locator('input[name="episodesWatched"]').inputValue()).toBe("10");
     });
 
-    test("Delete book from table", async ({ page }) => {
-        /* Edit book from table */
-        await page.goto('/home/books', { waitUntil: "networkidle" });
+    test("Delete show from table", async ({ page }) => {
+        /* Edit show from table */
+        await page.goto('/home/shows', { waitUntil: "networkidle" });
 
         // Select the tab
         await page.locator('button[role="tab"]:has-text("Planning")').click();
 
-        // Delete book from table
-        await page.locator("text=Atomic Habits").waitFor();
+        // Delete show from table
+        await page.locator("text=SPY x FAMILY").waitFor();
         
-        // Select eye button to open editor modal
+        // Select edit button to open editor modal
         await page.locator('td button').click();
         await page.locator('button:has-text("Remove")').click();
         await page.locator('button:has-text("Yes, I am sure")').click()
 
-        // Check book has no tracking
-        await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
+        // Check show has no tracking
+        await page.goto("/home/shows/s_120089", { waitUntil: "networkidle" });
         await expect(await page.locator('button:has-text("Edit tracking")').count()).toBeFalsy();
     });
 });
