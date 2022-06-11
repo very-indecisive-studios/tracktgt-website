@@ -30,7 +30,7 @@ function RemoveConfirmModal({ game, platform, onCancel, onConfirm, onRemove }: R
                 onRemove((new FormData(e.currentTarget)).get("platform") as string);
             }}>
                 <Text>
-                    Are you sure you want to remove wishlist for this game on <b>{platform}</b>?
+                    Are you sure you want to remove wishlist for {game.title} on <b>{platform}</b>?
                     This is an irreversable action!
                 </Text>
                 <TextInput name={"platform"} defaultValue={platform} hidden={true}/>
@@ -150,10 +150,14 @@ export function showGameWishlistManageModal(
                         </Card>
                     ))}
                 </Stack>
-                <Divider my="xs" label="Or" labelPosition="center" />
-                <Button fullWidth onClick={() => showGameWishlistEditorModal(modalsContext, game, gameWishlists, onAdd)}>
-                    Add another platform to wishlist
-                </Button>
+                {(gameWishlists.length < (game.platforms?.length ?? 0)) &&
+                    <>
+                        <Divider my="xs" label="Or" labelPosition="center" />
+                        <Button fullWidth onClick={() => showGameWishlistEditorModal(modalsContext, game, gameWishlists, onAdd)}>
+                            Add another platform to wishlist
+                        </Button>
+                    </>
+                }
             </Stack>
         )
     });
