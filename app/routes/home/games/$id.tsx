@@ -12,13 +12,15 @@ import {
     RemoveGameTrackingCommand,
     UpdateGameTrackingCommand,
 } from "backend";
-import { Edit, Plus, Star } from "tabler-icons-react";
+import { Edit, Heart, Plus, Star } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
 import { showGameTrackingsSelectorModal, showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
+import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
+import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
 
 interface LoaderData {
     game: GetGameResult;
@@ -157,33 +159,68 @@ export const action: ActionFunction = async ({ request }) => {
     }
 }
 
+interface Game {
+    remoteId?: number | undefined;
+    coverImageURL?: string | undefined;
+    title?: string | undefined;
+    rating?: number | undefined;
+    platforms?: string[] | undefined;
+    companies?: string[] | undefined;
+}
+
+interface WishlistButtonProps {
+    game: Game;
+}
+
+function WishlistButton({ game }: WishlistButtonProps) {
+    const { wishlists, addToWishlist, removeFromWishlist, isLoading } = useGamesWishlist(game.remoteId ?? 0);
+    const modals = useModals();
+    
+    return (
+        <>
+            {
+                (wishlists.length < 1) ?
+                    <Button color={"yellow"}
+                            onClick={() => {
+                                showGameWishlistEditorModal(modals, game, wishlists, addToWishlist)
+                            }}
+                            leftIcon={<Star size={20}/>}
+                            loading={isLoading}>
+                        Add to wishlist
+                    </Button> :
+                    <Button color={"yellow"}
+                            variant={"outline"}
+                            onClick={() => {
+                                showGameWishlistManageModal(modals, game, wishlists, addToWishlist, removeFromWishlist)
+                            }}
+                            leftIcon={<Star size={20}/>}
+                            loading={isLoading}>
+                        Edit wishlist
+                    </Button>
+            }
+        </>
+    );
+}
+
 interface GameHeaderProps {
-    coverImageURL: string | undefined;
-    title: string | undefined;
-    rating: number | undefined;
-    platforms: string[] | undefined;
-    companies: string[] | undefined;
+    game: Game;
     noOfGameTrackings: number;
     onAddClick: () => void;
     onEditClick: () => void;
 }
 
 export function GameHeader({
-                               coverImageURL,
-                               title,
-                               rating,
-                               platforms,
-                               companies,
-                               noOfGameTrackings,
-                               onAddClick,
-                               onEditClick
-                           }: GameHeaderProps) {
+    game,
+    noOfGameTrackings,
+    onAddClick,
+    onEditClick
+}: GameHeaderProps) {
     return (
         <>
             <Stack mr={12}>
-                <CoverImage src={coverImageURL} width={200} height={300}/>
+                <CoverImage src={game.coverImageURL} width={200} height={300}/>
 
-                {(noOfGameTrackings < (platforms?.length ?? 1)) &&
+                {(noOfGameTrackings < (game.platforms?.length ?? 1)) &&
                     <Button color={"indigo"}
                             onClick={onAddClick}
                             leftIcon={<Plus size={20}/>}>
@@ -196,30 +233,32 @@ export function GameHeader({
                             leftIcon={<Edit size={20}/>}>
                         Edit tracking
                     </Button>}
+                
+                <WishlistButton game={game} />
             </Stack>
 
             <Stack spacing={"xs"}>
                 <Title order={1}>
-                    {title}
+                    {game.title}
                 </Title>
 
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {companies?.join(", ")}
+                    {game.companies?.join(", ")}
                 </Title>
 
                 <Group>
-                    <ThemeIcon color={"yellow"}>
-                        <Star size={16}/>
+                    <ThemeIcon color={"red"}>
+                        <Heart size={16}/>
                     </ThemeIcon>
                     <Text sx={(theme) => ({ color: theme.colors.gray[6] })} size={"sm"}>
-                        {rating === 0 ? "No rating" : `${rating?.toFixed(0)}%`}
+                        {game.rating === 0 ? "No rating" : `${game.rating?.toFixed(0)}%`}
                     </Text>
                 </Group>
 
                 <Group mt={16}>
-                    {platforms?.map(platform => (
+                    {game.platforms?.map(platform => (
                         <Badge color={"gray"} size={"lg"} key={platform}>{platform}</Badge>))}
                 </Group>
             </Stack>
@@ -232,11 +271,7 @@ export default function Game() {
     const modals = useModals();
     const submit = useSubmit();
 
-    const gameHeader = <GameHeader coverImageURL={data.game.coverImageURL}
-                                   title={data.game.title}
-                                   rating={data.game.rating}
-                                   platforms={data.game.platforms}
-                                   companies={data.game.companies}
+    const gameHeader = <GameHeader game={data.game}
                                    noOfGameTrackings={data.gameTrackings.length}
                                    onAddClick={() => showTrackGameEditorModal(
                                        modals,

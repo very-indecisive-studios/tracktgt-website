@@ -1,9 +1,9 @@
 ﻿import {
-    ActionIcon,
+    ActionIcon, Box,
     Center,
     Container,
     Loader, LoadingOverlay,
-    Pagination,
+    Pagination, SegmentedControl,
     Stack,
     Table,
     Tabs,
@@ -22,7 +22,7 @@ import {
 } from "backend";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Edit, PlayerPause, PlayerPlay } from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
@@ -353,38 +353,102 @@ export default function Games() {
     return (
         <Container py={16}>
             <Title mb={32} order={1}>Games</Title>
+            
             <Tabs grow
-                  variant={"outline"}
-                  active={tabIndex}
-                  onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
+                  variant={"unstyled"}
                   styles={(theme) => ({
                       tabControl: {
-                          fontSize: theme.fontSizes.md
-                      }
+                          backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+                          color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
+                          border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
+                          fontSize: theme.fontSizes.sm,
+                          padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
+
+                          '&:not(:first-of-type)': {
+                              borderLeft: 0,
+                          },
+
+                          '&:first-of-type': {
+                              borderTopLeftRadius: theme.radius.sm,
+                              borderBottomLeftRadius: theme.radius.sm,
+                          },
+
+                          '&:last-of-type': {
+                              borderTopRightRadius: theme.radius.sm,
+                              borderBottomRightRadius: theme.radius.sm,
+                          },
+                      },
+
+                      tabActive: {
+                          backgroundColor: theme.colors.blue[8],
+                          borderColor: theme.colors.blue[8],
+                          color: theme.white,
+                      },
                   })}>
-                <Tabs.Tab label={isMobile ? "" : "Completed"}
-                          icon={<Check size={18}/>}>
-                    <GameTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={GameTrackingStatus[GameTrackingStatus.Completed]}/>
+                <Tabs.Tab label={isMobile ? "" : "Tracking"}
+                          icon={<Eye size={18}/>}>
+                    <Tabs grow
+                          variant={"unstyled"}
+                          active={tabIndex}
+                          onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
+                          styles={(theme) => ({
+                              tabControl: {
+                                  backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+                                  color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
+                                  border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
+                                  fontSize: theme.fontSizes.sm,
+                                  padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
+
+                                  '&:not(:first-of-type)': {
+                                      borderLeft: 0,
+                                  },
+
+                                  '&:first-of-type': {
+                                      borderTopLeftRadius: theme.radius.sm,
+                                      borderBottomLeftRadius: theme.radius.sm,
+                                  },
+
+                                  '&:last-of-type': {
+                                      borderTopRightRadius: theme.radius.sm,
+                                      borderBottomRightRadius: theme.radius.sm,
+                                  },
+                              },
+
+                              tabActive: {
+                                  backgroundColor: theme.colors.blue[8],
+                                  borderColor: theme.colors.blue[8],
+                                  color: theme.white,
+                              },
+                          })}>
+                        <Tabs.Tab label={isMobile ? "" : "Completed"}
+                                  icon={<Check size={18}/>}>
+                            <GameTrackingStatusTable onPageChange={onPageChange}
+                                                     initialPage={page}
+                                                     status={GameTrackingStatus[GameTrackingStatus.Completed]}/>
+                        </Tabs.Tab>
+                        <Tabs.Tab label={isMobile ? "" : "Playing"}
+                                  icon={<PlayerPlay size={18}/>}>
+                            <GameTrackingStatusTable onPageChange={onPageChange}
+                                                     initialPage={page}
+                                                     status={GameTrackingStatus[GameTrackingStatus.Playing]}/>
+                        </Tabs.Tab>
+                        <Tabs.Tab label={isMobile ? "" : "Paused"}
+                                  icon={<PlayerPause size={18}/>}>
+                            <GameTrackingStatusTable onPageChange={onPageChange}
+                                                     initialPage={page}
+                                                     status={GameTrackingStatus[GameTrackingStatus.Paused]}/>
+                        </Tabs.Tab>
+                        <Tabs.Tab label={isMobile ? "" : "Planning"}
+                                  icon={<Clock size={18}/>}>
+                            <GameTrackingStatusTable onPageChange={onPageChange}
+                                                     initialPage={page}
+                                                     status={GameTrackingStatus[GameTrackingStatus.Planning]}/>
+                        </Tabs.Tab>
+                    </Tabs>
                 </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Playing"}
-                          icon={<PlayerPlay size={18}/>}>
-                    <GameTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={GameTrackingStatus[GameTrackingStatus.Playing]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Paused"}
-                          icon={<PlayerPause size={18}/>}>
-                    <GameTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={GameTrackingStatus[GameTrackingStatus.Paused]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Planning"}
-                          icon={<Clock size={18}/>}>
-                    <GameTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={GameTrackingStatus[GameTrackingStatus.Planning]}/>
+
+                <Tabs.Tab label={isMobile ? "" : "Wishlist"}
+                          icon={<Star size={18}/>}>
                 </Tabs.Tab>
             </Tabs>
         </Container>
