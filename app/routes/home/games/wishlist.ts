@@ -46,7 +46,7 @@ export function useAllGamesWishlist(initialPage?: number): GameWishlistStateAndF
     const fetcherAllWishlistLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [allWishlists, setAllWishlists] = useState<GetAllGameWishlistsItemResult[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 

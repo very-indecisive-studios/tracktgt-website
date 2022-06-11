@@ -1,9 +1,10 @@
 ﻿import {
-    ActionIcon, Box,
+    ActionIcon,
     Center,
     Container,
-    Loader, LoadingOverlay, MantineTheme,
-    Pagination, SegmentedControl,
+    LoadingOverlay,
+    MantineTheme,
+    Pagination,
     Stack,
     Table,
     Tabs,
@@ -31,9 +32,7 @@ import { badRequest } from "~/utils/response.server";
 import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
-import { useAllGamesWishlist } from "~/routes/home/games/wishlist";
-import { useGamesWishlistActions } from "~/routes/home/games/wishlist/$id";
-import { showGameWishlistRemoveConfirmModal } from "~/components/home/games/GameWishlistModals";
+import GameWishlistTable from "~/components/home/games/GameWishlistTable";
 
 interface LoaderData {
     items: GetAllGameTrackingsItemResult[],
@@ -314,81 +313,6 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
     );
 }
 
-function GameWishlistTable() {
-    const theme = useMantineTheme();
-    const isMobile = useMobileQuery();
-    const modals = useModals();
-    
-    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesWishlist();
-    const { removeFromWishlist, isLoading: isActionLoading } = useGamesWishlistActions();
-    
-    useEffect(() => {
-        if (!isActionLoading) {
-            fetchPage(currentPage);
-        }
-    }, [isActionLoading])
-    
-    return (
-        <Stack py={16} sx={(theme) => ({
-            overflowX: "auto",
-            position: "relative",
-            height: "600px"
-        })}>
-            <LoadingOverlay overlayOpacity={0.8} visible={isActionLoading || isFetcherLoading} />
-
-            <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Title</th>
-                    <th>Platform</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {allWishlists.map((gw) => (
-                    <tr key={`${gw.gameRemoteId}${gw.platform}`}>
-                        <td>
-                            <CoverImage src={gw.coverImageURL} width={40} height={60}/>
-                        </td>
-                        <td>
-                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/games/${gw.gameRemoteId}`}>
-                                <Text sx={(theme) => ({
-                                    width: isMobile ? "10ch" : "20ch",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                })}>
-                                    {gw.title}
-                                </Text>
-                            </Link>
-                        </td>
-                        <td>{gw.platform}</td>
-                        <td>
-                            <ActionIcon onClick={() => showGameWishlistRemoveConfirmModal(
-                                modals, gw, 
-                                gw.platform ?? "", 
-                                () => removeFromWishlist(gw.gameRemoteId ?? 0, gw.platform ?? "")
-                            )}>
-                                <TrashX color={"red"} />
-                            </ActionIcon>
-                        </td>
-                    </tr>))}
-                </tbody>
-            </Table>
-
-            {(!isFetcherLoading && allWishlists.length === 0) &&
-                <Center p={32}>
-                    <Text>You do not have wishlisted games.</Text>
-                </Center>}
-
-            {(!isFetcherLoading && totalPages !== 0) &&
-                <Pagination size={"sm"} total={totalPages} page={currentPage} onChange={fetchPage}/>}
-        </Stack>
-    );
-}
-
 const tabStyles = (theme: MantineTheme) => ({
     tabControl: {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
@@ -493,7 +417,7 @@ function GameTrackingTabs() {
     );
 }
 
-export default function Games() {
+export default function GamesIndex() {
     const isMobile = useMobileQuery();
 
     return (
