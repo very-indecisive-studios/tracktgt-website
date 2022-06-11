@@ -2,7 +2,7 @@
     ActionIcon, Box,
     Center,
     Container,
-    Loader, LoadingOverlay,
+    Loader, LoadingOverlay, MantineTheme,
     Pagination, SegmentedControl,
     Stack,
     Table,
@@ -22,7 +22,7 @@ import {
 } from "backend";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star, TrashX } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
@@ -31,6 +31,9 @@ import { badRequest } from "~/utils/response.server";
 import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
+import { useAllGamesWishlist } from "~/routes/home/games/wishlist";
+import { useGamesWishlistActions } from "~/routes/home/games/wishlist/$id";
+import { showGameWishlistRemoveConfirmModal } from "~/components/home/games/GameWishlistModals";
 
 interface LoaderData {
     items: GetAllGameTrackingsItemResult[],
@@ -311,8 +314,114 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
     );
 }
 
-export default function Games() {
+function GameWishlistTable() {
+    const theme = useMantineTheme();
     const isMobile = useMobileQuery();
+    const modals = useModals();
+    
+    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesWishlist();
+    const { removeFromWishlist, isLoading: isActionLoading } = useGamesWishlistActions();
+    
+    useEffect(() => {
+        if (!isActionLoading) {
+            fetchPage(currentPage);
+        }
+    }, [isActionLoading])
+    
+    return (
+        <Stack py={16} sx={(theme) => ({
+            overflowX: "auto",
+            position: "relative",
+            height: "600px"
+        })}>
+            <LoadingOverlay overlayOpacity={0.8} visible={isActionLoading || isFetcherLoading} />
+
+            <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Platform</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {allWishlists.map((gw) => (
+                    <tr key={`${gw.gameRemoteId}${gw.platform}`}>
+                        <td>
+                            <CoverImage src={gw.coverImageURL} width={40} height={60}/>
+                        </td>
+                        <td>
+                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
+                                  to={`/home/games/${gw.gameRemoteId}`}>
+                                <Text sx={(theme) => ({
+                                    width: isMobile ? "10ch" : "20ch",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap"
+                                })}>
+                                    {gw.title}
+                                </Text>
+                            </Link>
+                        </td>
+                        <td>{gw.platform}</td>
+                        <td>
+                            <ActionIcon onClick={() => showGameWishlistRemoveConfirmModal(
+                                modals, gw, 
+                                gw.platform ?? "", 
+                                () => removeFromWishlist(gw.gameRemoteId ?? 0, gw.platform ?? "")
+                            )}>
+                                <TrashX color={"red"} />
+                            </ActionIcon>
+                        </td>
+                    </tr>))}
+                </tbody>
+            </Table>
+
+            {(!isFetcherLoading && allWishlists.length === 0) &&
+                <Center p={32}>
+                    <Text>You do not have wishlisted games.</Text>
+                </Center>}
+
+            {(!isFetcherLoading && totalPages !== 0) &&
+                <Pagination size={"sm"} total={totalPages} page={currentPage} onChange={fetchPage}/>}
+        </Stack>
+    );
+}
+
+const tabStyles = (theme: MantineTheme) => ({
+    tabControl: {
+        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+        color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
+        border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
+        fontSize: theme.fontSizes.sm,
+        padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
+
+        '&:not(:first-of-type)': {
+            borderLeft: 0,
+        },
+
+        '&:first-of-type': {
+            borderTopLeftRadius: theme.radius.sm,
+            borderBottomLeftRadius: theme.radius.sm,
+        },
+
+        '&:last-of-type': {
+            borderTopRightRadius: theme.radius.sm,
+            borderBottomRightRadius: theme.radius.sm,
+        },
+    },
+
+    tabActive: {
+        backgroundColor: theme.colors.blue[8],
+        borderColor: theme.colors.blue[8],
+        color: theme.white,
+    },
+});
+
+function GameTrackingTabs() {
+    const isMobile = useMobileQuery();
+    
     let [searchParams, setSearchParams] = useSearchParams();
     let [tabIndex, setTabIndex] = useState(() => {
         const status = GameTrackingStatus[searchParams.get("status") as keyof typeof GameTrackingStatus];
@@ -322,7 +431,7 @@ export default function Games() {
         const page = parseInt(searchParams.get("page") ?? "1");
         return page < 0 ? 1 : page;
     });
-    
+
     useEffect(() => {
         if (!searchParams.has("status")) {
             const newSearchParams = new URLSearchParams(searchParams);
@@ -349,6 +458,43 @@ export default function Games() {
         newSearchParams.set("page", pageNo.toString());
         setSearchParams(newSearchParams);
     }
+    
+    return (
+        <Tabs grow
+              variant={"unstyled"}
+              active={tabIndex}
+              onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
+              styles={tabStyles}>
+            <Tabs.Tab label={isMobile ? "" : "Completed"}
+                      icon={<Check size={18}/>}>
+                <GameTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={GameTrackingStatus[GameTrackingStatus.Completed]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Playing"}
+                      icon={<PlayerPlay size={18}/>}>
+                <GameTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={GameTrackingStatus[GameTrackingStatus.Playing]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Paused"}
+                      icon={<PlayerPause size={18}/>}>
+                <GameTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={GameTrackingStatus[GameTrackingStatus.Paused]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Planning"}
+                      icon={<Clock size={18}/>}>
+                <GameTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={GameTrackingStatus[GameTrackingStatus.Planning]}/>
+            </Tabs.Tab>
+        </Tabs>
+    );
+}
+
+export default function Games() {
+    const isMobile = useMobileQuery();
 
     return (
         <Container py={16}>
@@ -356,99 +502,15 @@ export default function Games() {
             
             <Tabs grow
                   variant={"unstyled"}
-                  styles={(theme) => ({
-                      tabControl: {
-                          backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-                          color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
-                          border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
-                          fontSize: theme.fontSizes.sm,
-                          padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
-
-                          '&:not(:first-of-type)': {
-                              borderLeft: 0,
-                          },
-
-                          '&:first-of-type': {
-                              borderTopLeftRadius: theme.radius.sm,
-                              borderBottomLeftRadius: theme.radius.sm,
-                          },
-
-                          '&:last-of-type': {
-                              borderTopRightRadius: theme.radius.sm,
-                              borderBottomRightRadius: theme.radius.sm,
-                          },
-                      },
-
-                      tabActive: {
-                          backgroundColor: theme.colors.blue[8],
-                          borderColor: theme.colors.blue[8],
-                          color: theme.white,
-                      },
-                  })}>
+                  styles={tabStyles}>
                 <Tabs.Tab label={isMobile ? "" : "Tracking"}
                           icon={<Eye size={18}/>}>
-                    <Tabs grow
-                          variant={"unstyled"}
-                          active={tabIndex}
-                          onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
-                          styles={(theme) => ({
-                              tabControl: {
-                                  backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-                                  color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
-                                  border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
-                                  fontSize: theme.fontSizes.sm,
-                                  padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
-
-                                  '&:not(:first-of-type)': {
-                                      borderLeft: 0,
-                                  },
-
-                                  '&:first-of-type': {
-                                      borderTopLeftRadius: theme.radius.sm,
-                                      borderBottomLeftRadius: theme.radius.sm,
-                                  },
-
-                                  '&:last-of-type': {
-                                      borderTopRightRadius: theme.radius.sm,
-                                      borderBottomRightRadius: theme.radius.sm,
-                                  },
-                              },
-
-                              tabActive: {
-                                  backgroundColor: theme.colors.blue[8],
-                                  borderColor: theme.colors.blue[8],
-                                  color: theme.white,
-                              },
-                          })}>
-                        <Tabs.Tab label={isMobile ? "" : "Completed"}
-                                  icon={<Check size={18}/>}>
-                            <GameTrackingStatusTable onPageChange={onPageChange}
-                                                     initialPage={page}
-                                                     status={GameTrackingStatus[GameTrackingStatus.Completed]}/>
-                        </Tabs.Tab>
-                        <Tabs.Tab label={isMobile ? "" : "Playing"}
-                                  icon={<PlayerPlay size={18}/>}>
-                            <GameTrackingStatusTable onPageChange={onPageChange}
-                                                     initialPage={page}
-                                                     status={GameTrackingStatus[GameTrackingStatus.Playing]}/>
-                        </Tabs.Tab>
-                        <Tabs.Tab label={isMobile ? "" : "Paused"}
-                                  icon={<PlayerPause size={18}/>}>
-                            <GameTrackingStatusTable onPageChange={onPageChange}
-                                                     initialPage={page}
-                                                     status={GameTrackingStatus[GameTrackingStatus.Paused]}/>
-                        </Tabs.Tab>
-                        <Tabs.Tab label={isMobile ? "" : "Planning"}
-                                  icon={<Clock size={18}/>}>
-                            <GameTrackingStatusTable onPageChange={onPageChange}
-                                                     initialPage={page}
-                                                     status={GameTrackingStatus[GameTrackingStatus.Planning]}/>
-                        </Tabs.Tab>
-                    </Tabs>
+                    <GameTrackingTabs />
                 </Tabs.Tab>
 
                 <Tabs.Tab label={isMobile ? "" : "Wishlist"}
                           icon={<Star size={18}/>}>
+                    <GameWishlistTable />
                 </Tabs.Tab>
             </Tabs>
         </Container>

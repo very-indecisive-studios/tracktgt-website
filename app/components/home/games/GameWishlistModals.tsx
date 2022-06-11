@@ -14,7 +14,7 @@ interface GameWishlist {
     platform?: string;
 }
 
-interface RemoveConfirmModalProps {
+interface GameWishlistRemoveConfirmModalProps {
     game: Game;
     platform: string;
     onCancel: () => void;
@@ -22,7 +22,7 @@ interface RemoveConfirmModalProps {
     onRemove: (platform: string) => void;
 }
 
-function RemoveConfirmModal({ game, platform, onCancel, onConfirm, onRemove }: RemoveConfirmModalProps) {
+function GameWishlistRemoveConfirmModal({ game, platform, onCancel, onConfirm, onRemove }: GameWishlistRemoveConfirmModalProps) {
     return (
         <>
             <Form onSubmit={(e) => {
@@ -43,7 +43,7 @@ function RemoveConfirmModal({ game, platform, onCancel, onConfirm, onRemove }: R
     );
 }
 
-export function showRemoveConfirmModal(
+export function showGameWishlistRemoveConfirmModal(
     modalsContext: ModalsContextProps,
     game: Game,
     platform: string,
@@ -53,7 +53,7 @@ export function showRemoveConfirmModal(
         title: "Confirm deletion",
         centered: true,
         children: (
-            <RemoveConfirmModal
+            <GameWishlistRemoveConfirmModal
                 game={game}
                 platform={platform}
                 onCancel={() => modalsContext.closeModal(id)}
@@ -140,7 +140,7 @@ export function showGameWishlistManageModal(
                             <Group>
                                 <Title order={5}>{gw.platform}</Title>
                                 <ActionIcon 
-                                    onClick={() => showRemoveConfirmModal(modalsContext, game, gw.platform ?? "", onRemove)}
+                                    onClick={() => showGameWishlistRemoveConfirmModal(modalsContext, game, gw.platform ?? "", onRemove)}
                                     sx={() => ({
                                       marginLeft: "auto"  
                                     })}>

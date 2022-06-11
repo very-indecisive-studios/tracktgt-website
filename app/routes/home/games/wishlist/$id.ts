@@ -87,6 +87,57 @@ export const action: ActionFunction = async ({ request }) => {
         return json({ message: "Method not allowed" }, 405);
     }
 }
+interface GameWishlistActionsFunc {
+    addToWishlist: (gameRemoteId: number, platform: string) => void;
+    removeFromWishlist: (gameRemoteId: number, platform: string) => void;
+    isLoading: boolean;
+}
+
+export function useGamesWishlistActions(): GameWishlistActionsFunc {
+    const fetcherWishlistAction = useFetcher();
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (fetcherWishlistAction.type === "done") {
+            setIsLoading(false);
+        }
+    }, [fetcherWishlistAction.type]);
+    
+    const addToWishlist = (gameRemoteId: number, platform: string) => {
+        fetcherWishlistAction.submit(
+            {
+                gameRemoteId: gameRemoteId.toString(),
+                platform: platform
+            },
+            {
+                action: `/home/games/wishlist/${gameRemoteId}`,
+                method: "post"
+            });
+
+        setIsLoading(true);
+    };
+
+    const removeFromWishlist = (gameRemoteId: number, platform: string) => {
+        fetcherWishlistAction.submit(
+            {
+                gameRemoteId: gameRemoteId.toString(),
+                platform: platform
+            },
+            {
+                action: `/home/games/wishlist/${gameRemoteId}`,
+                method: "delete"
+            });
+
+        setIsLoading(true);
+    };
+
+    return {
+        addToWishlist,
+        removeFromWishlist,
+        isLoading
+    }
+}
 
 interface GameWishlistStateAndFunc {
     wishlists: GetGameWishlistItemResult[];
@@ -131,6 +182,7 @@ export function useGamesWishlist(gameRemoteId: number): GameWishlistStateAndFunc
                 action: `/home/games/wishlist/${gameRemoteId}`,
                 method: "post"
             });
+        setIsLoading(true);
     };
 
     const removeFromWishlist = (platform: string) => {
@@ -143,6 +195,7 @@ export function useGamesWishlist(gameRemoteId: number): GameWishlistStateAndFunc
                 action: `/home/games/wishlist/${gameRemoteId}`,
                 method: "delete"
             });
+        setIsLoading(true);
     };
     
     return {
