@@ -1,8 +1,16 @@
 ﻿import {
     ActionIcon,
     Center,
-    Container, LoadingOverlay, MantineTheme, Pagination, Stack, Table, Tabs, Text,
-    Title, useMantineTheme,
+    Container, 
+    LoadingOverlay, 
+    MantineTheme, 
+    Pagination, 
+    Stack, 
+    Table, 
+    Tabs, 
+    Text,
+    Title, 
+    useMantineTheme,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import {
@@ -22,7 +30,7 @@ import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Edit, Eye, Eyeglass2, PlayerPause, Star } from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-react";
 import { showTrackBookEditorModal } from "~/components/home/books/TrackBookEditorModal";
 import { tabStyles } from "~/components/home/tabStyles";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
@@ -352,7 +360,7 @@ function BooksTrackingTabs() {
                                          status={BookTrackingStatus[BookTrackingStatus.Completed]}/>
             </Tabs.Tab>
             <Tabs.Tab label={isMobile ? "" : "Reading"}
-                      icon={<Eyeglass2 size={18}/>}>
+                      icon={<PlayerPlay size={18}/>}>
                 <BookTrackingStatusTable onPageChange={onPageChange}
                                          initialPage={page}
                                          status={BookTrackingStatus[BookTrackingStatus.Reading]}/>

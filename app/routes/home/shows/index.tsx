@@ -1,8 +1,16 @@
 ﻿import {
     ActionIcon,
     Center,
-    Container, Loader, LoadingOverlay, MantineTheme, Pagination, Stack, Table, Tabs, Text,
-    Title, useMantineTheme,
+    Container,
+    LoadingOverlay, 
+    MantineTheme, 
+    Pagination, 
+    Stack, 
+    Table, 
+    Tabs, 
+    Text,
+    Title, 
+    useMantineTheme,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import {
@@ -10,7 +18,8 @@ import {
     ShowTrackingStatus,
     GetAllShowTrackingsItemResult,
     RemoveShowTrackingCommand,
-    UpdateShowTrackingCommand, ShowType
+    UpdateShowTrackingCommand, 
+    ShowType
 } from "backend";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
@@ -20,7 +29,7 @@ import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Edit, Eye, PlayerPause } from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay } from "tabler-icons-react";
 import { showTrackShowEditorModal } from "~/components/home/shows/TrackShowEditorModal";
 import { tabStyles } from "~/components/home/tabStyles";
 
@@ -281,8 +290,9 @@ function showsTabStyles(theme: MantineTheme) {
     return tabStyles(theme, theme.colors.red[8]);
 }
 
-export default function Shows() {
+function ShowsTrackingTab() {
     const isMobile = useMobileQuery();
+
     let [searchParams, setSearchParams] = useSearchParams();
     let [tabIndex, setTabIndex] = useState(() => {
         const status = ShowTrackingStatus[searchParams.get("status") as keyof typeof ShowTrackingStatus];
@@ -321,36 +331,52 @@ export default function Shows() {
     }
     
     return (
+        <Tabs grow
+              variant={"unstyled"}
+              active={tabIndex}
+              onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
+              styles={showsTabStyles}>
+            <Tabs.Tab label={isMobile ? "" : "Completed"}
+                      icon={<Check size={18}/>}>
+                <ShowTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={ShowTrackingStatus[ShowTrackingStatus.Completed]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Watching"}
+                      icon={<PlayerPlay size={18}/>}>
+                <ShowTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={ShowTrackingStatus[ShowTrackingStatus.Watching]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Paused"}
+                      icon={<PlayerPause size={18}/>}>
+                <ShowTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={ShowTrackingStatus[ShowTrackingStatus.Paused]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Planning"}
+                      icon={<Clock size={18}/>}>
+                <ShowTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={ShowTrackingStatus[ShowTrackingStatus.Planning]}/>
+            </Tabs.Tab>
+        </Tabs>
+    );
+}
+
+export default function Shows() {
+    const isMobile = useMobileQuery();
+    
+    return (
         <Container py={16}>
             <Title mb={32} order={1}>Shows</Title>
+            
             <Tabs grow
                   variant={"unstyled"}
-                  active={tabIndex}
-                  onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
                   styles={showsTabStyles}>
-                <Tabs.Tab label={isMobile ? "" : "Completed"}
-                          icon={<Check size={18}/>}>
-                    <ShowTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={ShowTrackingStatus[ShowTrackingStatus.Completed]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Watching"}
+                <Tabs.Tab label={isMobile ? "" : "Tracking"}
                           icon={<Eye size={18}/>}>
-                    <ShowTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={ShowTrackingStatus[ShowTrackingStatus.Watching]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Paused"}
-                          icon={<PlayerPause size={18}/>}>
-                    <ShowTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={ShowTrackingStatus[ShowTrackingStatus.Paused]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Planning"}
-                          icon={<Clock size={18}/>}>
-                    <ShowTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={ShowTrackingStatus[ShowTrackingStatus.Planning]}/>
+                    <ShowsTrackingTab />
                 </Tabs.Tab>
             </Tabs>
         </Container>

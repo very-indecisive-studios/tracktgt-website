@@ -23,7 +23,7 @@ import {
 } from "backend";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star, TrashX } from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-react";
 import React, { useEffect, useState } from "react";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
