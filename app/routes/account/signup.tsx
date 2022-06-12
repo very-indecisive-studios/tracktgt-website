@@ -1,6 +1,16 @@
-import { Button, Center, Container, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
+import {
+    Button,
+    Center,
+    Container, Divider,
+    PasswordInput,
+    Stack,
+    Text,
+    TextInput,
+    Title,
+    useMantineTheme
+} from "@mantine/core";
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
+import { Form, Link, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { getUserId, redirectWithUserSession } from "~/utils/session.server";
 import { register, sendUserVerificationEmail, verifyHuman } from "auth";
 import { z } from "zod";
@@ -8,6 +18,7 @@ import { backendAPIClientInstance, RegisterUserCommand } from "backend";
 import { useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { badRequest } from "~/utils/response.server";
+import { LockOpen, Plus } from "tabler-icons-react";
 
 interface LoaderData {
     captchaSitekey: string;
@@ -101,6 +112,8 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function SignUp() {
+    const theme = useMantineTheme();
+    
     const loaderData = useLoaderData<LoaderData>();
     const actionData = useActionData<ActionData>()
     const transition = useTransition()
@@ -115,8 +128,10 @@ export default function SignUp() {
             width: "100vw",
             height: "100vh"
         })}>
-            <Container size={"xs"}>
-                <Title mb={24} order={1}>Create a tracktgt account</Title>
+            <Container px={0} sx={() => ({
+                width: 425
+            })}>
+                <Title mb={24} order={1}>Create an account on TrackTogether</Title>
                 <Form method="post">
                     <TextInput name="captcha" hidden defaultValue={captchaToken}/>
 
@@ -125,21 +140,38 @@ export default function SignUp() {
                     <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
                     <PasswordInput mt={16} name="confirmPassword" label="Confirm Password"
                                    error={actionData?.confirmPassword}/>
-
+                    
                     <Stack mt={16} align={"center"}>
                         <HCaptcha
+                            theme={"dark"}
                             sitekey={loaderData.captchaSitekey}
                             onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}
                         />
                     </Stack>
                     <Text hidden={!(actionData?.captcha)} color={"red"}>{actionData?.captcha}</Text>
-
+                    
                     <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
 
                     <Stack align={"end"}>
-                        <Button mt={16} type="submit" loading={transition.state === "submitting"}>Sign up</Button>
+                        <Button fullWidth
+                                leftIcon={<Plus size={18}/>}
+                                mt={16} 
+                                type="submit" 
+                                loading={transition.state === "submitting"}>
+                            Create an account
+                        </Button>
                     </Stack>
                 </Form>
+                <Divider my={"md"} label={"or"} labelProps={{ size: "md" }} labelPosition={"center"}></Divider>
+                <Button fullWidth
+                        component={Link}
+                        variant={"outline"}
+                        to={"/account/login"}
+                        leftIcon={<LockOpen size={18} />}
+                        mt={16}
+                        disabled={transition.state === "submitting"}>
+                    Login to an existing account
+                </Button>
             </Container>
         </Center>
     );
