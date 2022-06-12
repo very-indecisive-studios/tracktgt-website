@@ -2,10 +2,12 @@ import { LoaderFunction, redirect } from "@remix-run/node";
 import React, { ReactNode, useEffect, useState } from 'react';
 import {
     AppShell,
+    Box,
     Burger,
     Center,
     Container,
     Grid,
+    Group,
     Header,
     Image,
     MediaQuery,
@@ -111,18 +113,21 @@ const Shell = ({ children }: ShellProps) => {
             header={
                 <Header height={70} p="md">
                     <MediaQuery smallerThan="md" styles={{ display: 'none' }}>
-                        <Grid columns={12} align={"center"}>
-                            <Grid.Col span={3}>
+                        <Group>
+                            <Box sx={(theme) => ({
+                                width: 268
+                            })}>
+                                
                                 <Link to={"/home"}>
                                     <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
                                 </Link>
-                            </Grid.Col>
-                            <Grid.Col span={6}>
+                            </Box>
+                            <Container sx={(theme) => ({
+                               width: 700 
+                            })}>
                                 <SearchBar/>
-                            </Grid.Col>
-                            <Grid.Col span={3}>
-                            </Grid.Col>
-                        </Grid>
+                            </Container>
+                        </Group>
                     </MediaQuery>
                     <MediaQuery largerThan="md" styles={{ display: 'none' }}>
                         <Grid columns={12} align={"center"}>
