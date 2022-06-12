@@ -84,8 +84,8 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 interface BookWishlistActionsFunc {
-    addToWishlist: (bookRemoteId: string, platform: string) => void;
-    removeFromWishlist: (bookRemoteId: string, platform: string) => void;
+    addToWishlist: (bookRemoteId: string) => void;
+    removeFromWishlist: (bookRemoteId: string) => void;
     isLoading: boolean;
 }
 
@@ -100,11 +100,10 @@ export function useBookWishlistActions(): BookWishlistActionsFunc {
         }
     }, [fetcherWishlistAction.type]);
     
-    const addToWishlist = (bookRemoteId: string, platform: string) => {
+    const addToWishlist = (bookRemoteId: string) => {
         fetcherWishlistAction.submit(
             {
                 bookRemoteId: bookRemoteId,
-                platform: platform
             },
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
@@ -114,11 +113,10 @@ export function useBookWishlistActions(): BookWishlistActionsFunc {
         setIsLoading(true);
     };
 
-    const removeFromWishlist = (bookRemoteId: string, platform: string) => {
+    const removeFromWishlist = (bookRemoteId: string) => {
         fetcherWishlistAction.submit(
             {
                 bookRemoteId: bookRemoteId,
-                platform: platform
             },
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
@@ -136,7 +134,7 @@ export function useBookWishlistActions(): BookWishlistActionsFunc {
 }
 
 interface BookWishlistStateAndFunc {
-    hasWishlist:boolean;
+    hasWishlist: boolean;
     addToWishlist: () => void;
     removeFromWishlist: () => void;
     isLoading: boolean;

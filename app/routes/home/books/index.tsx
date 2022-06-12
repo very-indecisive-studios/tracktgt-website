@@ -1,7 +1,7 @@
 ﻿import {
     ActionIcon,
     Center,
-    Container, Loader, LoadingOverlay, Pagination, Stack, Table, Tabs, Text,
+    Container, LoadingOverlay, MantineTheme, Pagination, Stack, Table, Tabs, Text,
     Title, useMantineTheme,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
@@ -22,8 +22,10 @@ import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
-import {Check, Clock, Edit, Eyeglass2, PlayerPause} from "tabler-icons-react";
+import { Check, Clock, Edit, Eye, Eyeglass2, PlayerPause, Star } from "tabler-icons-react";
 import { showTrackBookEditorModal } from "~/components/home/books/TrackBookEditorModal";
+import { tabStyles } from "~/components/home/tabStyles";
+import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 
 interface LoaderData {
     items: GetAllBookTrackingsItemResult[],
@@ -293,8 +295,13 @@ const BookTrackingStatusTable = ({ status, initialPage, onPageChange }: BookTrac
     );
 }
 
-export default function Books() {
+function bookTabStyles(theme: MantineTheme) {
+    return tabStyles(theme, theme.colors.yellow[8]);
+}
+
+function BooksTrackingTabs() {
     const isMobile = useMobileQuery();
+    
     let [searchParams, setSearchParams] = useSearchParams();
     let [tabIndex, setTabIndex] = useState(() => {
         const status = BookTrackingStatus[searchParams.get("status") as keyof typeof BookTrackingStatus];
@@ -333,40 +340,57 @@ export default function Books() {
     }
     
     return (
+        <Tabs grow
+              variant={"unstyled"}
+              active={tabIndex}
+              onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
+              styles={bookTabStyles}>
+            <Tabs.Tab label={isMobile ? "" : "Completed"}
+                      icon={<Check size={18}/>}>
+                <BookTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={BookTrackingStatus[BookTrackingStatus.Completed]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Reading"}
+                      icon={<Eyeglass2 size={18}/>}>
+                <BookTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={BookTrackingStatus[BookTrackingStatus.Reading]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Paused"}
+                      icon={<PlayerPause size={18}/>}>
+                <BookTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={BookTrackingStatus[BookTrackingStatus.Paused]}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Planning"}
+                      icon={<Clock size={18}/>}>
+                <BookTrackingStatusTable onPageChange={onPageChange}
+                                         initialPage={page}
+                                         status={BookTrackingStatus[BookTrackingStatus.Planning]}/>
+            </Tabs.Tab>
+        </Tabs>
+    );
+}
+
+export default function Books() {
+    const isMobile = useMobileQuery();
+
+      return (
         <Container py={16}>
             <Title mb={32} order={1}>Books</Title>
+
             <Tabs grow
-                  variant={"outline"}
-                  active={tabIndex}
-                  onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
-                  styles={(theme) => ({
-                      tabControl: {
-                          fontSize: theme.fontSizes.md
-                      }
-                  })}>
-                <Tabs.Tab label={isMobile ? "" : "Completed"}
-                          icon={<Check size={18}/>}>
-                    <BookTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={BookTrackingStatus[BookTrackingStatus.Completed]}/>
+                  variant={"unstyled"}
+                  styles={bookTabStyles}>
+                <Tabs.Tab label={isMobile ? "" : "Tracking"}
+                          icon={<Eye size={18}/>}>
+                    <BooksTrackingTabs />
                 </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Reading"}
-                          icon={<Eyeglass2 size={18}/>}>
-                    <BookTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={BookTrackingStatus[BookTrackingStatus.Reading]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Paused"}
-                          icon={<PlayerPause size={18}/>}>
-                    <BookTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={BookTrackingStatus[BookTrackingStatus.Paused]}/>
-                </Tabs.Tab>
-                <Tabs.Tab label={isMobile ? "" : "Planning"}
-                          icon={<Clock size={18}/>}>
-                    <BookTrackingStatusTable onPageChange={onPageChange}
-                                             initialPage={page}
-                                             status={BookTrackingStatus[BookTrackingStatus.Planning]}/>
+
+                <Tabs.Tab label={isMobile ? "" : "Wishlist"}
+                          icon={<Star size={18}/>}>
+                    <BookWishlistTable />
                 </Tabs.Tab>
             </Tabs>
         </Container>

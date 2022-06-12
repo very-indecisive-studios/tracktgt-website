@@ -19,9 +19,8 @@ import { badRequest } from "~/utils/response.server";
 import { Edit, Plus, Star } from "tabler-icons-react";
 import { showTrackBookEditorModal } from "~/components/home/books/TrackBookEditorModal";
 import { useModals } from "@mantine/modals";
-import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
-import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
 import { useBookWishlist } from "~/routes/home/books/wishlist/$id";
+import { showBookWishlistRemoveConfirmModal } from "~/components/home/books/BookWishlistModals";
 
 interface LoaderData {
     book: GetBookResult;
@@ -166,6 +165,8 @@ interface WishlistButtonProps {
 }
 
 function WishlistButton({ book }: WishlistButtonProps) {
+    const modals = useModals();
+    
     const { hasWishlist, addToWishlist, removeFromWishlist, isLoading } = useBookWishlist(book.remoteId ?? "");
 
     return (
@@ -180,7 +181,7 @@ function WishlistButton({ book }: WishlistButtonProps) {
                     </Button> :
                     <Button color={"yellow"}
                             variant={"outline"}
-                            onClick={removeFromWishlist}
+                            onClick={() => showBookWishlistRemoveConfirmModal(modals, book, removeFromWishlist)}
                             leftIcon={<Star size={20}/>}
                             loading={isLoading}>
                         Remove from wishlist
