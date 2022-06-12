@@ -16,9 +16,12 @@ import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
-import { Edit, Plus } from "tabler-icons-react";
+import { Edit, Plus, Star } from "tabler-icons-react";
 import { showTrackBookEditorModal } from "~/components/home/books/TrackBookEditorModal";
 import { useModals } from "@mantine/modals";
+import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
+import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
+import { useBookWishlist } from "~/routes/home/books/wishlist/$id";
 
 interface LoaderData {
     book: GetBookResult;
@@ -151,27 +154,59 @@ export const action: ActionFunction = async ({ request }) => {
     }
 }
 
+interface Book {
+    remoteId?: string | undefined; 
+    coverImageURL?: string | undefined;
+    title?: string | undefined;
+    authors?: string[] | undefined;
+}
+
+interface WishlistButtonProps {
+    book: Book;
+}
+
+function WishlistButton({ book }: WishlistButtonProps) {
+    const { hasWishlist, addToWishlist, removeFromWishlist, isLoading } = useBookWishlist(book.remoteId ?? "");
+
+    return (
+        <>
+            {
+                (!hasWishlist) ?
+                    <Button color={"yellow"}
+                            onClick={addToWishlist}
+                            leftIcon={<Star size={20}/>}
+                            loading={isLoading}>
+                        Add to wishlist
+                    </Button> :
+                    <Button color={"yellow"}
+                            variant={"outline"}
+                            onClick={removeFromWishlist}
+                            leftIcon={<Star size={20}/>}
+                            loading={isLoading}>
+                        Remove from wishlist
+                    </Button>
+            }
+        </>
+    );
+}
+
 interface BookHeaderProps {
-    coverImageURL: string | undefined;
-    title: string | undefined;
-    authors: string[] | undefined;
+    book: Book;
     hasGameTracking: boolean;
     onAddClick: () => void;
     onEditClick: () => void;
 }
 
 export function BookHeader({
-                               coverImageURL,
-                               title,
-                               authors, 
-                               hasGameTracking, 
-                               onAddClick, 
-                               onEditClick
-                           }: BookHeaderProps) {
+    book,
+    hasGameTracking, 
+    onAddClick, 
+    onEditClick
+}: BookHeaderProps) {
     return (
         <>
             <Stack mr={12}>
-                <CoverImage src={coverImageURL} width={200} height={300}/>
+                <CoverImage src={book.coverImageURL} width={200} height={300}/>
 
                 {!hasGameTracking &&
                     <Button color={"indigo"}
@@ -186,17 +221,19 @@ export function BookHeader({
                             leftIcon={<Edit size={20}/>}>
                         Edit tracking
                     </Button>}
+
+                <WishlistButton book={book} />
             </Stack>
 
             <Stack spacing={"xs"}>
                 <Title order={1}>
-                    {title}
+                    {book.title}
                 </Title>
 
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {authors?.join(", ")}
+                    {book.authors?.join(", ")}
                 </Title>
             </Stack>
         </>
@@ -208,9 +245,7 @@ export default function Book() {
     const modals = useModals();
     const submit = useSubmit();
 
-    const bookHeader = <BookHeader coverImageURL={loaderData.book.coverImageURL}
-                                   title={loaderData.book.title}
-                                   authors={loaderData.book.authors}
+    const bookHeader = <BookHeader book={loaderData.book}
                                    hasGameTracking={!!loaderData.bookTracking}
                                    onAddClick={() => showTrackBookEditorModal(
                                        modals,
