@@ -1,6 +1,6 @@
 import { MantineTheme } from "@mantine/core";
 
-export function tabStyles(theme: MantineTheme, color: string) {
+export default function tabStyles(theme: MantineTheme, color: string) {
     return ({
         tabControl: {
             backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,

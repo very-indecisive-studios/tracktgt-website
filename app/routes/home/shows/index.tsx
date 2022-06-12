@@ -31,7 +31,7 @@ import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay } from "tabler-icons-react";
 import { showTrackShowEditorModal } from "~/components/home/shows/TrackShowEditorModal";
-import { tabStyles } from "~/components/home/tabStyles";
+import tabStyles from "~/styles/tabStyles";
 
 interface LoaderData {
     items: GetAllShowTrackingsItemResult[],

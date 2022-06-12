@@ -32,7 +32,7 @@ import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 import { Check, Clock, Edit, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-react";
 import { showTrackBookEditorModal } from "~/components/home/books/TrackBookEditorModal";
-import { tabStyles } from "~/components/home/tabStyles";
+import tabStyles from "~/styles/tabStyles";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 
 interface LoaderData {

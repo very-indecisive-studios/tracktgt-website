@@ -33,7 +33,7 @@ import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
 import GameWishlistTable from "~/components/home/games/GameWishlistTable";
-import { tabStyles } from "~/components/home/tabStyles";
+import tabStyles from "~/styles/tabStyles";
 
 interface LoaderData {
     items: GetAllGameTrackingsItemResult[],
