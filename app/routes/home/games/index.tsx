@@ -237,7 +237,7 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
 
             {(pageData.length == 0 && fetcherTable.type === "done") ?
                 <Center p={32}>
-                    <Text>You do not have {status.toLowerCase()} games.</Text>
+                    <Text align={"center"}>You do not have {status.toLowerCase()} games.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -398,7 +398,7 @@ export default function Games() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container py={16}>
+        <Container py={16} px={isMobile ? 4 : 16}>
             <Title mb={32} order={1}>Games</Title>
             
             <Tabs grow

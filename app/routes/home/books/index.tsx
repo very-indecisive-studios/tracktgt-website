@@ -230,7 +230,7 @@ const BookTrackingStatusTable = ({ status, initialPage, onPageChange }: BookTrac
                 || fetcherEditor.state === "submitting"} />
             {(pageData.length == 0 && fetcherTable.type === "done") ?
                 <Center p={64}>
-                    <Text>You do not have {status.toLowerCase()} books.</Text>
+                    <Text align={"center"}>You do not have {status.toLowerCase()} books.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -386,7 +386,7 @@ export default function Books() {
     const isMobile = useMobileQuery();
 
       return (
-        <Container py={16}>
+        <Container py={16} px={isMobile ? 4 : 16}>
             <Title mb={32} order={1}>Books</Title>
 
             <Tabs grow

@@ -34,7 +34,7 @@ export default function GameWishlistTable() {
 
             {(!isFetcherLoading && allWishlists.length === 0) ?
                 <Center p={32}>
-                    <Text>You do not have wishlisted games.</Text>
+                    <Text align={"center"}>You do not have wishlisted games.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
