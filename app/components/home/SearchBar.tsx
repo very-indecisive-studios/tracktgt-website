@@ -25,7 +25,7 @@ function SearchBarType({ type }: SearchBarTypeProps) {
                    width: "100%",
                    height: "100%"
                })}>
-            {type}
+            in {type}
         </Badge>
     );
 }
@@ -46,9 +46,6 @@ export default function SearchBar() {
     return (
         <Form hidden={!type} action={`/home/${type}/search`}>
             <Grid columns={12} gutter={0}>
-                <Grid.Col span={2}>
-                    <SearchBarType type={type} />
-                </Grid.Col>
                 <Grid.Col span={9}>
                     <TextInput
                         name="title"
@@ -56,6 +53,9 @@ export default function SearchBar() {
                         width={500}
                         radius={0} 
                         required />
+                </Grid.Col>
+                <Grid.Col span={2}>
+                    <SearchBarType type={type} />
                 </Grid.Col>
                 <Grid.Col span={1}>
                     <ActionIcon size={"lg"} 
@@ -68,7 +68,7 @@ export default function SearchBar() {
                                 })}>
                         <Search size={20} />
                     </ActionIcon>
-                </Grid.Col>    
+                </Grid.Col>
             </Grid>
         </Form>
     );
