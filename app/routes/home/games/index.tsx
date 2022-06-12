@@ -33,6 +33,7 @@ import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import { showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
 import GameWishlistTable from "~/components/home/games/GameWishlistTable";
+import { tabStyles } from "~/components/home/tabStyles";
 
 interface LoaderData {
     items: GetAllGameTrackingsItemResult[],
@@ -313,35 +314,9 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
     );
 }
 
-const tabStyles = (theme: MantineTheme) => ({
-    tabControl: {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-        color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
-        border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
-        fontSize: theme.fontSizes.sm,
-        padding: `${theme.spacing.sm}px ${theme.spacing.sm}px`,
-
-        '&:not(:first-of-type)': {
-            borderLeft: 0,
-        },
-
-        '&:first-of-type': {
-            borderTopLeftRadius: theme.radius.sm,
-            borderBottomLeftRadius: theme.radius.sm,
-        },
-
-        '&:last-of-type': {
-            borderTopRightRadius: theme.radius.sm,
-            borderBottomRightRadius: theme.radius.sm,
-        },
-    },
-
-    tabActive: {
-        backgroundColor: theme.colors.blue[8],
-        borderColor: theme.colors.blue[8],
-        color: theme.white,
-    },
-});
+function gameTabStyles(theme: MantineTheme) {
+    return tabStyles(theme, theme.colors.blue[8]);
+}
 
 function GameTrackingTabs() {
     const isMobile = useMobileQuery();
@@ -388,7 +363,7 @@ function GameTrackingTabs() {
               variant={"unstyled"}
               active={tabIndex}
               onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
-              styles={tabStyles}>
+              styles={gameTabStyles}>
             <Tabs.Tab label={isMobile ? "" : "Completed"}
                       icon={<Check size={18}/>}>
                 <GameTrackingStatusTable onPageChange={onPageChange}
@@ -417,7 +392,7 @@ function GameTrackingTabs() {
     );
 }
 
-export default function GamesIndex() {
+export default function Games() {
     const isMobile = useMobileQuery();
 
     return (
@@ -426,7 +401,7 @@ export default function GamesIndex() {
             
             <Tabs grow
                   variant={"unstyled"}
-                  styles={tabStyles}>
+                  styles={gameTabStyles}>
                 <Tabs.Tab label={isMobile ? "" : "Tracking"}
                           icon={<Eye size={18}/>}>
                     <GameTrackingTabs />

@@ -1,7 +1,7 @@
 ﻿import {
     ActionIcon,
     Center,
-    Container, Loader, LoadingOverlay, Pagination, Stack, Table, Tabs, Text,
+    Container, Loader, LoadingOverlay, MantineTheme, Pagination, Stack, Table, Tabs, Text,
     Title, useMantineTheme,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
@@ -22,6 +22,7 @@ import { Link, useFetcher, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 import { Check, Clock, Edit, Eye, PlayerPause } from "tabler-icons-react";
 import { showTrackShowEditorModal } from "~/components/home/shows/TrackShowEditorModal";
+import { tabStyles } from "~/components/home/tabStyles";
 
 interface LoaderData {
     items: GetAllShowTrackingsItemResult[],
@@ -276,6 +277,10 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
     );
 }
 
+function showsTabStyles(theme: MantineTheme) {
+    return tabStyles(theme, theme.colors.red[8]);
+}
+
 export default function Shows() {
     const isMobile = useMobileQuery();
     let [searchParams, setSearchParams] = useSearchParams();
@@ -319,14 +324,10 @@ export default function Shows() {
         <Container py={16}>
             <Title mb={32} order={1}>Shows</Title>
             <Tabs grow
-                  variant={"outline"}
+                  variant={"unstyled"}
                   active={tabIndex}
                   onTabChange={(tabIndex, _) => onTabChange(tabIndex)}
-                  styles={(theme) => ({
-                      tabControl: {
-                          fontSize: theme.fontSizes.md
-                      }
-                  })}>
+                  styles={showsTabStyles}>
                 <Tabs.Tab label={isMobile ? "" : "Completed"}
                           icon={<Check size={18}/>}>
                     <ShowTrackingStatusTable onPageChange={onPageChange}
