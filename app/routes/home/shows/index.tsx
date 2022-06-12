@@ -209,79 +209,82 @@ const ShowTrackingStatusTable = ({ status, initialPage, onPageChange }: ShowTrac
             position: "relative",
             height: "600px"
         })}>
-            <LoadingOverlay overlayOpacity={0.8} visible={
+            <LoadingOverlay overlayOpacity={1} overlayColor={theme.colors.dark[8]} visible={
                 fetcherTable.type === "init"
                 || fetcherTable.type === "loaderSubmission"
                 || fetcherEditor.state === "submitting"} />
-            
-            <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Title</th>
-                    <th>Episodes Watched</th>
-                    {!isMobile &&
-                        (<>
-                            <th>Status</th>
-                            <th>Show Type</th>
-                        </>)}
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {pageData.map((st) => (
-                    <tr key={`${st.showRemoteId}`}>
-                        <td>
-                            <CoverImage src={st.coverImageURL} width={40} height={60}/>
-                        </td>
-                        <td>
-                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/shows/${st.showRemoteId}`}>
-                                <Text sx={(theme) => ({
-                                    width: isMobile ? "10ch" : "20ch",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                })}>
-                                    {st.title}
-                                </Text>
-                            </Link>
-                        </td>
-                        <td>{st.episodesWatched}</td>
-                        {!isMobile &&
-                            <>
-                                <td>{ShowTrackingStatus[st.status!!]}</td>
-                                <td>{ShowType[st.showType!!]}</td>
-                            </>}
-                        <td>
-                            <ActionIcon onClick={() => showTrackShowEditorModal(
-                                modals,
-                                {
-                                    title: st.title,
-                                    remoteId: st.showRemoteId,
-                                },
-                                st,
-                                () => { },
-                                (formData) => fetcherEditor.submit(formData, { method: "put" }),
-                                (formData) => fetcherEditor.submit(formData, { method: "delete" })
-                            )}>
-                                <Edit/>
-                            </ActionIcon>
-                        </td>
-                    </tr>))}
-                </tbody>
-            </Table>
 
-            {(pageData.length == 0 && fetcherTable.type === "done") &&
+
+            {(pageData.length == 0 && fetcherTable.type === "done") ?
                 <Center p={32}>
                     <Text>You do not have {status.toLowerCase()} shows.</Text>
-                </Center>}
+                </Center> :
+                <>
+                    <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Title</th>
+                            <th>Episodes Watched</th>
+                            {!isMobile &&
+                                (<>
+                                    <th>Status</th>
+                                    <th>Show Type</th>
+                                </>)}
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {pageData.map((st) => (
+                            <tr key={`${st.showRemoteId}`}>
+                                <td>
+                                    <CoverImage src={st.coverImageURL} width={40} height={60}/>
+                                </td>
+                                <td>
+                                    <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
+                                          to={`/home/shows/${st.showRemoteId}`}>
+                                        <Text sx={(theme) => ({
+                                            width: isMobile ? "10ch" : "20ch",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap"
+                                        })}>
+                                            {st.title}
+                                        </Text>
+                                    </Link>
+                                </td>
+                                <td>{st.episodesWatched}</td>
+                                {!isMobile &&
+                                    <>
+                                        <td>{ShowTrackingStatus[st.status!!]}</td>
+                                        <td>{ShowType[st.showType!!]}</td>
+                                    </>}
+                                <td>
+                                    <ActionIcon onClick={() => showTrackShowEditorModal(
+                                        modals,
+                                        {
+                                            title: st.title,
+                                            remoteId: st.showRemoteId,
+                                        },
+                                        st,
+                                        () => { },
+                                        (formData) => fetcherEditor.submit(formData, { method: "put" }),
+                                        (formData) => fetcherEditor.submit(formData, { method: "delete" })
+                                    )}>
+                                        <Edit/>
+                                    </ActionIcon>
+                                </td>
+                            </tr>))}
+                        </tbody>
+                    </Table>
 
-            {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
-                <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
-                    onPageChange(pageNo);
-                    setPageNo(pageNo);
-                }}/>}
+                    {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
+                        <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
+                            onPageChange(pageNo);
+                            setPageNo(pageNo);
+                        }}/>}   
+                </>
+            }
         </Stack>
     );
 }

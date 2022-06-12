@@ -230,86 +230,88 @@ const GameTrackingStatusTable = ({ status, initialPage, onPageChange }: GameTrac
             position: "relative",
             height: "600px"
         })}>
-            <LoadingOverlay overlayOpacity={0.8} visible={
+            <LoadingOverlay overlayOpacity={1} overlayColor={theme.colors.dark[8]} visible={
                 fetcherTable.type === "init"
                 || fetcherTable.type === "loaderSubmission"
                 || fetcherEditor.state === "submitting"} />
 
-            <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Title</th>
-                    <th>Platform</th>
-                    {!isMobile &&
-                        (<>
-                            <th>Hours Played</th>
-                            <th>Format</th>
-                            <th>Status</th>
-                            <th>Ownership</th>
-                        </>)}
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {pageData.map((gt) => (
-                    <tr key={`${gt.gameRemoteId}${gt.platform}`}>
-                        <td>
-                            <CoverImage src={gt.coverImageURL} width={40} height={60}/>
-                        </td>
-                        <td>
-                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/games/${gt.gameRemoteId}`}>
-                                <Text sx={(theme) => ({
-                                    width: isMobile ? "10ch" : "20ch",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                })}>
-                                    {gt.title}
-                                </Text>
-                            </Link>
-                        </td>
-                        <td>{gt.platform}</td>
-                        {!isMobile &&
-                            <>
-                                <td>{gt.hoursPlayed}</td>
-                                <td>{GameTrackingFormat[gt.format!!]}</td>
-                                <td>{GameTrackingStatus[gt.status!!]}</td>
-                                <td>{GameTrackingOwnership[gt.ownership!!]}</td>
-                            </>}
-                        <td>
-                            <ActionIcon onClick={() => showTrackGameEditorModal(
-                                modals,
-                                {
-                                    title: gt.title,
-                                    remoteId: gt.gameRemoteId,
-                                    platforms: []
-                                },
-                                gt,
-                                [gt],
-                                () => {
-                                },
-                                (formData) => fetcherEditor.submit(formData, { method: "put" }),
-                                (formData) => fetcherEditor.submit(formData, { method: "delete" })
-                            )}>
-                                <Edit/>
-                            </ActionIcon>
-                        </td>
-                    </tr>))}
-                </tbody>
-            </Table>
-
-            {(pageData.length == 0 && fetcherTable.type === "done") &&
+            {(pageData.length == 0 && fetcherTable.type === "done") ?
                 <Center p={32}>
                     <Text>You do not have {status.toLowerCase()} games.</Text>
-                </Center>}
+                </Center> :
+                <>
+                    <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Title</th>
+                            <th>Platform</th>
+                            {!isMobile &&
+                                (<>
+                                    <th>Hours Played</th>
+                                    <th>Format</th>
+                                    <th>Status</th>
+                                    <th>Ownership</th>
+                                </>)}
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {pageData.map((gt) => (
+                            <tr key={`${gt.gameRemoteId}${gt.platform}`}>
+                                <td>
+                                    <CoverImage src={gt.coverImageURL} width={40} height={60}/>
+                                </td>
+                                <td>
+                                    <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
+                                          to={`/home/games/${gt.gameRemoteId}`}>
+                                        <Text sx={(theme) => ({
+                                            width: isMobile ? "10ch" : "20ch",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap"
+                                        })}>
+                                            {gt.title}
+                                        </Text>
+                                    </Link>
+                                </td>
+                                <td>{gt.platform}</td>
+                                {!isMobile &&
+                                    <>
+                                        <td>{gt.hoursPlayed}</td>
+                                        <td>{GameTrackingFormat[gt.format!!]}</td>
+                                        <td>{GameTrackingStatus[gt.status!!]}</td>
+                                        <td>{GameTrackingOwnership[gt.ownership!!]}</td>
+                                    </>}
+                                <td>
+                                    <ActionIcon onClick={() => showTrackGameEditorModal(
+                                        modals,
+                                        {
+                                            title: gt.title,
+                                            remoteId: gt.gameRemoteId,
+                                            platforms: []
+                                        },
+                                        gt,
+                                        [gt],
+                                        () => {
+                                        },
+                                        (formData) => fetcherEditor.submit(formData, { method: "put" }),
+                                        (formData) => fetcherEditor.submit(formData, { method: "delete" })
+                                    )}>
+                                        <Edit/>
+                                    </ActionIcon>
+                                </td>
+                            </tr>))}
+                        </tbody>
+                    </Table>
 
-            {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
-                <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
-                    onPageChange(pageNo);
-                    setPageNo(pageNo);
-                }}/>}
+                    {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
+                        <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
+                            onPageChange(pageNo);
+                            setPageNo(pageNo);
+                        }}/>}
+                </>
+            }
         </Stack>
     );
 }

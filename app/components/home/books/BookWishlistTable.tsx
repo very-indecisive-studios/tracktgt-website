@@ -28,55 +28,59 @@ export default function BookWishlistTable() {
             position: "relative",
             height: "600px"
         })}>
-            <LoadingOverlay overlayOpacity={0.8} visible={isActionLoading || isFetcherLoading} />
+            <LoadingOverlay overlayOpacity={1} 
+                            overlayColor={theme.colors.dark[8]} 
+                            visible={isActionLoading || isFetcherLoading} />
 
-            <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Title</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {allWishlists.map((bw) => (
-                    <tr key={`${bw.bookRemoteId}`}>
-                        <td>
-                            <CoverImage src={bw.coverImageURL} width={40} height={60}/>
-                        </td>
-                        <td>
-                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/books/${bw.bookRemoteId}`}>
-                                <Text sx={(theme) => ({
-                                    width: isMobile ? "10ch" : "20ch",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                })}>
-                                    {bw.title}
-                                </Text>
-                            </Link>
-                        </td>
-                        <td>
-                            <ActionIcon onClick={() => showBookWishlistRemoveConfirmModal(
-                                modals, 
-                                bw,
-                                () => removeFromWishlist(bw.bookRemoteId ?? "")
-                            )}>
-                                <TrashX color={"red"} />
-                            </ActionIcon>
-                        </td>
-                    </tr>))}
-                </tbody>
-            </Table>
-
-            {(!isFetcherLoading && allWishlists.length === 0) &&
+            {(!isFetcherLoading && allWishlists.length === 0) ?
                 <Center p={32}>
                     <Text>You do not have wishlisted books.</Text>
-                </Center>}
-
-            {(!isFetcherLoading && totalPages !== 0) &&
-                <Pagination size={"sm"} total={totalPages} page={currentPage} onChange={fetchPage}/>}
+                </Center> :
+                <>
+                    <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Title</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {allWishlists.map((bw) => (
+                            <tr key={`${bw.bookRemoteId}`}>
+                                <td>
+                                    <CoverImage src={bw.coverImageURL} width={40} height={60}/>
+                                </td>
+                                <td>
+                                    <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
+                                          to={`/home/books/${bw.bookRemoteId}`}>
+                                        <Text sx={(theme) => ({
+                                            width: isMobile ? "10ch" : "20ch",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap"
+                                        })}>
+                                            {bw.title}
+                                        </Text>
+                                    </Link>
+                                </td>
+                                <td>
+                                    <ActionIcon onClick={() => showBookWishlistRemoveConfirmModal(
+                                        modals,
+                                        bw,
+                                        () => removeFromWishlist(bw.bookRemoteId ?? "")
+                                    )}>
+                                        <TrashX color={"red"}/>
+                                    </ActionIcon>
+                                </td>
+                            </tr>))}
+                        </tbody>
+                    </Table>
+    
+                    {(!isFetcherLoading && totalPages !== 0) &&
+                        <Pagination size={"sm"} total={totalPages} page={currentPage} onChange={fetchPage}/>}
+                                </>
+            }
         </Stack>
     );
 }

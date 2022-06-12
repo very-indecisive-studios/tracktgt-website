@@ -224,81 +224,82 @@ const BookTrackingStatusTable = ({ status, initialPage, onPageChange }: BookTrac
             position: "relative",
             height: "600px"
         })}>
-            <LoadingOverlay overlayOpacity={0.8} visible={
+            <LoadingOverlay overlayOpacity={1} overlayColor={theme.colors.dark[8]} visible={
                 fetcherTable.type === "init"
                 || fetcherTable.type === "loaderSubmission"
                 || fetcherEditor.state === "submitting"} />
-            
-            <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Title</th>
-                    <th>Chapters Read</th>
-                    {!isMobile &&
-                        (<>
-                            <th>Format</th>
-                            <th>Status</th>
-                            <th>Ownership</th>
-                        </>)}
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {pageData.map((bt) => (
-                    <tr key={`${bt.bookRemoteId}`}>
-                        <td>
-                            <CoverImage src={bt.coverImageURL} width={40} height={60}/>
-                        </td>
-                        <td>
-                            <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
-                                  to={`/home/books/${bt.bookRemoteId}`}>
-                                <Text sx={(theme) => ({
-                                    width: isMobile ? "10ch" : "20ch",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap"
-                                })}>
-                                    {bt.title}
-                                </Text>
-                            </Link>
-                        </td>
-                        <td>{bt.chaptersRead}</td>
-                        {!isMobile &&
-                            <>
-                                <td>{BookTrackingFormat[bt.format!!]}</td>
-                                <td>{BookTrackingStatus[bt.status!!]}</td>
-                                <td>{BookTrackingOwnership[bt.ownership!!]}</td>
-                            </>}
-                        <td>
-                            <ActionIcon onClick={() => showTrackBookEditorModal(
-                                modals,
-                                {
-                                    title: bt.title,
-                                    remoteId: bt.bookRemoteId,
-                                },
-                                bt,
-                                () => { },
-                                (formData) => fetcherEditor.submit(formData, { method: "put" }),
-                                (formData) => fetcherEditor.submit(formData, { method: "delete" })
-                            )}>
-                                <Edit/>
-                            </ActionIcon>
-                        </td>
-                    </tr>))}
-                </tbody>
-            </Table>
-
-            {(pageData.length == 0 && fetcherTable.type === "done") &&
-                <Center p={32}>
+            {(pageData.length == 0 && fetcherTable.type === "done") ?
+                <Center p={64}>
                     <Text>You do not have {status.toLowerCase()} books.</Text>
-                </Center>}
-
-            {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
-                <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
-                    onPageChange(pageNo);
-                    setPageNo(pageNo);
-                }}/>}
+                </Center> :
+                <>
+                    <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Title</th>
+                            <th>Chapters Read</th>
+                            {!isMobile &&
+                                (<>
+                                    <th>Format</th>
+                                    <th>Status</th>
+                                    <th>Ownership</th>
+                                </>)}
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {pageData.map((bt) => (
+                            <tr key={`${bt.bookRemoteId}`}>
+                                <td>
+                                    <CoverImage src={bt.coverImageURL} width={40} height={60}/>
+                                </td>
+                                <td>
+                                    <Link style={{ color: theme.colors.dark[1], textDecoration: "none" }}
+                                          to={`/home/books/${bt.bookRemoteId}`}>
+                                        <Text sx={(theme) => ({
+                                            width: isMobile ? "10ch" : "20ch",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap"
+                                        })}>
+                                            {bt.title}
+                                        </Text>
+                                    </Link>
+                                </td>
+                                <td>{bt.chaptersRead}</td>
+                                {!isMobile &&
+                                    <>
+                                        <td>{BookTrackingFormat[bt.format!!]}</td>
+                                        <td>{BookTrackingStatus[bt.status!!]}</td>
+                                        <td>{BookTrackingOwnership[bt.ownership!!]}</td>
+                                    </>}
+                                <td>
+                                    <ActionIcon onClick={() => showTrackBookEditorModal(
+                                        modals,
+                                        {
+                                            title: bt.title,
+                                            remoteId: bt.bookRemoteId,
+                                        },
+                                        bt,
+                                        () => { },
+                                        (formData) => fetcherEditor.submit(formData, { method: "put" }),
+                                        (formData) => fetcherEditor.submit(formData, { method: "delete" })
+                                    )}>
+                                        <Edit/>
+                                    </ActionIcon>
+                                </td>
+                            </tr>))}
+                        </tbody>
+                    </Table>
+        
+                    {(totalNoOfPages != 0 && fetcherTable.type === "done") &&
+                        <Pagination size={"sm"} total={totalNoOfPages} page={pageNo} onChange={(pageNo) => {
+                            onPageChange(pageNo);
+                            setPageNo(pageNo);
+                        }}/>}
+                </>
+            }
         </Stack>
     );
 }
