@@ -41,7 +41,7 @@ export function showBookWishlistRemoveConfirmModal(
     onRemove: () => void
 ) {
     const id = modalsContext.openModal({
-        title: "Confirm deletion",
+        title: "Confirm removal",
         centered: true,
         children: (
             <BookWishlistRemoveConfirmModal

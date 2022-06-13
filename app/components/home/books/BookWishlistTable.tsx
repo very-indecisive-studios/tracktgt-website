@@ -79,7 +79,7 @@ export default function BookWishlistTable() {
     
                     {(!isFetcherLoading && totalPages !== 0) &&
                         <Pagination size={"sm"} total={totalPages} page={currentPage} onChange={fetchPage}/>}
-                                </>
+                </>
             }
         </Stack>
     );
