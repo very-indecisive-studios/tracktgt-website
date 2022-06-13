@@ -1,9 +1,7 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { z } from "zod";
 import { requireUserId } from "~/utils/session.server";
-import { badRequest } from "~/utils/response.server";
 import {
     backendAPIClientInstance,
     RemoveBookWishlistCommand, 
@@ -25,59 +23,35 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     });
 }
 
-const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
-    // Validate form.
-    const formDataSchema = z
-        .object({
-            bookRemoteId: z.string()
-        });
-
-    return formDataSchema.safeParse(formData);
-}
-
-const handleDelete = async (request: Request) => {
+const handleDelete = async (bookId: string, request: Request) => {
     const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
     
-    const parsedFormData = parseAndValidateFormData(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
     await backendAPIClientInstance.book_RemoveBookWishlist(new RemoveBookWishlistCommand({
-        bookRemoteId: parsedFormData.data.bookRemoteId,
+        bookRemoteId: bookId,
         userRemoteId: userId,
     }));
 
     return null;
 }
 
-const handlePost = async (request: Request) => {
+const handlePost = async (bookId: string, request: Request) => {
     const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
-
-    const parsedFormData = parseAndValidateFormData(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
 
     await backendAPIClientInstance.book_AddBookWishlist(new AddBookWishlistCommand({
-        bookRemoteId: parsedFormData.data.bookRemoteId,
+        bookRemoteId: bookId,
         userRemoteId: userId,
     }));
 
     return null;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ params, request }) => {
+    const bookId = params.id ?? "";
+    
     if (request.method === "POST") {
-        return handlePost(request);
+        return handlePost(bookId, request);
     } else if (request.method === "DELETE") {
-        return handleDelete(request);
+        return handleDelete(bookId, request);
     } else {
         return json({ message: "Method not allowed" }, 405);
     }
@@ -102,9 +76,7 @@ export function useBookWishlistActions(): BookWishlistActionsFunc {
     
     const addToWishlist = (bookRemoteId: string) => {
         fetcherWishlistAction.submit(
-            {
-                bookRemoteId: bookRemoteId,
-            },
+            null,
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "post"
@@ -115,9 +87,7 @@ export function useBookWishlistActions(): BookWishlistActionsFunc {
 
     const removeFromWishlist = (bookRemoteId: string) => {
         fetcherWishlistAction.submit(
-            {
-                bookRemoteId: bookRemoteId,
-            },
+            null,
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "delete"
@@ -168,9 +138,7 @@ export function useBookWishlist(bookRemoteId: string): BookWishlistStateAndFunc 
     
     const addToWishlist = () => {
         fetcherWishlistAction.submit(
-            {
-                bookRemoteId: bookRemoteId
-            }, 
+            null, 
             { 
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "post"
@@ -180,9 +148,7 @@ export function useBookWishlist(bookRemoteId: string): BookWishlistStateAndFunc 
 
     const removeFromWishlist = () => {
         fetcherWishlistAction.submit(
-            {
-                bookRemoteId: bookRemoteId
-            },
+            null,
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "delete"
