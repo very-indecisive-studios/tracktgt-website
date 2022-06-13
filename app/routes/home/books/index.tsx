@@ -4,7 +4,7 @@ import { Check, Clock, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-r
 import { useMobileQuery } from "~/utils/hooks";
 import tabStyles from "~/styles/tabStyles";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
-import BookTrackingStatusTable from "~/components/home/books/BookTrackingTable";
+import BookTrackingStatusTable from "~/components/home/books/BookTrackingStatusTable";
 import {
     BookTrackingStatus,
 } from "backend";

@@ -57,7 +57,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 
-interface BookTrackingStateAndFunc {
+interface AllBookTrackingsStateAndFunc {
     allTrackings: GetAllBookTrackingsItemResult[];
     currentPage: number;
     totalPages: number;
@@ -65,8 +65,8 @@ interface BookTrackingStateAndFunc {
     isLoading: boolean;
 }
 
-export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: number): BookTrackingStateAndFunc {
-    const fetcherAllWishlistLoader = useFetcher<LoaderData>();
+export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
+    const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
     const [totalPages, setTotalPages] = useState(1);
@@ -74,7 +74,7 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetcherAllWishlistLoader.submit(
+        fetcherAllTrackingsLoader.submit(
             null, 
             { 
                 action: `/home/books/track?status=${BookTrackingStatus[status]}&page=${currentPage}`, 
@@ -85,19 +85,19 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
     }, []);
 
     useEffect(() => {
-        if (fetcherAllWishlistLoader.type === "done") {
-            setAllTrackings(fetcherAllWishlistLoader.data.bookTrackings);
-            setTotalPages(fetcherAllWishlistLoader.data.totalPages);
-            setCurrentPage(fetcherAllWishlistLoader.data.currentPage);
+        if (fetcherAllTrackingsLoader.type === "done") {
+            setAllTrackings(fetcherAllTrackingsLoader.data.bookTrackings);
+            setTotalPages(fetcherAllTrackingsLoader.data.totalPages);
+            setCurrentPage(fetcherAllTrackingsLoader.data.currentPage);
             setIsLoading(false);
         }
-    }, [fetcherAllWishlistLoader.type]);
+    }, [fetcherAllTrackingsLoader.type]);
 
     const fetchPage = (page: number) => {
-        fetcherAllWishlistLoader.submit(
+        fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/books/track?status=${status.toString()}&page=${page}`,
+                action: `/home/books/track?status=${BookTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
