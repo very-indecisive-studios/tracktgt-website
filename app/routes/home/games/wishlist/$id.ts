@@ -28,17 +28,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
     // Validate form.
-    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
-            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
             platform: z.string(),
         });
 
     return formDataSchema.safeParse(formData);
 }
 
-const handleDelete = async (request: Request) => {
+const handleDelete = async (gameId: number, request: Request) => {
     const userId = await requireUserId(request);
 
     let formData = Object.fromEntries(await request.formData())
@@ -50,7 +48,7 @@ const handleDelete = async (request: Request) => {
     }
 
     await backendAPIClientInstance.game_RemoveGameWishlist(new RemoveGameWishlistCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
+        gameRemoteId: gameId,
         userRemoteId: userId,
         platform: parsedFormData.data.platform
     }));
@@ -58,7 +56,7 @@ const handleDelete = async (request: Request) => {
     return null;
 }
 
-const handlePost = async (request: Request) => {
+const handlePost = async (gameId: number, request: Request) => {
     const userId = await requireUserId(request);
 
     let formData = Object.fromEntries(await request.formData())
@@ -70,7 +68,7 @@ const handlePost = async (request: Request) => {
     }
 
     await backendAPIClientInstance.game_AddGameWishlist(new AddGameWishlistCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
+        gameRemoteId: gameId,
         userRemoteId: userId,
         platform: parsedFormData.data.platform
     }));
@@ -78,18 +76,20 @@ const handlePost = async (request: Request) => {
     return null;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ params, request }) => {
+    const gameId = parseInt(params.id ?? "0");
+    
     if (request.method === "POST") {
-        return handlePost(request);
+        return handlePost(gameId, request);
     } else if (request.method === "DELETE") {
-        return handleDelete(request);
+        return handleDelete(gameId, request);
     } else {
         return json({ message: "Method not allowed" }, 405);
     }
 }
 interface GameWishlistActionsFunc {
-    addToWishlist: (gameRemoteId: number, platform: string) => void;
-    removeFromWishlist: (gameRemoteId: number, platform: string) => void;
+    addToWishlist: (gameRemoteId: number, formData: FormData) => void;
+    removeFromWishlist: (gameRemoteId: number, formData: FormData) => void;
     isLoading: boolean;
 }
 
@@ -104,12 +104,9 @@ export function useGamesWishlistActions(): GameWishlistActionsFunc {
         }
     }, [fetcherWishlistAction.type]);
     
-    const addToWishlist = (gameRemoteId: number, platform: string) => {
+    const addToWishlist = (gameRemoteId: number, formData: FormData) => {
         fetcherWishlistAction.submit(
-            {
-                gameRemoteId: gameRemoteId.toString(),
-                platform: platform
-            },
+            formData,
             {
                 action: `/home/games/wishlist/${gameRemoteId}`,
                 method: "post"
@@ -118,12 +115,9 @@ export function useGamesWishlistActions(): GameWishlistActionsFunc {
         setIsLoading(true);
     };
 
-    const removeFromWishlist = (gameRemoteId: number, platform: string) => {
+    const removeFromWishlist = (gameRemoteId: number, formData: FormData) => {
         fetcherWishlistAction.submit(
-            {
-                gameRemoteId: gameRemoteId.toString(),
-                platform: platform
-            },
+            formData,
             {
                 action: `/home/games/wishlist/${gameRemoteId}`,
                 method: "delete"
@@ -141,8 +135,8 @@ export function useGamesWishlistActions(): GameWishlistActionsFunc {
 
 interface GameWishlistStateAndFunc {
     wishlists: GetGameWishlistItemResult[];
-    addToWishlist: (platform: string) => void;
-    removeFromWishlist: (platform: string) => void;
+    addToWishlist: (formData: FormData) => void;
+    removeFromWishlist: (formData: FormData) => void;
     isLoading: boolean;
 }
 
@@ -172,12 +166,9 @@ export function useGamesWishlist(gameRemoteId: number): GameWishlistStateAndFunc
         }
     }, [fetcherWishlistAction.type]);
     
-    const addToWishlist = (platform: string) => {
+    const addToWishlist = (formData: FormData) => {
         fetcherWishlistAction.submit(
-            { 
-                gameRemoteId: gameRemoteId.toString(), 
-                platform: platform 
-            }, 
+            formData, 
             { 
                 action: `/home/games/wishlist/${gameRemoteId}`,
                 method: "post"
@@ -185,12 +176,9 @@ export function useGamesWishlist(gameRemoteId: number): GameWishlistStateAndFunc
         setIsLoading(true);
     };
 
-    const removeFromWishlist = (platform: string) => {
+    const removeFromWishlist = (formData: FormData) => {
         fetcherWishlistAction.submit(
-            {
-                gameRemoteId: gameRemoteId.toString(),
-                platform: platform
-            },
+            formData,
             {
                 action: `/home/games/wishlist/${gameRemoteId}`,
                 method: "delete"

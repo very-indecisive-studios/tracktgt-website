@@ -70,7 +70,7 @@ export default function GameWishlistTable() {
                                     <ActionIcon onClick={() => showGameWishlistRemoveConfirmModal(
                                         modals, gw,
                                         gw.platform ?? "",
-                                        () => removeFromWishlist(gw.gameRemoteId ?? 0, gw.platform ?? "")
+                                        (formData) => removeFromWishlist(gw.gameRemoteId!!, formData)
                                     )}>
                                         <TrashX color={"red"}/>
                                     </ActionIcon>

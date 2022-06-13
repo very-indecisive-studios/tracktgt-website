@@ -1,7 +1,6 @@
 import { Form } from "@remix-run/react";
 import { ActionIcon, Button, Card, Divider, Group, Select, Stack, Text, TextInput, Title } from "@mantine/core";
 import { ModalsContextProps } from "@mantine/modals/lib/context";
-import { showNotification } from "@mantine/notifications";
 import { TrashX } from "tabler-icons-react";
 
 interface Game {
@@ -18,16 +17,15 @@ interface GameWishlistRemoveConfirmModalProps {
     game: Game;
     platform: string;
     onCancel: () => void;
-    onConfirm: () => void;
-    onRemove: (platform: string) => void;
+    onRemove: (formData: FormData) => void;
 }
 
-function GameWishlistRemoveConfirmModal({ game, platform, onCancel, onConfirm, onRemove }: GameWishlistRemoveConfirmModalProps) {
+function GameWishlistRemoveConfirmModal({ game, platform, onCancel, onRemove }: GameWishlistRemoveConfirmModalProps) {
     return (
         <>
             <Form onSubmit={(e) => {
                 e.preventDefault();
-                onRemove((new FormData(e.currentTarget)).get("platform") as string);
+                onRemove(new FormData(e.currentTarget));
             }}>
                 <Text>
                     Are you sure you want to remove wishlist for {game.title} on <b>{platform}</b>?
@@ -36,7 +34,7 @@ function GameWishlistRemoveConfirmModal({ game, platform, onCancel, onConfirm, o
                 <TextInput name={"platform"} defaultValue={platform} hidden={true}/>
                 <Group position={"right"} mt={32}>
                     <Button variant={"outline"} onClick={onCancel}>Cancel</Button>
-                    <Button color={"red"} type={"submit"} onClick={onConfirm}>Yes, I am sure</Button>
+                    <Button color={"red"} type={"submit"}>Yes, I am sure</Button>
                 </Group>
             </Form>
         </>
@@ -47,7 +45,7 @@ export function showGameWishlistRemoveConfirmModal(
     modalsContext: ModalsContextProps,
     game: Game,
     platform: string,
-    onRemove: (platform: string) => void
+    onRemove: (formData: FormData) => void
 ) {
     const id = modalsContext.openModal({
         title: "Confirm deletion",
@@ -57,24 +55,18 @@ export function showGameWishlistRemoveConfirmModal(
                 game={game}
                 platform={platform}
                 onCancel={() => modalsContext.closeModal(id)}
-                onConfirm={() => {
-                    showNotification({
-                        title: 'Successfully removed wishlisted game',
-                        message: `Removed ${game.title} for ${platform} from wishlist.`,
-                        icon: <TrashX size={16}/>,
-                        color: "red"
-                    });
-
+                onRemove={(formData) => {
+                    onRemove(formData);
+                    
                     modalsContext.closeAll();
-                }}
-                onRemove={onRemove}/>
+                }}/>
         )
     });
 }
 
 interface GameWishlistEditorModalProps {
     availablePlatformsToWishlist: string[];
-    onAdd: (platform: string) => void;
+    onAdd: (formData: FormData) => void;
     onCancel: () => void;
 }
 
@@ -83,7 +75,7 @@ function GameWishlistEditorModal({ availablePlatformsToWishlist, onAdd, onCancel
         <Form onSubmit={(e) => {
             e.preventDefault();
 
-            onAdd((new FormData(e.currentTarget)).get("platform") as string);
+            onAdd(new FormData(e.currentTarget));
         }}>
             <Select name="platform"
                     label="Platform"
@@ -91,7 +83,6 @@ function GameWishlistEditorModal({ availablePlatformsToWishlist, onAdd, onCancel
                     defaultValue={availablePlatformsToWishlist[0]}
                     data={availablePlatformsToWishlist}/>
             <Group position={"right"}>
-                <Button variant={"outline"} onClick={onCancel}>Cancel</Button>
                 <Button type={"submit"}>Add</Button>
             </Group>
         </Form>
@@ -102,7 +93,7 @@ export function showGameWishlistEditorModal(
     modalsContext: ModalsContextProps,
     game: Game,
     gameWishlists: GameWishlist[],
-    onAdd: (platform: string) => void,
+    onAdd: (formData: FormData) => void,
 ) {
     const availableGamePlatforms = game.platforms
         ?.filter(value => !gameWishlists.map(gw => gw.platform).includes(value)) ?? [];
@@ -126,8 +117,8 @@ export function showGameWishlistManageModal(
     modalsContext: ModalsContextProps,
     game: Game,
     gameWishlists: GameWishlist[],
-    onAdd: (platform: string) => void,
-    onRemove: (platform: string) => void,
+    onAdd: (formData: FormData) => void,
+    onRemove: (formData: FormData) => void,
 ) {
     const id = modalsContext.openModal({
         title: "Manage your wishlist",

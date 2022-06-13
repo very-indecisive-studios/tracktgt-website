@@ -1,163 +1,37 @@
 ﻿import { Badge, Button, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import {
-    AddGameTrackingCommand,
     backendAPIClientInstance,
-    GameTrackingFormat,
-    GameTrackingOwnership,
-    GameTrackingStatus,
     GetGameResult,
-    GetGameTrackingsItemResult,
-    RemoveGameTrackingCommand,
-    UpdateGameTrackingCommand,
 } from "backend";
 import { Edit, Heart, Plus, Star } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
-import { showGameTrackingsSelectorModal, showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
-import { z } from "zod";
-import { badRequest } from "~/utils/response.server";
 import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
 import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
+import { useGameTrackings } from "~/routes/home/games/track/$id";
+import { showGameTrackingEditorModal, showGameTrackingsSelectorModal } from "~/components/home/games/GameTrackingModals";
+
+//region Server
 
 interface LoaderData {
     game: GetGameResult;
-    gameTrackings: GetGameTrackingsItemResult[]
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
     const gameId: number = parseInt(params.id ?? "0");
 
     const getGameBackendAPIResponse = await backendAPIClientInstance.game_GetGame(gameId);
-    const game = getGameBackendAPIResponse.result;
-
-    const userId = await requireUserId(request);
-
-    const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetGameTrackings(userId, gameId);
 
     return json<LoaderData>({
-        game: game,
-        gameTrackings: getGameTrackingsBackendAPIResponse.result.items ?? []
+        game: getGameBackendAPIResponse.result,
     });
 }
 
-const handleDelete = async (request: Request) => {
-    const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
-
-    // Validate form.
-    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
-    const formDataSchema = z
-        .object({
-            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
-            platform: z.string(),
-        });
-
-    const parsedFormData = formDataSchema.safeParse(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
-    await backendAPIClientInstance.game_RemoveGameTracking(new RemoveGameTrackingCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
-        userRemoteId: userId,
-        platform: parsedFormData.data.platform
-    }));
-
-    return null;
-}
-
-const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
-    const gameStatusesLength = Object.keys(GameTrackingStatus)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
-    const gameFormatsLength = Object.keys(GameTrackingFormat)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
-    const gameOwnershipsLength = Object.keys(GameTrackingOwnership)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
-    // Validate form.
-    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
-    const formDataSchema = z
-        .object({
-            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
-            hoursPlayed: z.preprocess(preProcessToNumber, z.number().gte(0)),
-            platform: z.string(),
-            status: z.preprocess(preProcessToNumber, z.number().min(0).max(gameStatusesLength - 1)),
-            format: z.preprocess(preProcessToNumber, z.number().min(0).max(gameFormatsLength - 1)),
-            ownership: z.preprocess(preProcessToNumber, z.number().min(0).max(gameOwnershipsLength - 1))
-        });
-
-    return formDataSchema.safeParse(formData);
-}
-
-const handlePost = async (request: Request) => {
-    const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
-
-    const parsedFormData = parseAndValidateFormData(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
-    await backendAPIClientInstance.game_AddGameTracking(new AddGameTrackingCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
-        userRemoteId: userId,
-        hoursPlayed: parsedFormData.data.hoursPlayed,
-        platform: parsedFormData.data.platform,
-        ownership: parsedFormData.data.ownership,
-        format: parsedFormData.data.format,
-        status: parsedFormData.data.status,
-    }));
-
-    return null;
-}
-
-const handlePut = async (request: Request) => {
-    const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
-
-    const parsedFormData = parseAndValidateFormData(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
-    await backendAPIClientInstance.game_UpdateGameTracking(new UpdateGameTrackingCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
-        userRemoteId: userId,
-        hoursPlayed: parsedFormData.data.hoursPlayed,
-        platform: parsedFormData.data.platform,
-        ownership: parsedFormData.data.ownership,
-        format: parsedFormData.data.format,
-        status: parsedFormData.data.status,
-    }));
-
-    return null;
-}
-
-export const action: ActionFunction = async ({ request }) => {
-    if (request.method === "POST") {
-        return handlePost(request);
-    } else if (request.method === "DELETE") {
-        return handleDelete(request);
-    } else if (request.method === "PUT") {
-        return handlePut(request);
-    } else {
-        return json({ message: "Method not allowed" }, 405);
-    }
-}
+//endregion
 
 interface Game {
     remoteId?: number | undefined;
@@ -166,6 +40,49 @@ interface Game {
     rating?: number | undefined;
     platforms?: string[] | undefined;
     companies?: string[] | undefined;
+}
+
+interface TrackingButtonProps {
+    game: Game;
+}
+
+function TrackingButton({ game }: TrackingButtonProps) {
+    const { trackings, addTracking, updateTracking, removeTracking, isLoading } = useGameTrackings(game.remoteId ?? 0);
+    const modals = useModals();
+
+    return (
+        <>
+            {(trackings.length < 1) ?
+                <Button color={"indigo"}
+                        onClick={() => showGameTrackingEditorModal(
+                            modals,
+                            game,
+                            null,
+                            trackings,
+                            addTracking,
+                            updateTracking,
+                            removeTracking
+                        )}
+                        leftIcon={<Plus size={20}/>}
+                        loading={isLoading}>
+                    Create tracking
+                </Button> :
+                <Button color={"orange"}
+                        onClick={() => showGameTrackingsSelectorModal(
+                            modals,
+                            game,
+                            trackings,
+                            addTracking,
+                            updateTracking,
+                            removeTracking
+                        )}
+                        leftIcon={<Edit size={20}/>}
+                        loading={isLoading}>
+                    Manage trackings
+                </Button>
+            }
+        </>
+    );
 }
 
 interface WishlistButtonProps {
@@ -204,36 +121,15 @@ function WishlistButton({ game }: WishlistButtonProps) {
 
 interface GameHeaderProps {
     game: Game;
-    noOfGameTrackings: number;
-    onAddClick: () => void;
-    onEditClick: () => void;
 }
 
-export function GameHeader({
-    game,
-    noOfGameTrackings,
-    onAddClick,
-    onEditClick
-}: GameHeaderProps) {
+export function GameHeader({ game }: GameHeaderProps) {
     return (
         <>
             <Stack mr={12}>
                 <CoverImage src={game.coverImageURL} width={200} height={300}/>
-
-                {(noOfGameTrackings < (game.platforms?.length ?? 1)) &&
-                    <Button color={"indigo"}
-                            onClick={onAddClick}
-                            leftIcon={<Plus size={20}/>}>
-                        Create tracking
-                    </Button>}
-
-                {(noOfGameTrackings > 0) &&
-                    <Button color={"orange"}
-                            onClick={onEditClick}
-                            leftIcon={<Edit size={20}/>}>
-                        Edit tracking
-                    </Button>}
                 
+                <TrackingButton game={game} />
                 <WishlistButton game={game} />
             </Stack>
 
@@ -268,30 +164,8 @@ export function GameHeader({
 
 export default function Game() {
     const data = useLoaderData<LoaderData>();
-    const modals = useModals();
-    const submit = useSubmit();
 
-    const gameHeader = <GameHeader game={data.game}
-                                   noOfGameTrackings={data.gameTrackings.length}
-                                   onAddClick={() => showTrackGameEditorModal(
-                                       modals,
-                                       data.game,
-                                       null,
-                                       data.gameTrackings,
-                                       (formData) => submit(formData, { method: "post", replace: true }),
-                                       () => {
-                                       },
-                                       () => {
-                                       }
-                                   )}
-                                   onEditClick={() => showGameTrackingsSelectorModal(
-                                       modals,
-                                       data.game,
-                                       data.gameTrackings,
-                                       (formData) => submit(formData, { method: "post", replace: true }),
-                                       (formData) => submit(formData, { method: "put", replace: true }),
-                                       (formData) => submit(formData, { method: "delete", replace: true })
-                                   )}/>
+    const gameHeader = <GameHeader game={data.game} />
 
     return (
         <Container py={16}>
