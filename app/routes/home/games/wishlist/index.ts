@@ -15,11 +15,11 @@ interface LoaderData {
 
 export const loader: LoaderFunction = async ({ request }) => {
     const userId = await requireUserId(request);
-    
+
     const url = new URL(request.url);
     const urlSearchParams = url.searchParams;
     const page = parseInt(urlSearchParams.get("page") ?? "1");
-    
+
     const backendAPIResponse = await backendAPIClientInstance.game_GetAllGameWishlists(
         userId,
         false,
@@ -51,10 +51,16 @@ export function useAllGamesWishlist(initialPage?: number): GameWishlistStateAndF
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetcherAllWishlistLoader.submit(null, { action: `/home/games/wishlist?page=${currentPage}`, method: "get" });
+        fetcherAllWishlistLoader.submit(
+            null, 
+            {
+                action: `/home/games/wishlist?index&page=${currentPage}`,
+                method: "get"
+            }
+        );
         setIsLoading(true);
     }, []);
-    
+
     useEffect(() => {
         if (fetcherAllWishlistLoader.type === "done") {
             setAllWishlists(fetcherAllWishlistLoader.data.gameWishlists);
@@ -65,10 +71,16 @@ export function useAllGamesWishlist(initialPage?: number): GameWishlistStateAndF
     }, [fetcherAllWishlistLoader.type]);
 
     const fetchPage = (page: number) => {
-        fetcherAllWishlistLoader.submit(null, { action: `/home/games/wishlist?page=${page}`, method: "get" });
+        fetcherAllWishlistLoader.submit(
+            null, 
+            { 
+                action: `/home/games/wishlist?index&page=${page}`, 
+                method: "get" 
+            }
+        );
         setIsLoading(true);
     };
-    
+
     return {
         allWishlists,
         currentPage,

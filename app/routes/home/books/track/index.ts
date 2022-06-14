@@ -77,7 +77,7 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null, 
             { 
-                action: `/home/books/track?status=${BookTrackingStatus[status]}&page=${currentPage}`, 
+                action: `/home/books/track?index&status=${BookTrackingStatus[status]}&page=${currentPage}`, 
                 method: "get" 
             }
         );
@@ -97,7 +97,7 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/books/track?status=${BookTrackingStatus[status]}&page=${page}`,
+                action: `/home/books/track?index&status=${BookTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );

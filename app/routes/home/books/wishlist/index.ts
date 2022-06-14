@@ -50,7 +50,13 @@ export function useAllBooksWishlist(initialPage?: number): BookWishlistStateAndF
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        fetcherAllWishlistLoader.submit(null, { action: `/home/books/wishlist?page=${currentPage}`, method: "get" });
+        fetcherAllWishlistLoader.submit(
+            null, 
+            { 
+                action: `/home/books/wishlist?index&page=${currentPage}`, 
+                method: "get" 
+            }
+        );
         setIsLoading(true);
     }, []);
     
@@ -64,7 +70,13 @@ export function useAllBooksWishlist(initialPage?: number): BookWishlistStateAndF
     }, [fetcherAllWishlistLoader.type]);
 
     const fetchPage = (page: number) => {
-        fetcherAllWishlistLoader.submit(null, { action: `/home/books/wishlist?page=${page}`, method: "get" });
+        fetcherAllWishlistLoader.submit(
+            null, 
+            { 
+                action: `/home/books/wishlist?index&page=${page}`, 
+                method: "get" 
+            }
+        );
         setIsLoading(true);
     };
     

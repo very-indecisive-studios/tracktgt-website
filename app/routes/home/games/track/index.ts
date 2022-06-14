@@ -77,7 +77,7 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/games/track?status=${GameTrackingStatus[status]}&page=${currentPage}`,
+                action: `/home/games/track?index&status=${GameTrackingStatus[status]}&page=${currentPage}`,
                 method: "get"
             }
         );
@@ -97,7 +97,7 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/games/track?status=${GameTrackingStatus[status]}&page=${page}`,
+                action: `/home/games/track?index&status=${GameTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
