@@ -1,4 +1,4 @@
-﻿import { Chip, TextInput } from "@mantine/core";
+﻿import { ActionIcon, Badge, Chip, Grid, Group, TextInput } from "@mantine/core";
 import { Form, useLocation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { Search } from "tabler-icons-react";
@@ -8,20 +8,26 @@ interface SearchBarTypeProps {
 }
 
 function SearchBarType({ type }: SearchBarTypeProps) {
-    let color = "grey";
+    let color = "gray";
     if (type === "games") {
         color = "blue";
     } else if (type === "shows") {
         color = "red";
     } else if (type === "books") {
-        color = "yellow"
+        color = "yellow";
     }
 
-    return (<Chip styles={(theme) => ({
-        iconWrapper: {
-            display: "none"
-        },
-    })} variant={"filled"} color={color} checked={true}>in {type}</Chip>);
+    return (                    
+        <Badge size={"lg"}
+               radius={0}
+               color={color}
+               sx={() => ({
+                   width: "100%",
+                   height: "100%"
+               })}>
+            in {type}
+        </Badge>
+    );
 }
 
 export default function SearchBar() {
@@ -39,12 +45,31 @@ export default function SearchBar() {
 
     return (
         <Form hidden={!type} action={`/home/${type}/search`}>
-            <TextInput
-                name="title"
-                placeholder={"Search"}
-                icon={<Search size={20}/>}
-                rightSection={<SearchBarType type={type}/>}
-                rightSectionWidth={100}/>
+            <Grid columns={12} gutter={0}>
+                <Grid.Col span={9}>
+                    <TextInput
+                        name="title"
+                        placeholder={"Search"}
+                        width={500}
+                        radius={0} 
+                        required />
+                </Grid.Col>
+                <Grid.Col span={2}>
+                    <SearchBarType type={type} />
+                </Grid.Col>
+                <Grid.Col span={1}>
+                    <ActionIcon size={"lg"} 
+                                type={"submit"} 
+                                variant={"filled"}
+                                radius={0}
+                                sx={() => ({
+                                    width: "100%",
+                                    height: "100%"
+                                })}>
+                        <Search size={20} />
+                    </ActionIcon>
+                </Grid.Col>
+            </Grid>
         </Form>
     );
 }

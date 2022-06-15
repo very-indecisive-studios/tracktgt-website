@@ -1,225 +1,212 @@
 ﻿import { Badge, Button, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import {
-    AddGameTrackingCommand,
     backendAPIClientInstance,
-    GameTrackingFormat,
-    GameTrackingOwnership,
-    GameTrackingStatus,
     GetGameResult,
-    GetGameTrackingsItemResult,
-    RemoveGameTrackingCommand,
-    UpdateGameTrackingCommand,
 } from "backend";
-import { Edit, Plus, Star } from "tabler-icons-react";
+import { Edit, Heart, Pencil, PlaylistAdd, Plus, Star, StarOff, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
-import { showGameTrackingsSelectorModal, showTrackGameEditorModal } from "~/components/home/games/TrackGameEditorModal";
-import { z } from "zod";
-import { badRequest } from "~/utils/response.server";
+import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
+import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
+import { useGameTrackings } from "~/routes/home/games/track/$id";
+import { showGameTrackingEditorModal, showGameTrackingsSelectorModal } from "~/components/home/games/GameTrackingModals";
+import React, { useEffect } from "react";
+import { showNotification } from "@mantine/notifications";
+
+//region Server
 
 interface LoaderData {
     game: GetGameResult;
-    gameTrackings: GetGameTrackingsItemResult[]
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
     const gameId: number = parseInt(params.id ?? "0");
 
     const getGameBackendAPIResponse = await backendAPIClientInstance.game_GetGame(gameId);
-    const game = getGameBackendAPIResponse.result;
-
-    const userId = await requireUserId(request);
-
-    const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetGameTrackings(userId, gameId);
 
     return json<LoaderData>({
-        game: game,
-        gameTrackings: getGameTrackingsBackendAPIResponse.result.items ?? []
+        game: getGameBackendAPIResponse.result,
     });
 }
 
-const handleDelete = async (request: Request) => {
-    const userId = await requireUserId(request);
+//endregion
 
-    let formData = Object.fromEntries(await request.formData())
+//region Client
 
-    // Validate form.
-    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
-    const formDataSchema = z
-        .object({
-            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
-            platform: z.string(),
-        });
-
-    const parsedFormData = formDataSchema.safeParse(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
-    await backendAPIClientInstance.game_RemoveGameTracking(new RemoveGameTrackingCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
-        userRemoteId: userId,
-        platform: parsedFormData.data.platform
-    }));
-
-    return null;
+interface Game {
+    remoteId?: number | undefined;
+    coverImageURL?: string | undefined;
+    title?: string | undefined;
+    rating?: number | undefined;
+    platforms?: string[] | undefined;
+    companies?: string[] | undefined;
 }
 
-const parseAndValidateFormData = (formData: { [p: string]: FormDataEntryValue }) => {
-    const gameStatusesLength = Object.keys(GameTrackingStatus)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
-    const gameFormatsLength = Object.keys(GameTrackingFormat)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
-    const gameOwnershipsLength = Object.keys(GameTrackingOwnership)
-        .filter((s) => isNaN(Number(s)))
-        .length;
-
-    // Validate form.
-    const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
-    const formDataSchema = z
-        .object({
-            gameRemoteId: z.preprocess(preProcessToNumber, z.number()),
-            hoursPlayed: z.preprocess(preProcessToNumber, z.number().gte(0)),
-            platform: z.string(),
-            status: z.preprocess(preProcessToNumber, z.number().min(0).max(gameStatusesLength - 1)),
-            format: z.preprocess(preProcessToNumber, z.number().min(0).max(gameFormatsLength - 1)),
-            ownership: z.preprocess(preProcessToNumber, z.number().min(0).max(gameOwnershipsLength - 1))
-        });
-
-    return formDataSchema.safeParse(formData);
+interface TrackingButtonProps {
+    game: Game;
 }
 
-const handlePost = async (request: Request) => {
-    const userId = await requireUserId(request);
+function TrackingButton({ game }: TrackingButtonProps) {
+    const modals = useModals();
+    
+    const { trackings, addTracking, updateTracking, removeTracking, actionDone, isLoading } 
+        = useGameTrackings(game.remoteId ?? 0);
 
-    let formData = Object.fromEntries(await request.formData())
-
-    const parsedFormData = parseAndValidateFormData(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
-    await backendAPIClientInstance.game_AddGameTracking(new AddGameTrackingCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
-        userRemoteId: userId,
-        hoursPlayed: parsedFormData.data.hoursPlayed,
-        platform: parsedFormData.data.platform,
-        ownership: parsedFormData.data.ownership,
-        format: parsedFormData.data.format,
-        status: parsedFormData.data.status,
-    }));
-
-    return null;
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "add") {
+            showNotification({
+                title: 'Successfully added game to tracking.',
+                message: `Your changes have been saved.`,
+                icon: <PlaylistAdd size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "update") {
+            showNotification({
+                title: 'Successfully updated game tracking.',
+                message: `Your changes have been saved.`,
+                icon: <Pencil size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed game tracking.',
+                message: `Your changes have been saved.`,
+                icon: <TrashX size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
+    
+    return (
+        <>
+            {(trackings.length < 1) ?
+                <Button color={"indigo"}
+                        onClick={() => showGameTrackingEditorModal(
+                            modals,
+                            game,
+                            null,
+                            trackings,
+                            addTracking,
+                            updateTracking,
+                            removeTracking
+                        )}
+                        leftIcon={<Plus size={20}/>}
+                        loading={isLoading}>
+                    Add tracking
+                </Button> :
+                <Button color={"orange"}
+                        onClick={() => showGameTrackingsSelectorModal(
+                            modals,
+                            game,
+                            trackings,
+                            addTracking,
+                            updateTracking,
+                            removeTracking
+                        )}
+                        leftIcon={<Edit size={20}/>}
+                        loading={isLoading}>
+                    Manage trackings
+                </Button>
+            }
+        </>
+    );
 }
 
-const handlePut = async (request: Request) => {
-    const userId = await requireUserId(request);
-
-    let formData = Object.fromEntries(await request.formData())
-
-    const parsedFormData = parseAndValidateFormData(formData);
-
-    if (!parsedFormData.success) {
-        return badRequest(parsedFormData.error.flatten().fieldErrors);
-    }
-
-    await backendAPIClientInstance.game_UpdateGameTracking(new UpdateGameTrackingCommand({
-        gameRemoteId: parsedFormData.data.gameRemoteId,
-        userRemoteId: userId,
-        hoursPlayed: parsedFormData.data.hoursPlayed,
-        platform: parsedFormData.data.platform,
-        ownership: parsedFormData.data.ownership,
-        format: parsedFormData.data.format,
-        status: parsedFormData.data.status,
-    }));
-
-    return null;
+interface WishlistButtonProps {
+    game: Game;
 }
 
-export const action: ActionFunction = async ({ request }) => {
-    if (request.method === "POST") {
-        return handlePost(request);
-    } else if (request.method === "DELETE") {
-        return handleDelete(request);
-    } else if (request.method === "PUT") {
-        return handlePut(request);
-    } else {
-        return json({ message: "Method not allowed" }, 405);
-    }
+function WishlistButton({ game }: WishlistButtonProps) {
+    const { wishlists, addToWishlist, removeFromWishlist, actionDone, isLoading } 
+        = useGamesWishlist(game.remoteId ?? 0);
+    const modals = useModals();
+
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "add") {
+            showNotification({
+                title: 'Successfully added game to wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <Star size={16}/>,
+                color: "yellow"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed game from wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <StarOff size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
+    
+    return (
+        <>
+            {
+                (wishlists.length < 1) ?
+                    <Button color={"yellow"}
+                            onClick={() => {
+                                showGameWishlistEditorModal(modals, game, wishlists, addToWishlist)
+                            }}
+                            leftIcon={<Star size={20}/>}
+                            loading={isLoading}>
+                        Add to wishlist
+                    </Button> :
+                    <Button color={"yellow"}
+                            variant={"outline"}
+                            onClick={() => {
+                                showGameWishlistManageModal(modals, game, wishlists, addToWishlist, removeFromWishlist)
+                            }}
+                            leftIcon={<Star size={20}/>}
+                            loading={isLoading}>
+                        Manage wishlist
+                    </Button>
+            }
+        </>
+    );
 }
 
 interface GameHeaderProps {
-    coverImageURL: string | undefined;
-    title: string | undefined;
-    rating: number | undefined;
-    platforms: string[] | undefined;
-    companies: string[] | undefined;
-    noOfGameTrackings: number;
-    onAddClick: () => void;
-    onEditClick: () => void;
+    game: Game;
 }
 
-export function GameHeader({
-                               coverImageURL,
-                               title,
-                               rating,
-                               platforms,
-                               companies,
-                               noOfGameTrackings,
-                               onAddClick,
-                               onEditClick
-                           }: GameHeaderProps) {
+export function GameHeader({ game }: GameHeaderProps) {
     return (
         <>
             <Stack mr={12}>
-                <CoverImage src={coverImageURL} width={200} height={300}/>
-
-                {(noOfGameTrackings < (platforms?.length ?? 1)) &&
-                    <Button color={"indigo"}
-                            onClick={onAddClick}
-                            leftIcon={<Plus size={20}/>}>
-                        Create tracking
-                    </Button>}
-
-                {(noOfGameTrackings > 0) &&
-                    <Button color={"orange"}
-                            onClick={onEditClick}
-                            leftIcon={<Edit size={20}/>}>
-                        Edit tracking
-                    </Button>}
+                <CoverImage src={game.coverImageURL} width={200} height={300}/>
+                
+                <TrackingButton game={game} />
+                <WishlistButton game={game} />
             </Stack>
 
             <Stack spacing={"xs"}>
                 <Title order={1}>
-                    {title}
+                    {game.title}
                 </Title>
 
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {companies?.join(", ")}
+                    {game.companies?.join(", ")}
                 </Title>
 
                 <Group>
-                    <ThemeIcon color={"yellow"}>
-                        <Star size={16}/>
+                    <ThemeIcon color={"red"}>
+                        <Heart size={16}/>
                     </ThemeIcon>
                     <Text sx={(theme) => ({ color: theme.colors.gray[6] })} size={"sm"}>
-                        {rating === 0 ? "No rating" : `${rating?.toFixed(0)}%`}
+                        {game.rating === 0 ? "No rating" : `${game.rating?.toFixed(0)}%`}
                     </Text>
                 </Group>
 
                 <Group mt={16}>
-                    {platforms?.map(platform => (
+                    {game.platforms?.map(platform => (
                         <Badge color={"gray"} size={"lg"} key={platform}>{platform}</Badge>))}
                 </Group>
             </Stack>
@@ -229,34 +216,8 @@ export function GameHeader({
 
 export default function Game() {
     const data = useLoaderData<LoaderData>();
-    const modals = useModals();
-    const submit = useSubmit();
 
-    const gameHeader = <GameHeader coverImageURL={data.game.coverImageURL}
-                                   title={data.game.title}
-                                   rating={data.game.rating}
-                                   platforms={data.game.platforms}
-                                   companies={data.game.companies}
-                                   noOfGameTrackings={data.gameTrackings.length}
-                                   onAddClick={() => showTrackGameEditorModal(
-                                       modals,
-                                       data.game,
-                                       null,
-                                       data.gameTrackings,
-                                       (formData) => submit(formData, { method: "post", replace: true }),
-                                       () => {
-                                       },
-                                       () => {
-                                       }
-                                   )}
-                                   onEditClick={() => showGameTrackingsSelectorModal(
-                                       modals,
-                                       data.game,
-                                       data.gameTrackings,
-                                       (formData) => submit(formData, { method: "post", replace: true }),
-                                       (formData) => submit(formData, { method: "put", replace: true }),
-                                       (formData) => submit(formData, { method: "delete", replace: true })
-                                   )}/>
+    const gameHeader = <GameHeader game={data.game} />
 
     return (
         <Container py={16}>
@@ -279,3 +240,5 @@ export default function Game() {
         </Container>
     );
 }
+
+//endregion

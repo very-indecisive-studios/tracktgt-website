@@ -32,6 +32,259 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
+    book_AddBookWishlist(addBookWishlistCommand: AddBookWishlistCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/book/wishlist";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(addBookWishlistCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_AddBookWishlist(_response);
+        });
+    }
+
+    protected processBook_AddBookWishlist(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_RemoveBookWishlist(removeBookWishlistCommand: RemoveBookWishlistCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/book/wishlist";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(removeBookWishlistCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_RemoveBookWishlist(_response);
+        });
+    }
+
+    protected processBook_RemoveBookWishlist(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_GetAllBookWishlists(userRemoteId: string | null | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllBookWishlistsItemResult>> {
+        let url_ = this.baseUrl + "/api/book/wishlist?";
+        if (userRemoteId !== undefined && userRemoteId !== null)
+            url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "Page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_GetAllBookWishlists(_response);
+        });
+    }
+
+    protected processBook_GetAllBookWishlists(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetAllBookWishlistsItemResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedListResultOfGetAllBookWishlistsItemResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetAllBookWishlistsItemResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    book_GetBookWishlist(userRemoteId: string | null, bookRemoteId: string | null): Promise<BackendAPIResponse<boolean>> {
+        let url_ = this.baseUrl + "/api/book/wishlist/{userRemoteId}/{bookRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        if (bookRemoteId === undefined || bookRemoteId === null)
+            throw new Error("The parameter 'bookRemoteId' must be defined.");
+        url_ = url_.replace("{bookRemoteId}", encodeURIComponent("" + bookRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processBook_GetBookWishlist(_response);
+        });
+    }
+
+    protected processBook_GetBookWishlist(response: Response): Promise<BackendAPIResponse<boolean>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<boolean>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     book_AddBookTracking(addBookTrackingCommand: AddBookTrackingCommand): Promise<BackendAPIResponse<Unit>> {
         let url_ = this.baseUrl + "/api/book/track";
         url_ = url_.replace(/[?&]$/, "");
@@ -480,6 +733,262 @@ export class BackendAPIClient extends ExtBackendAPIClient {
             });
         }
         return Promise.resolve<BackendAPIResponse<SearchBooksResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_AddGameWishlist(addGameWishlistCommand: AddGameWishlistCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/game/wishlist";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(addGameWishlistCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_AddGameWishlist(_response);
+        });
+    }
+
+    protected processGame_AddGameWishlist(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_RemoveGameWishlist(removeGameWishlistCommand: RemoveGameWishlistCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/game/wishlist";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(removeGameWishlistCommand);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_RemoveGameWishlist(_response);
+        });
+    }
+
+    protected processGame_RemoveGameWishlist(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_GetAllGameWishlists(userRemoteId: string | null | undefined, sortByPlatform: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllGameWishlistsItemResult>> {
+        let url_ = this.baseUrl + "/api/game/wishlist?";
+        if (userRemoteId !== undefined && userRemoteId !== null)
+            url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (sortByPlatform === null)
+            throw new Error("The parameter 'sortByPlatform' cannot be null.");
+        else if (sortByPlatform !== undefined)
+            url_ += "SortByPlatform=" + encodeURIComponent("" + sortByPlatform) + "&";
+        if (page === null)
+            throw new Error("The parameter 'page' cannot be null.");
+        else if (page !== undefined)
+            url_ += "Page=" + encodeURIComponent("" + page) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_GetAllGameWishlists(_response);
+        });
+    }
+
+    protected processGame_GetAllGameWishlists(response: Response): Promise<BackendAPIResponse<PagedListResultOfGetAllGameWishlistsItemResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedListResultOfGetAllGameWishlistsItemResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<PagedListResultOfGetAllGameWishlistsItemResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    game_GetGameWishlists(userRemoteId: string | null, gameRemoteId: number): Promise<BackendAPIResponse<GetGameWishlistsResult>> {
+        let url_ = this.baseUrl + "/api/game/wishlist/{userRemoteId}/{gameRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        if (gameRemoteId === undefined || gameRemoteId === null)
+            throw new Error("The parameter 'gameRemoteId' must be defined.");
+        url_ = url_.replace("{gameRemoteId}", encodeURIComponent("" + gameRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGame_GetGameWishlists(_response);
+        });
+    }
+
+    protected processGame_GetGameWishlists(response: Response): Promise<BackendAPIResponse<GetGameWishlistsResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetGameWishlistsResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetGameWishlistsResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
     game_AddGameTracking(addGameTrackingCommand: AddGameTrackingCommand): Promise<BackendAPIResponse<Unit>> {
@@ -1643,6 +2152,210 @@ export interface IProblemDetails {
     instance?: string | undefined;
 }
 
+export class AddBookWishlistCommand implements IAddBookWishlistCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+
+    constructor(data?: IAddBookWishlistCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.bookRemoteId = _data["bookRemoteId"];
+        }
+    }
+
+    static fromJS(data: any): AddBookWishlistCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddBookWishlistCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["bookRemoteId"] = this.bookRemoteId;
+        return data;
+    }
+}
+
+export interface IAddBookWishlistCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+}
+
+export class RemoveBookWishlistCommand implements IRemoveBookWishlistCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+
+    constructor(data?: IRemoveBookWishlistCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.bookRemoteId = _data["bookRemoteId"];
+        }
+    }
+
+    static fromJS(data: any): RemoveBookWishlistCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RemoveBookWishlistCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["bookRemoteId"] = this.bookRemoteId;
+        return data;
+    }
+}
+
+export interface IRemoveBookWishlistCommand {
+    userRemoteId?: string;
+    bookRemoteId?: string;
+}
+
+export class PagedListResultOfGetAllBookWishlistsItemResult implements IPagedListResultOfGetAllBookWishlistsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllBookWishlistsItemResult[];
+
+    constructor(data?: IPagedListResultOfGetAllBookWishlistsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.page = _data["page"];
+            this.totalPages = _data["totalPages"];
+            this.pageSize = _data["pageSize"];
+            this.currentPageSize = _data["currentPageSize"];
+            this.currentStartIndex = _data["currentStartIndex"];
+            this.currentEndIndex = _data["currentEndIndex"];
+            this.totalCount = _data["totalCount"];
+            this.hasPrevious = _data["hasPrevious"];
+            this.hasNext = _data["hasNext"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetAllBookWishlistsItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedListResultOfGetAllBookWishlistsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedListResultOfGetAllBookWishlistsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["totalPages"] = this.totalPages;
+        data["pageSize"] = this.pageSize;
+        data["currentPageSize"] = this.currentPageSize;
+        data["currentStartIndex"] = this.currentStartIndex;
+        data["currentEndIndex"] = this.currentEndIndex;
+        data["totalCount"] = this.totalCount;
+        data["hasPrevious"] = this.hasPrevious;
+        data["hasNext"] = this.hasNext;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPagedListResultOfGetAllBookWishlistsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllBookWishlistsItemResult[];
+}
+
+export class GetAllBookWishlistsItemResult implements IGetAllBookWishlistsItemResult {
+    bookRemoteId?: string;
+    title?: string;
+    coverImageURL?: string;
+
+    constructor(data?: IGetAllBookWishlistsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bookRemoteId = _data["bookRemoteId"];
+            this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
+        }
+    }
+
+    static fromJS(data: any): GetAllBookWishlistsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAllBookWishlistsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bookRemoteId"] = this.bookRemoteId;
+        data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
+        return data;
+    }
+}
+
+export interface IGetAllBookWishlistsItemResult {
+    bookRemoteId?: string;
+    title?: string;
+    coverImageURL?: string;
+}
+
 export class AddBookTrackingCommand implements IAddBookTrackingCommand {
     userRemoteId?: string;
     bookRemoteId?: string;
@@ -1702,7 +2415,6 @@ export interface IAddBookTrackingCommand {
 export enum BookTrackingFormat {
     Digital = 0,
     Physical = 1,
-    None = 2,
 }
 
 export enum BookTrackingStatus {
@@ -1715,7 +2427,6 @@ export enum BookTrackingStatus {
 export enum BookTrackingOwnership {
     Owned = 0,
     Loan = 1,
-    Wishlist = 2,
 }
 
 export class RemoveBookTrackingCommand implements IRemoveBookTrackingCommand {
@@ -2162,6 +2873,302 @@ export interface ISearchBooksItemResult {
     authors?: string[];
 }
 
+export class AddGameWishlistCommand implements IAddGameWishlistCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+    platform?: string;
+
+    constructor(data?: IAddGameWishlistCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.gameRemoteId = _data["gameRemoteId"];
+            this.platform = _data["platform"];
+        }
+    }
+
+    static fromJS(data: any): AddGameWishlistCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddGameWishlistCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["gameRemoteId"] = this.gameRemoteId;
+        data["platform"] = this.platform;
+        return data;
+    }
+}
+
+export interface IAddGameWishlistCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+    platform?: string;
+}
+
+export class RemoveGameWishlistCommand implements IRemoveGameWishlistCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+    platform?: string;
+
+    constructor(data?: IRemoveGameWishlistCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.gameRemoteId = _data["gameRemoteId"];
+            this.platform = _data["platform"];
+        }
+    }
+
+    static fromJS(data: any): RemoveGameWishlistCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RemoveGameWishlistCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["gameRemoteId"] = this.gameRemoteId;
+        data["platform"] = this.platform;
+        return data;
+    }
+}
+
+export interface IRemoveGameWishlistCommand {
+    userRemoteId?: string;
+    gameRemoteId?: number;
+    platform?: string;
+}
+
+export class PagedListResultOfGetAllGameWishlistsItemResult implements IPagedListResultOfGetAllGameWishlistsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllGameWishlistsItemResult[];
+
+    constructor(data?: IPagedListResultOfGetAllGameWishlistsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.page = _data["page"];
+            this.totalPages = _data["totalPages"];
+            this.pageSize = _data["pageSize"];
+            this.currentPageSize = _data["currentPageSize"];
+            this.currentStartIndex = _data["currentStartIndex"];
+            this.currentEndIndex = _data["currentEndIndex"];
+            this.totalCount = _data["totalCount"];
+            this.hasPrevious = _data["hasPrevious"];
+            this.hasNext = _data["hasNext"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetAllGameWishlistsItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedListResultOfGetAllGameWishlistsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedListResultOfGetAllGameWishlistsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["totalPages"] = this.totalPages;
+        data["pageSize"] = this.pageSize;
+        data["currentPageSize"] = this.currentPageSize;
+        data["currentStartIndex"] = this.currentStartIndex;
+        data["currentEndIndex"] = this.currentEndIndex;
+        data["totalCount"] = this.totalCount;
+        data["hasPrevious"] = this.hasPrevious;
+        data["hasNext"] = this.hasNext;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPagedListResultOfGetAllGameWishlistsItemResult {
+    page?: number;
+    totalPages?: number;
+    pageSize?: number;
+    currentPageSize?: number;
+    currentStartIndex?: number;
+    currentEndIndex?: number;
+    totalCount?: number;
+    hasPrevious?: boolean;
+    hasNext?: boolean;
+    items?: GetAllGameWishlistsItemResult[];
+}
+
+export class GetAllGameWishlistsItemResult implements IGetAllGameWishlistsItemResult {
+    gameRemoteId?: number;
+    title?: string;
+    coverImageURL?: string;
+    platform?: string;
+
+    constructor(data?: IGetAllGameWishlistsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.gameRemoteId = _data["gameRemoteId"];
+            this.title = _data["title"];
+            this.coverImageURL = _data["coverImageURL"];
+            this.platform = _data["platform"];
+        }
+    }
+
+    static fromJS(data: any): GetAllGameWishlistsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAllGameWishlistsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["gameRemoteId"] = this.gameRemoteId;
+        data["title"] = this.title;
+        data["coverImageURL"] = this.coverImageURL;
+        data["platform"] = this.platform;
+        return data;
+    }
+}
+
+export interface IGetAllGameWishlistsItemResult {
+    gameRemoteId?: number;
+    title?: string;
+    coverImageURL?: string;
+    platform?: string;
+}
+
+export class GetGameWishlistsResult implements IGetGameWishlistsResult {
+    items?: GetGameWishlistItemResult[];
+
+    constructor(data?: IGetGameWishlistsResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetGameWishlistItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GetGameWishlistsResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetGameWishlistsResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGetGameWishlistsResult {
+    items?: GetGameWishlistItemResult[];
+}
+
+export class GetGameWishlistItemResult implements IGetGameWishlistItemResult {
+    platform?: string;
+
+    constructor(data?: IGetGameWishlistItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.platform = _data["platform"];
+        }
+    }
+
+    static fromJS(data: any): GetGameWishlistItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetGameWishlistItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["platform"] = this.platform;
+        return data;
+    }
+}
+
+export interface IGetGameWishlistItemResult {
+    platform?: string;
+}
+
 export class AddGameTrackingCommand implements IAddGameTrackingCommand {
     userRemoteId?: string;
     gameRemoteId?: number;
@@ -2225,7 +3232,6 @@ export interface IAddGameTrackingCommand {
 export enum GameTrackingFormat {
     Digital = 0,
     Physical = 1,
-    None = 2,
 }
 
 export enum GameTrackingStatus {
@@ -2238,8 +3244,7 @@ export enum GameTrackingStatus {
 export enum GameTrackingOwnership {
     Owned = 0,
     Loan = 1,
-    Wishlist = 2,
-    Subscription = 3,
+    Subscription = 2,
 }
 
 export class RemoveGameTrackingCommand implements IRemoveGameTrackingCommand {

@@ -20,10 +20,8 @@ test.describe("Home > Index", () => {
         /* Add game */
         await page.goto('/home/games/114795', { waitUntil: "networkidle" });
         await expect(page).toHaveURL('/home/games/114795');
-        // Click button:has-text("Create tracking") >> nth=1
-        await page.locator('button:has-text("Create tracking")').nth(1).click();
-        // Click button:has-text("Add")
-        await page.locator('button:has-text("Add")').click();
+        await page.locator('button:has-text("Add tracking")').nth(1).click();
+        await page.locator('div[role="dialog"] button:has-text("Add")').click();
         await expect(page).toHaveURL('/home/games/114795');
         
         /* Check dashboard */
@@ -44,7 +42,7 @@ test.describe("Home > Index", () => {
         await page.locator('text=Apex LegendsPC >> img').click();
         await expect(page).toHaveURL('/home/games/114795');
         // Click button:has-text("Edit tracking") >> nth=1
-        await page.locator('button:has-text("Edit tracking")').nth(1).click();
+        await page.locator('button:has-text("Manage tracking")').nth(1).click();
         // Click h5:has-text("PC")
         await page.locator('h5:has-text("PC")').click();
         // Click button:has-text("Remove")
@@ -63,10 +61,8 @@ test.describe("Home > Index", () => {
     test('Recent books are shown', async ({ page }) => {
         await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
-        // Click button:has-text("Create tracking") >> nth=1
-        await page.locator('button:has-text("Create tracking")').nth(1).click();
-        // Click button:has-text("Add")
-        await page.locator('button:has-text("Add")').click();
+        await page.locator('button:has-text("Add tracking")').nth(1).click();
+        await page.locator('div[role="dialog"] button:has-text("Add")').click();
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
 
         /* Check dashboard */
@@ -80,7 +76,7 @@ test.describe("Home > Index", () => {
         await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
         // Click button:has-text("Edit tracking") >> nth=1
-        await page.locator('button:has-text("Edit tracking")').nth(1).click();
+        await page.locator('button:has-text("Manage tracking")').nth(1).click();
         // Click button:has-text("Remove")
         await page.locator('button:has-text("Remove")').click();
         // Click button:has-text("Yes, I am sure")

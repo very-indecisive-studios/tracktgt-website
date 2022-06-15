@@ -1,7 +1,7 @@
 import {
     Button,
     Center,
-    Container,
+    Container, Divider,
     PasswordInput,
     Stack,
     Text,
@@ -17,6 +17,8 @@ import { login, verifyHuman } from "auth";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useState } from "react";
 import { badRequest } from "~/utils/response.server";
+import { LockOpen, Plus } from "tabler-icons-react";
+import { useMobileQuery } from "~/utils/hooks";
 
 interface LoaderData {
     captchaSitekey: string;
@@ -77,6 +79,8 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function Login() {
+    const isMobile = useMobileQuery();
+    
     const loaderData = useLoaderData<LoaderData>()
     const actionData = useActionData<ActionData>()
     const transition = useTransition()
@@ -93,22 +97,28 @@ export default function Login() {
             width: "100vw",
             height: "100vh"
         })}>
-            <Container size={"xs"}>
-                <Title mb={24} order={1}>Welcome back to tracktgt</Title>
+            <Container px={0} sx={() => ({
+                width: 425
+            })}>
+                <Title mb={24} order={1}>Welcome back to TrackTogether</Title>
                 <Form method="post">
                     <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
 
                     <TextInput name="captcha" hidden defaultValue={captchaToken}/>
                     <PasswordInput mt={16} name="password" label="Password" error={actionData?.password}/>
-                    <Link to={"/account/passwordReset"} style={{
-                        color: theme.colors.indigo[6],
-                        fontSize: theme.fontSizes.sm
-                    }}>
-                        Forget password?
-                    </Link>
+                    
+                    <Text>
+                        <Link to={"/account/passwordReset"} style={{
+                            color: theme.colors.indigo[6],
+                            fontSize: theme.fontSizes.sm
+                        }}>
+                            Forget password?
+                        </Link>
+                    </Text>
 
                     <Stack mt={16} align={"center"}>
                         <HCaptcha
+                            theme={"dark"}
                             sitekey={loaderData.captchaSitekey}
                             onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}
                         />
@@ -118,9 +128,25 @@ export default function Login() {
                     <Text hidden={!(actionData?.formError)} color={"red"}>{actionData?.formError}</Text>
 
                     <Stack align={"end"}>
-                        <Button mt={16} type="submit" loading={transition.state === "submitting"}>Login</Button>
+                        <Button fullWidth
+                                leftIcon={<LockOpen size={18} />}
+                                mt={16} 
+                                type="submit"
+                                loading={transition.state === "submitting"}>
+                            Login
+                        </Button>
                     </Stack>
                 </Form>
+                <Divider my={"md"} label={"or"} labelProps={{ size: "md" }} labelPosition={"center"}></Divider>
+                <Button fullWidth
+                        component={Link}
+                        variant={"outline"}
+                        to={"/account/signup"}
+                        leftIcon={<Plus size={18} />}
+                        mt={16}
+                        disabled={transition.state === "submitting"}>
+                    Create an account
+                </Button>
             </Container>
         </Center>
     )

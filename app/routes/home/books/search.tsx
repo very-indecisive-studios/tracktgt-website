@@ -1,8 +1,10 @@
 ﻿import { Card, Text, Container, Group, Stack, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
-import { backendAPIClientInstance, SearchBooksItemResult, SearchGamesResult } from "backend";
+import { backendAPIClientInstance, SearchBooksItemResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
+
+//region Server
 
 interface LoaderData {
     items: SearchBooksItemResult[]
@@ -18,6 +20,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         items: backendResult.result.items ?? []
     });
 }
+
+//endregion
+
+//region Client
 
 interface SearchResultItemProps {
     id: string;
@@ -68,3 +74,5 @@ export default function Search() {
         </Container>
     );
 }
+
+//endregion
