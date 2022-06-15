@@ -10,6 +10,8 @@ import { badRequest } from "~/utils/response.server";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
+//region Server
+
 interface LoaderData {
     bookTrackings: GetAllBookTrackingsItemResult[],
     currentPage: number;
@@ -56,6 +58,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
 }
 
+//endregion
+
+//region Client
 
 interface AllBookTrackingsStateAndFunc {
     allTrackings: GetAllBookTrackingsItemResult[];
@@ -112,3 +117,5 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         isLoading
     }
 }
+
+//endregion

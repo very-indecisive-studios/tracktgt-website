@@ -1,6 +1,8 @@
 ﻿import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
+import React, { useEffect } from "react";
 import { Button, Container, Group, MediaQuery, Stack, Text, Title } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { useModals } from "@mantine/modals";
 import { Edit, Pencil, PlaylistAdd, Plus, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
@@ -12,8 +14,6 @@ import {
     GetShowResult,
     ShowType,
 } from "backend";
-import React, { useEffect } from "react";
-import { showNotification } from "@mantine/notifications";
 
 //region Server
 

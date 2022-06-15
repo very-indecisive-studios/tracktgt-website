@@ -25,26 +25,28 @@ export default function GameTrackingStatusTable({ status }: GameTrackingStatusTa
     const modals = useModals();
 
     const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesTrackings(status);
-    const { updateTracking, removeTracking, isLoading: isActionLoading, actionDone } = useGameTrackingsActions();
+    const { updateTracking, removeTracking, actionDone, isLoading: isActionLoading } = useGameTrackingsActions();
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+    
+    // Action notifications
     useEffect(() => {
-        if (actionDone == "remove") {
+        if (actionDone == "update") {
             showNotification({
-                title: 'Successfully removed tracked game.',
-                message: `Your changes have been saved.`,
-                icon: <TrashX size={16}/>,
-                color: "red"
-            });
-        } else if (actionDone == "update") {
-            showNotification({
-                title: 'Successfully updated tracked game.',
+                title: 'Successfully updated game tracking.',
                 message: `Your changes have been saved.`,
                 icon: <Pencil size={16}/>,
                 color: "green"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed game tracking.',
+                message: `Your changes have been saved.`,
+                icon: <TrashX size={16}/>,
+                color: "red"
             });
         }
     }, [actionDone]);

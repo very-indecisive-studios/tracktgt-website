@@ -134,7 +134,7 @@ const handlePut = async (gameId: number, request: Request) => {
 
 export const action: ActionFunction = async ({ params, request }) => {
     const gameId = parseInt(params.id ?? "0")
-    
+
     if (request.method === "POST") {
         return handlePost(gameId, request);
     } else if (request.method === "PUT") {
@@ -156,7 +156,7 @@ interface GameTrackingsActionsFunc {
     addTracking: (gameRemoteId: number, formData: FormData) => void;
     updateTracking: (gameRemoteId: number, formData: FormData) => void
     removeTracking: (gameRemoteId: number, formData: FormData) => void;
-    actionDone: Actions
+    actionDone: Actions;
     isLoading: boolean;
 }
 
@@ -211,8 +211,8 @@ export function useGameTrackingsActions(): GameTrackingsActionsFunc {
         addTracking,
         updateTracking,
         removeTracking,
-        isLoading,
-        actionDone
+        actionDone,
+        isLoading
     }
 }
 
@@ -221,6 +221,7 @@ interface GameTrackingsStateAndFunc {
     addTracking: (formData: FormData) => void;
     updateTracking: (formData: FormData) => void
     removeTracking: (formData: FormData) => void;
+    actionDone: Actions;
     isLoading: boolean;
 }
 
@@ -230,7 +231,9 @@ export function useGameTrackings(gameRemoteId: number): GameTrackingsStateAndFun
 
     const [trackings, setTrackings] = useState<GetGameTrackingsItemResult[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [actionDone, setIsActionDone] = useState<Actions>("idle");
+    const [actionDoing, setIsActionDoing] = useState<Actions>("idle");
+    
     useEffect(() => {
         fetcherTrackingsLoader.submit(null, { action: `/home/games/track/${gameRemoteId}`, method: "get" });
         setIsLoading(true);
@@ -239,6 +242,7 @@ export function useGameTrackings(gameRemoteId: number): GameTrackingsStateAndFun
     useEffect(() => {
         if (fetcherTrackingsLoader.type === "done") {
             setTrackings(fetcherTrackingsLoader.data.gameTrackings);
+            setIsActionDone(actionDoing);
             setIsLoading(false);
         }
     }, [fetcherTrackingsLoader.type]);
@@ -256,7 +260,9 @@ export function useGameTrackings(gameRemoteId: number): GameTrackingsStateAndFun
             {
                 action: `/home/games/track/${gameRemoteId}`,
                 method: "post"
-            });
+            }
+        );
+        setIsActionDoing("add");
         setIsLoading(true);
     };
 
@@ -266,7 +272,9 @@ export function useGameTrackings(gameRemoteId: number): GameTrackingsStateAndFun
             {
                 action: `/home/games/track/${gameRemoteId}`,
                 method: "put"
-            });
+            }
+        );
+        setIsActionDoing("update");
         setIsLoading(true);
     };
 
@@ -276,7 +284,9 @@ export function useGameTrackings(gameRemoteId: number): GameTrackingsStateAndFun
             {
                 action: `/home/games/track/${gameRemoteId}`,
                 method: "delete"
-            });
+            }
+        );
+        setIsActionDoing("remove");
         setIsLoading(true);
     };
 
@@ -285,6 +295,7 @@ export function useGameTrackings(gameRemoteId: number): GameTrackingsStateAndFun
         addTracking,
         updateTracking,
         removeTracking,
+        actionDone,
         isLoading
     }
 }

@@ -10,6 +10,8 @@ import {
     ShowTrackingStatus
 } from "backend";
 
+//region Server
+
 interface LoaderData {
     showTrackings: GetAllShowTrackingsItemResult[],
     currentPage: number,
@@ -54,13 +56,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
 }
 
-interface AllShowTrackingsStateAndFunc {
-    allTrackings: GetAllShowTrackingsItemResult[];
-    currentPage: number;
-    totalPages: number;
-    fetchPage: (page: number) => void;
-    isLoading: boolean;
-}
+//endregion
+
+//region Client
 
 export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
@@ -109,3 +107,13 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
         isLoading
     }
 }
+
+interface AllShowTrackingsStateAndFunc {
+    allTrackings: GetAllShowTrackingsItemResult[];
+    currentPage: number;
+    totalPages: number;
+    fetchPage: (page: number) => void;
+    isLoading: boolean;
+}
+
+//endregion

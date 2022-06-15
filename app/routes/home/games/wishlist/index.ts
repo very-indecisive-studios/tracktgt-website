@@ -1,11 +1,13 @@
+import { json, LoaderFunction } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { requireUserId } from "~/utils/session.server";
 import {
     backendAPIClientInstance,
     GetAllGameWishlistsItemResult
 } from "backend";
-import { json, LoaderFunction } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
-import { useFetcher } from "@remix-run/react";
-import { useEffect, useState } from "react";
+
+//region Server
 
 interface LoaderData {
     gameWishlists: GetAllGameWishlistsItemResult[];
@@ -33,6 +35,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         totalPages: backendAPIResponse.result.totalPages ?? 0
     });
 }
+
+//endregion
+
+//region Client
 
 interface GameWishlistStateAndFunc {
     allWishlists: GetAllGameWishlistsItemResult[];
@@ -89,3 +95,5 @@ export function useAllGamesWishlist(initialPage?: number): GameWishlistStateAndF
         isLoading: isLoading
     }
 }
+
+//endregion

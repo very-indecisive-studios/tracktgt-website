@@ -1,8 +1,9 @@
 import { Link } from "@remix-run/react";
 import React, { useEffect } from "react";
 import { ActionIcon, Center, LoadingOverlay, Pagination, Stack, Table, Text, useMantineTheme } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { useModals } from "@mantine/modals";
-import { Edit } from "tabler-icons-react";
+import { Edit, Pencil, TrashX } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
 import CoverImage from "~/components/home/CoverImage";
 import { showBookTrackingEditorModal } from "~/components/home/books/BookTrackingModals";
@@ -24,12 +25,31 @@ export default function BookTrackingStatusTable({ status }: BookTrackingStatusTa
     const modals = useModals();
 
     const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksTrackings(status);
-    const { addTracking, updateTracking, removeTracking, isLoading: isActionLoading } = useBookTrackingActions();
+    const { addTracking, updateTracking, removeTracking, actionDone, isLoading: isActionLoading } = useBookTrackingActions();
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "update") {
+            showNotification({
+                title: 'Successfully updated book tracking.',
+                message: `Your changes have been saved.`,
+                icon: <Pencil size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed book tracking.',
+                message: `Your changes have been saved.`,
+                icon: <TrashX size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
     
     return (
         <Stack py={16} sx={(theme) => ({
@@ -94,7 +114,7 @@ export default function BookTrackingStatusTable({ status }: BookTrackingStatusTa
                                         bt,
                                         (formData) => addTracking(bt.bookRemoteId!!, formData),
                                         (formData) => updateTracking(bt.bookRemoteId!!, formData),
-                                        () => removeTracking(bt.bookRemoteId!!)
+                                        (formData) => removeTracking(bt.bookRemoteId!!, formData)
                                     )}>
                                         <Edit/>
                                     </ActionIcon>

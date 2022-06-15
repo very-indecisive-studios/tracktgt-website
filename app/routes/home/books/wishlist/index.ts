@@ -7,6 +7,8 @@ import { requireUserId } from "~/utils/session.server";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
+//region Server
+
 interface LoaderData {
     bookWishlists: GetAllBookWishlistsItemResult[];
     currentPage: number;
@@ -32,6 +34,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         totalPages: backendAPIResponse.result.totalPages ?? 0
     });
 }
+
+//endregion
+
+//region Client
 
 interface BookWishlistStateAndFunc {
     allWishlists: GetAllBookWishlistsItemResult[];
@@ -88,3 +94,5 @@ export function useAllBooksWishlist(initialPage?: number): BookWishlistStateAndF
         isLoading: isLoading
     }
 }
+
+//endregion

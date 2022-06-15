@@ -1,16 +1,12 @@
 ﻿import { Form } from "@remix-run/react";
 import { Button, Card, Divider, Group, NumberInput, Select, Stack, Text, TextInput, Title } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { TrashX } from "tabler-icons-react";
+import { Plus } from "tabler-icons-react";
 import {
     GameTrackingFormat,
     GameTrackingOwnership,
     GameTrackingStatus,
-    GetGameResult,
-    GetGameTrackingsItemResult
 } from "backend";
 import { ModalsContextProps } from "@mantine/modals/lib/context";
-import { showGameWishlistEditorModal } from "~/components/home/games/GameWishlistModals";
 
 interface Game {
     title?: string;
@@ -28,12 +24,17 @@ interface GameTracking {
 
 interface GameTrackingRemoveConfirmModalProps {
     game: Game;
-    platform: string;
+    gameTracking: GameTracking;
     onCancel: () => void;
     onRemove: (formData: FormData) => void;
 }
 
-function GameTrackingRemoveConfirmModal({ game, platform, onCancel, onRemove }: GameTrackingRemoveConfirmModalProps) {
+function GameTrackingRemoveConfirmModal({
+                                            game,
+                                            gameTracking,
+                                            onCancel,
+                                            onRemove
+                                        }: GameTrackingRemoveConfirmModalProps) {
     return (
         <>
             <Form onSubmit={(e) => {
@@ -41,10 +42,10 @@ function GameTrackingRemoveConfirmModal({ game, platform, onCancel, onRemove }: 
                 onRemove(new FormData(e.currentTarget));
             }}>
                 <Text>
-                    Are you sure you want to remove tracking for this game on <b>{platform}</b>?
+                    Are you sure you want to remove tracking for {game.title} on <b>{gameTracking.platform}</b>?
                     This is an irreversable action!
                 </Text>
-                <TextInput name={"platform"} defaultValue={platform} hidden={true}/>
+                <TextInput name={"platform"} defaultValue={gameTracking.platform} hidden={true}/>
                 <Group position={"right"} mt={32}>
                     <Button variant={"outline"} onClick={onCancel}>Cancel</Button>
                     <Button color={"red"} type={"submit"}>Yes, I am sure</Button>
@@ -57,16 +58,16 @@ function GameTrackingRemoveConfirmModal({ game, platform, onCancel, onRemove }: 
 export function showGameTrackingRemoveConfirmModal(
     modalsContext: ModalsContextProps,
     game: Game,
-    platform: string,
+    gameTracking: GameTracking,
     onRemove: (formData: FormData) => void
 ) {
     const id = modalsContext.openModal({
-        title: "Confirm deletion",
+        title: "Confirm removal",
         centered: true,
         children: (
             <GameTrackingRemoveConfirmModal
                 game={game}
-                platform={platform}
+                gameTracking={gameTracking}
                 onCancel={() => modalsContext.closeModal(id)}
                 onRemove={(formData) => {
                     onRemove(formData);
@@ -78,15 +79,24 @@ export function showGameTrackingRemoveConfirmModal(
 }
 
 interface GameTrackingEditorModalProps {
+    modalsContext: ModalsContextProps;
     game: Game;
     gameTrackings: GameTracking[];
     selectedGameTracking: GameTracking | null;
     onAdd: (formData: FormData) => void;
     onUpdate: (formData: FormData) => void;
-    onRemove: (platform: string) => void;
+    onRemove: (formData: FormData) => void;
 }
 
-function GameTrackingEditorModal({ game, gameTrackings, selectedGameTracking, onAdd, onUpdate, onRemove }: GameTrackingEditorModalProps) {
+function GameTrackingEditorModal({
+                                     modalsContext,
+                                     game,
+                                     gameTrackings,
+                                     selectedGameTracking,
+                                     onAdd,
+                                     onUpdate,
+                                     onRemove
+                                 }: GameTrackingEditorModalProps) {
     // Get all statuses, formats and ownerships.
     const gameStatuses = Object.keys(GameTrackingStatus)
         .filter((s) => isNaN(Number(s)))
@@ -144,7 +154,12 @@ function GameTrackingEditorModal({ game, gameTrackings, selectedGameTracking, on
             <Group mt={32} grow>
                 <Group position={"left"}>
                     {selectedGameTracking &&
-                        <Button color={"red"} onClick={() => onRemove(selectedGameTracking?.platform!!)}>
+                        <Button color={"red"} onClick={() => showGameTrackingRemoveConfirmModal(
+                            modalsContext,
+                            game,
+                            selectedGameTracking,
+                            onRemove
+                        )}>
                             Remove
                         </Button>}
                 </Group>
@@ -168,16 +183,17 @@ export function showGameTrackingEditorModal(
     onRemove: (formData: FormData) => void
 ) {
     const id = modalsContext.openModal({
-        title: selectedGameTracking ? "Edit tracked game" : "Add tracked game",
+        title: selectedGameTracking ? "Edit game tracking" : "Add game tracking",
         centered: true,
         children: (
-            <GameTrackingEditorModal 
-                game={game} 
-                gameTrackings={gameTrackings} 
-                selectedGameTracking={selectedGameTracking} 
+            <GameTrackingEditorModal
+                modalsContext={modalsContext}
+                game={game}
+                gameTrackings={gameTrackings}
+                selectedGameTracking={selectedGameTracking}
                 onAdd={(formData) => {
                     onAdd(formData);
-                    
+
                     modalsContext.closeAll();
                 }}
                 onUpdate={(formData) => {
@@ -185,9 +201,11 @@ export function showGameTrackingEditorModal(
 
                     modalsContext.closeAll();
                 }}
-                onRemove={(platform) => {
-                    showGameTrackingRemoveConfirmModal(modalsContext, game, platform, onRemove);
-                }} />
+                onRemove={(formData) => {
+                    onRemove(formData);
+
+                    modalsContext.closeAll();
+                }}/>
         )
     });
 }
@@ -223,12 +241,14 @@ export function showGameTrackingsSelectorModal(
                         <Title order={5}>{gt.platform}</Title>
                     </Card>
                 ))}
+                
                 {(gameTrackings.length < (game.platforms?.length ?? 0)) &&
                     <>
-                        <Divider my="xs" label="Or" labelPosition="center" />
-                        <Button fullWidth 
+                        <Divider my="xs" label="or" labelProps={{ size: "md" }} labelPosition="center"/>
+                        <Button fullWidth
+                                leftIcon={<Plus size={20}/>}
                                 onClick={() => showGameTrackingEditorModal(
-                                    modalsContext, 
+                                    modalsContext,
                                     game,
                                     null,
                                     gameTrackings,

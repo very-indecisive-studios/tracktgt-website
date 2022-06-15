@@ -1,18 +1,22 @@
 ﻿import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData} from "@remix-run/react";
+import React, { useEffect } from "react";
+import { showNotification } from "@mantine/notifications";
 import { Button, Container, Group, MediaQuery, Stack, Text, Title, } from "@mantine/core";
 import { useModals } from "@mantine/modals";
-import { Edit, Plus, Star } from "tabler-icons-react";
+import { Edit, Pencil, PlaylistAdd, Plus, Star, StarOff, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { showBookWishlistRemoveConfirmModal } from "~/components/home/books/BookWishlistModals";
+import { showBookTrackingEditorModal } from "~/components/home/books/BookTrackingModals";
 import { useBookWishlist } from "~/routes/home/books/wishlist/$id";
+import { useBookTracking } from "~/routes/home/books/track/$id";
 import {
     backendAPIClientInstance,
     GetBookResult,
 } from "backend";
-import { useBookTracking } from "~/routes/home/books/track/$id";
-import { showBookTrackingEditorModal } from "~/components/home/books/BookTrackingModals";
+
+//region Server
 
 interface LoaderData {
     book: GetBookResult;
@@ -31,6 +35,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     });
 }
 
+//endregion
+
+//region Client
+
 interface Book {
     remoteId?: string | undefined; 
     coverImageURL?: string | undefined;
@@ -45,35 +53,56 @@ interface TrackingButtonProps {
 function TrackingButton({ book }: TrackingButtonProps) {
     const modals = useModals();
 
-    const { tracking, addTracking, updateTracking, removeTracking, isLoading } 
+    const { tracking, addTracking, updateTracking, removeTracking, actionDone, isLoading } 
         = useBookTracking(book.remoteId ?? "");
 
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "add") {
+            showNotification({
+                title: 'Successfully added book to tracking.',
+                message: `Your changes have been saved.`,
+                icon: <PlaylistAdd size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "update") {
+            showNotification({
+                title: 'Successfully updated book tracking.',
+                message: `Your changes have been saved.`,
+                icon: <Pencil size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed book tracking.',
+                message: `Your changes have been saved.`,
+                icon: <TrashX size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
+    
+    const onClick = () => showBookTrackingEditorModal(
+        modals,
+        book,
+        tracking,
+        addTracking,
+        updateTracking,
+        removeTracking,
+    );
+    
     return (
         <>
             {
                 (!tracking) ?
                     <Button color={"indigo"}
-                            onClick={() => showBookTrackingEditorModal(
-                                modals, 
-                                book, 
-                                null, 
-                                addTracking,
-                                () => {},
-                                () => {},
-                            )}
+                            onClick={onClick}
                             leftIcon={<Plus size={20}/>}
                             loading={isLoading}>
                         Add tracking
                     </Button> :
                     <Button color={"orange"}
-                            onClick={() => showBookTrackingEditorModal(
-                                modals,
-                                book,
-                                tracking,
-                                () => {},
-                                updateTracking,
-                                removeTracking,
-                            )}
+                            onClick={onClick}
                             leftIcon={<Edit size={20}/>}
                             loading={isLoading}>
                         Edit tracking
@@ -90,14 +119,34 @@ interface WishlistButtonProps {
 function WishlistButton({ book }: WishlistButtonProps) {
     const modals = useModals();
     
-    const { hasWishlist, addToWishlist, removeFromWishlist, isLoading } = useBookWishlist(book.remoteId ?? "");
+    const { hasWishlist, addToWishlist, removeFromWishlist, actionDone, isLoading } 
+        = useBookWishlist(book.remoteId ?? "");
 
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "add") {
+            showNotification({
+                title: 'Successfully added book to wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <Star size={16}/>,
+                color: "yellow"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed book from wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <StarOff size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
+    
     return (
         <>
             {
                 (!hasWishlist) ?
                     <Button color={"yellow"}
-                            onClick={addToWishlist}
+                            onClick={() => addToWishlist(new FormData())}
                             leftIcon={<Star size={20}/>}
                             loading={isLoading}>
                         Add to wishlist
@@ -169,3 +218,5 @@ export default function Book() {
         </Container>
     );
 }
+
+//endregion

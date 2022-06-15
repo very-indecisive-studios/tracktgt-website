@@ -15,6 +15,8 @@ import {
     UpdateBookTrackingCommand
 } from "backend";
 
+//region Server
+
 interface LoaderData {
     bookTracking: GetBookTrackingResult | null;
 }
@@ -127,10 +129,17 @@ export const action: ActionFunction = async ({ params, request }) => {
     }
 }
 
+//endregion
+
+//region Client
+
+type Actions = "idle" | "add" | "update" | "remove";
+
 interface BookTrackingActionsFunc {
     addTracking: (bookRemoteId: string, formData: FormData) => void;
     updateTracking: (bookRemoteId: string, formData: FormData) => void
-    removeTracking: (bookRemoteId: string) => void;
+    removeTracking: (bookRemoteId: string, formData: FormData) => void;
+    actionDone: Actions;
     isLoading: boolean;
 }
 
@@ -138,10 +147,13 @@ export function useBookTrackingActions(): BookTrackingActionsFunc {
     const fetcherTrackingAction = useFetcher();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [actionDone, setIsActionDone] = useState<Actions>("idle");
+    const [actionDoing, setIsActionDoing] = useState<Actions>("idle");
 
     useEffect(() => {
         if (fetcherTrackingAction.type === "done") {
             setIsLoading(false);
+            setIsActionDone(actionDoing);
         }
     }, [fetcherTrackingAction.type]);
 
@@ -151,7 +163,9 @@ export function useBookTrackingActions(): BookTrackingActionsFunc {
             {
                 action: `/home/books/track/${bookRemoteId}`,
                 method: "post"
-            });
+            }
+        );
+        setIsActionDoing("add");
         setIsLoading(true);
     };
 
@@ -161,17 +175,21 @@ export function useBookTrackingActions(): BookTrackingActionsFunc {
             {
                 action: `/home/books/track/${bookRemoteId}`,
                 method: "put"
-            });
+            }
+        );
+        setIsActionDoing("update");
         setIsLoading(true);
     };
 
-    const removeTracking = (bookRemoteId: string) => {
+    const removeTracking = (bookRemoteId: string, formData: FormData) => {
         fetcherTrackingAction.submit(
-            null,
+            formData,
             {
                 action: `/home/books/track/${bookRemoteId}`,
                 method: "delete"
-            });
+            }
+        );
+        setIsActionDoing("remove");
         setIsLoading(true);
     };
 
@@ -179,6 +197,7 @@ export function useBookTrackingActions(): BookTrackingActionsFunc {
         addTracking,
         updateTracking,
         removeTracking,
+        actionDone,
         isLoading
     }
 }
@@ -187,7 +206,8 @@ interface BookTrackingStateAndFunc {
     tracking: GetBookTrackingResult | null;
     addTracking: (formData: FormData) => void;
     updateTracking: (formData: FormData) => void;
-    removeTracking: () => void;
+    removeTracking: (formData: FormData) => void;
+    actionDone: Actions;
     isLoading: boolean;
 }
 
@@ -197,6 +217,8 @@ export function useBookTracking(bookRemoteId: string): BookTrackingStateAndFunc 
 
     const [tracking, setTracking] = useState<GetBookTrackingResult | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [actionDone, setIsActionDone] = useState<Actions>("idle");
+    const [actionDoing, setIsActionDoing] = useState<Actions>("idle");
 
     useEffect(() => {
         fetcherTrackingLoader.submit(null, { action: `/home/books/track/${bookRemoteId}`, method: "get" });
@@ -213,6 +235,7 @@ export function useBookTracking(bookRemoteId: string): BookTrackingStateAndFunc 
     useEffect(() => {
         if (fetcherTrackingAction.type === "done") {
             fetcherTrackingLoader.submit(null, { action: `/home/books/track/${bookRemoteId}`, method: "get" });
+            setIsActionDone(actionDoing);
             setIsLoading(true);
         }
     }, [fetcherTrackingAction.type]);
@@ -223,7 +246,9 @@ export function useBookTracking(bookRemoteId: string): BookTrackingStateAndFunc 
             {
                 action: `/home/books/track/${bookRemoteId}`,
                 method: "post"
-            });
+            }
+        );
+        setIsActionDoing("add");
         setIsLoading(true);
     };
     
@@ -233,17 +258,21 @@ export function useBookTracking(bookRemoteId: string): BookTrackingStateAndFunc 
             {
                 action: `/home/books/track/${bookRemoteId}`,
                 method: "put"
-            });
+            }
+        );
+        setIsActionDoing("update");
         setIsLoading(true);
     };
 
-    const removeTracking = () => {
+    const removeTracking = (formData: FormData) => {
         fetcherTrackingAction.submit(
-            null,
+            formData,
             {
                 action: `/home/books/track/${bookRemoteId}`,
                 method: "delete"
-            });
+            }
+        );
+        setIsActionDoing("remove");
         setIsLoading(true);
     };
 
@@ -252,6 +281,9 @@ export function useBookTracking(bookRemoteId: string): BookTrackingStateAndFunc 
         addTracking,
         updateTracking,
         removeTracking,
+        actionDone,
         isLoading
     }
 }
+
+//endregion

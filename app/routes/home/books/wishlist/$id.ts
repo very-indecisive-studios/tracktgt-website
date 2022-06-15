@@ -8,6 +8,8 @@ import {
     AddBookWishlistCommand
 } from "backend";
 
+//region Server
+
 interface LoaderData {
     hasBookWishlist: boolean
 }
@@ -57,9 +59,16 @@ export const action: ActionFunction = async ({ params, request }) => {
     }
 }
 
+//endregion
+
+//region Client
+
+type Actions = "idle" | "add" | "update" | "remove";
+
 interface BookWishlistActionsFunc {
-    addToWishlist: (bookRemoteId: string) => void;
-    removeFromWishlist: (bookRemoteId: string) => void;
+    addToWishlist: (bookRemoteId: string, formData: FormData) => void;
+    removeFromWishlist: (bookRemoteId: string, formData: FormData) => void;
+    actionDone: Actions;
     isLoading: boolean;
 }
 
@@ -67,46 +76,53 @@ export function useBookWishlistActions(): BookWishlistActionsFunc {
     const fetcherWishlistAction = useFetcher();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [actionDone, setIsActionDone] = useState<Actions>("idle");
+    const [actionDoing, setIsActionDoing] = useState<Actions>("idle");
 
     useEffect(() => {
         if (fetcherWishlistAction.type === "done") {
             setIsLoading(false);
+            setIsActionDone(actionDoing);
         }
     }, [fetcherWishlistAction.type]);
     
-    const addToWishlist = (bookRemoteId: string) => {
+    const addToWishlist = (bookRemoteId: string, formData: FormData) => {
         fetcherWishlistAction.submit(
-            null,
+            formData,
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "post"
             });
 
+        setIsActionDoing("add");
         setIsLoading(true);
     };
 
-    const removeFromWishlist = (bookRemoteId: string) => {
+    const removeFromWishlist = (bookRemoteId: string, formData: FormData) => {
         fetcherWishlistAction.submit(
-            null,
+            formData,
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "delete"
             });
-
+        
+        setIsActionDoing("remove");
         setIsLoading(true);
     };
 
     return {
         addToWishlist,
         removeFromWishlist,
+        actionDone,
         isLoading
     }
 }
 
 interface BookWishlistStateAndFunc {
     hasWishlist: boolean;
-    addToWishlist: () => void;
-    removeFromWishlist: () => void;
+    addToWishlist: (formData: FormData) => void;
+    removeFromWishlist: (formData: FormData) => void;
+    actionDone: Actions;
     isLoading: boolean;
 }
 
@@ -116,7 +132,9 @@ export function useBookWishlist(bookRemoteId: string): BookWishlistStateAndFunc 
     
     const [hasWishlist, setHasWishlist] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    
+    const [actionDone, setIsActionDone] = useState<Actions>("idle");
+    const [actionDoing, setIsActionDoing] = useState<Actions>("idle");
+
     useEffect(() => {
         fetcherWishlistLoader.submit(null, { action: `/home/books/wishlist/${bookRemoteId}`, method: "get" });
         setIsLoading(true);
@@ -133,26 +151,31 @@ export function useBookWishlist(bookRemoteId: string): BookWishlistStateAndFunc 
         if (fetcherWishlistAction.type === "done") {
             fetcherWishlistLoader.submit(null, { action: `/home/books/wishlist/${bookRemoteId}`, method: "get" });
             setIsLoading(true);
+            setIsActionDone(actionDoing);
         }
     }, [fetcherWishlistAction.type]);
     
-    const addToWishlist = () => {
+    const addToWishlist = (formData: FormData) => {
         fetcherWishlistAction.submit(
-            null, 
+            formData, 
             { 
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "post"
-            });
+            }
+        );
+        setIsActionDoing("add");
         setIsLoading(true);
     };
 
-    const removeFromWishlist = () => {
+    const removeFromWishlist = (formData: FormData) => {
         fetcherWishlistAction.submit(
-            null,
+            formData,
             {
                 action: `/home/books/wishlist/${bookRemoteId}`,
                 method: "delete"
-            });
+            }
+        );
+        setIsActionDoing("remove");
         setIsLoading(true);
     };
     
@@ -160,6 +183,9 @@ export function useBookWishlist(bookRemoteId: string): BookWishlistStateAndFunc 
         hasWishlist,
         addToWishlist,
         removeFromWishlist,
+        actionDone,
         isLoading
     }
 }
+
+//endregion

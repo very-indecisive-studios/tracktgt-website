@@ -1,10 +1,11 @@
-import { ActionIcon, Center, LoadingOverlay, Pagination, Stack, Table, Text, useMantineTheme } from "@mantine/core";
-import { useMobileQuery } from "~/utils/hooks";
-import { useModals } from "@mantine/modals";
-import React, { useEffect } from "react";
-import CoverImage from "~/components/home/CoverImage";
 import { Link } from "@remix-run/react";
-import { TrashX } from "tabler-icons-react";
+import React, { useEffect } from "react";
+import { ActionIcon, Center, LoadingOverlay, Pagination, Stack, Table, Text, useMantineTheme } from "@mantine/core";
+import { useModals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { useMobileQuery } from "~/utils/hooks";
+import CoverImage from "~/components/home/CoverImage";
+import { StarOff, TrashX } from "tabler-icons-react";
 import { useBookWishlistActions } from "~/routes/home/books/wishlist/$id";
 import { useAllBooksWishlist } from "~/routes/home/books/wishlist";
 import { showBookWishlistRemoveConfirmModal } from "~/components/home/books/BookWishlistModals";
@@ -15,12 +16,23 @@ export default function BookWishlistTable() {
     const modals = useModals();
 
     const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksWishlist();
-    const { removeFromWishlist, isLoading: isActionLoading } = useBookWishlistActions();
+    const { removeFromWishlist, actionDone, isLoading: isActionLoading } = useBookWishlistActions();
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed book from wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <StarOff size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
     
     return (
         <Stack py={16} sx={(theme) => ({
@@ -68,7 +80,7 @@ export default function BookWishlistTable() {
                                     <ActionIcon onClick={() => showBookWishlistRemoveConfirmModal(
                                         modals,
                                         bw,
-                                        () => removeFromWishlist(bw.bookRemoteId ?? "")
+                                        (formData) => removeFromWishlist(bw.bookRemoteId!!, formData)
                                     )}>
                                         <TrashX color={"red"}/>
                                     </ActionIcon>

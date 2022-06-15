@@ -1,44 +1,24 @@
 ﻿import React from "react";
-import { Container, MantineTheme, Tabs, Title, } from "@mantine/core";
-import { Check, Clock, Eye, PlayerPause, PlayerPlay, Star } from "tabler-icons-react";
+import { LoaderFunction } from "@remix-run/node";
+import { Container, Tabs, Title, } from "@mantine/core";
+import { Eye, Star } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
 import tabStyles from "~/styles/tabStyles";
 import GameWishlistTable from "~/components/home/games/GameWishlistTable";
-import GameTrackingStatusTable from "~/components/home/games/GameTrackingStatusTable";
-import {
-    GameTrackingStatus,
-} from "backend";
+import GameTrackingTabs from "~/components/home/games/GameTrackingStatusTabs";
+import { requireUserId } from "~/utils/session.server";
 
-function gameTabStyles(theme: MantineTheme) {
-    return tabStyles(theme, theme.colors.blue[8]);
+//region Server
+
+export const loader: LoaderFunction = async ({ request }) => {
+    await requireUserId(request);
+    
+    return null;
 }
 
-function GameTrackingTabs() {
-    const isMobile = useMobileQuery();
+//endregion
 
-    return (
-        <Tabs grow
-              variant={"unstyled"}
-              styles={gameTabStyles}>
-            <Tabs.Tab label={isMobile ? "" : "Completed"}
-                      icon={<Check size={18}/>}>
-                <GameTrackingStatusTable status={GameTrackingStatus.Completed}/>
-            </Tabs.Tab>
-            <Tabs.Tab label={isMobile ? "" : "Playing"}
-                      icon={<PlayerPlay size={18}/>}>
-                <GameTrackingStatusTable status={GameTrackingStatus.Playing}/>
-            </Tabs.Tab>
-            <Tabs.Tab label={isMobile ? "" : "Paused"}
-                      icon={<PlayerPause size={18}/>}>
-                <GameTrackingStatusTable status={GameTrackingStatus.Paused}/>
-            </Tabs.Tab>
-            <Tabs.Tab label={isMobile ? "" : "Planning"}
-                      icon={<Clock size={18}/>}>
-                <GameTrackingStatusTable status={GameTrackingStatus.Planning}/>
-            </Tabs.Tab>
-        </Tabs>
-    );
-}
+//region Client
 
 export default function Games() {
     const isMobile = useMobileQuery();
@@ -49,7 +29,7 @@ export default function Games() {
             
             <Tabs grow
                   variant={"unstyled"}
-                  styles={gameTabStyles}>
+                  styles={(theme) => tabStyles(theme, theme.colors.blue[8])}>
                 <Tabs.Tab label={isMobile ? "" : "Tracking"}
                           icon={<Eye size={18}/>}>
                     <GameTrackingTabs />
@@ -63,3 +43,5 @@ export default function Games() {
         </Container>
     );
 }
+
+//endregion

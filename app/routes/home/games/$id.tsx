@@ -5,7 +5,7 @@ import {
     backendAPIClientInstance,
     GetGameResult,
 } from "backend";
-import { Edit, Heart, Plus, Star } from "tabler-icons-react";
+import { Edit, Heart, Pencil, PlaylistAdd, Plus, Star, StarOff, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
@@ -13,6 +13,8 @@ import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
 import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
 import { useGameTrackings } from "~/routes/home/games/track/$id";
 import { showGameTrackingEditorModal, showGameTrackingsSelectorModal } from "~/components/home/games/GameTrackingModals";
+import React, { useEffect } from "react";
+import { showNotification } from "@mantine/notifications";
 
 //region Server
 
@@ -33,6 +35,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 //endregion
 
+//region Client
+
 interface Game {
     remoteId?: number | undefined;
     coverImageURL?: string | undefined;
@@ -47,9 +51,37 @@ interface TrackingButtonProps {
 }
 
 function TrackingButton({ game }: TrackingButtonProps) {
-    const { trackings, addTracking, updateTracking, removeTracking, isLoading } = useGameTrackings(game.remoteId ?? 0);
     const modals = useModals();
+    
+    const { trackings, addTracking, updateTracking, removeTracking, actionDone, isLoading } 
+        = useGameTrackings(game.remoteId ?? 0);
 
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "add") {
+            showNotification({
+                title: 'Successfully added game to tracking.',
+                message: `Your changes have been saved.`,
+                icon: <PlaylistAdd size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "update") {
+            showNotification({
+                title: 'Successfully updated game tracking.',
+                message: `Your changes have been saved.`,
+                icon: <Pencil size={16}/>,
+                color: "green"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed game tracking.',
+                message: `Your changes have been saved.`,
+                icon: <TrashX size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
+    
     return (
         <>
             {(trackings.length < 1) ?
@@ -90,8 +122,28 @@ interface WishlistButtonProps {
 }
 
 function WishlistButton({ game }: WishlistButtonProps) {
-    const { wishlists, addToWishlist, removeFromWishlist, isLoading } = useGamesWishlist(game.remoteId ?? 0);
+    const { wishlists, addToWishlist, removeFromWishlist, actionDone, isLoading } 
+        = useGamesWishlist(game.remoteId ?? 0);
     const modals = useModals();
+
+    // Action notifications
+    useEffect(() => {
+        if (actionDone == "add") {
+            showNotification({
+                title: 'Successfully added game to wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <Star size={16}/>,
+                color: "yellow"
+            });
+        } else if (actionDone == "remove") {
+            showNotification({
+                title: 'Successfully removed game from wishlist.',
+                message: `Your changes have been saved.`,
+                icon: <StarOff size={16}/>,
+                color: "red"
+            });
+        }
+    }, [actionDone]);
     
     return (
         <>
@@ -188,3 +240,5 @@ export default function Game() {
         </Container>
     );
 }
+
+//endregion

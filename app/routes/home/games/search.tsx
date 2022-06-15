@@ -4,6 +4,8 @@ import { backendAPIClientInstance, SearchGamesResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 
+//region Server
+
 export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const title = url.searchParams.get("title");
@@ -14,6 +16,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         return json(backendResult.result);
     }
 }
+
+//endregion
+
+//region Client
 
 interface SearchResultItemProps {
     id: number;
@@ -64,3 +70,5 @@ export default function Search() {
         </Container>
     );
 }
+
+//endregion

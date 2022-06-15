@@ -4,6 +4,8 @@ import {backendAPIClientInstance, SearchShowsItemResult, ShowType} from "backend
 import {Link, useLoaderData, useSearchParams} from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 
+//region Server
+
 interface LoaderData {
     items: SearchShowsItemResult[]
 }
@@ -18,6 +20,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         items: backendResult.result.items ?? []
     });
 }
+
+//endregion
+
+//region Client
 
 interface SearchResultItemProps {
     id: string;
@@ -68,3 +74,5 @@ export default function Search() {
         </Container>
     );
 }
+
+//endregion

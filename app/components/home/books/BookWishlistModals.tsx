@@ -1,8 +1,6 @@
 import { Form } from "@remix-run/react";
 import { Button, Group, Text } from "@mantine/core";
 import { ModalsContextProps } from "@mantine/modals/lib/context";
-import { showNotification } from "@mantine/notifications";
-import { TrashX } from "tabler-icons-react";
 
 interface Book {
     title?: string | undefined;
@@ -12,23 +10,22 @@ interface Book {
 interface BookWishlistRemoveConfirmModalProps {
     book: Book;
     onCancel: () => void;
-    onConfirm: () => void;
-    onRemove: () => void;
+    onRemove: (formData: FormData) => void;
 }
 
-function BookWishlistRemoveConfirmModal({ book, onCancel, onConfirm, onRemove }: BookWishlistRemoveConfirmModalProps) {
+function BookWishlistRemoveConfirmModal({ book, onCancel, onRemove }: BookWishlistRemoveConfirmModalProps) {
     return (
         <>
             <Form onSubmit={(e) => {
                 e.preventDefault();
-                onRemove();
+                onRemove(new FormData(e.currentTarget));
             }}>
                 <Text>
                     Are you sure you want to remove wishlist for {book.title}?
                 </Text>
                 <Group position={"right"} mt={32}>
                     <Button variant={"outline"} onClick={onCancel}>Cancel</Button>
-                    <Button color={"red"} type={"submit"} onClick={onConfirm}>Yes, I am sure</Button>
+                    <Button color={"red"} type={"submit"}>Yes, I am sure</Button>
                 </Group>
             </Form>
         </>
@@ -38,7 +35,7 @@ function BookWishlistRemoveConfirmModal({ book, onCancel, onConfirm, onRemove }:
 export function showBookWishlistRemoveConfirmModal(
     modalsContext: ModalsContextProps,
     book: Book,
-    onRemove: () => void
+    onRemove: (formData: FormData) => void
 ) {
     const id = modalsContext.openModal({
         title: "Confirm removal",
@@ -47,17 +44,11 @@ export function showBookWishlistRemoveConfirmModal(
             <BookWishlistRemoveConfirmModal
                 book={book}
                 onCancel={() => modalsContext.closeModal(id)}
-                onConfirm={() => {
-                    showNotification({
-                        title: 'Successfully removed wishlisted game',
-                        message: `Removed ${book.title} from wishlist.`,
-                        icon: <TrashX size={16}/>,
-                        color: "red"
-                    });
-
+                onRemove={(formData) => {
+                    onRemove(formData);
+                    
                     modalsContext.closeAll();
-                }}
-                onRemove={onRemove}/>
+                }}/>
         )
     });
 }

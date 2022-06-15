@@ -1,10 +1,8 @@
 ﻿import { Form } from "@remix-run/react";
 import { Button, Group, NumberInput, Select, Text } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { Pencil, PlaylistAdd, TrashX } from "tabler-icons-react";
 import {
-    BookTrackingFormat, 
-    BookTrackingOwnership, 
+    BookTrackingFormat,
+    BookTrackingOwnership,
     BookTrackingStatus,
 } from "backend";
 import { ModalsContextProps } from "@mantine/modals/lib/context";
@@ -24,7 +22,7 @@ interface BookTracking {
 interface BookTrackingRemoveConfirmModalProps {
     book: Book;
     onCancel: () => void;
-    onRemove: () => void;
+    onRemove: (formData: FormData) => void;
 }
 
 function BookTrackingRemoveConfirmModal({ book, onCancel, onRemove }: BookTrackingRemoveConfirmModalProps) {
@@ -32,7 +30,7 @@ function BookTrackingRemoveConfirmModal({ book, onCancel, onRemove }: BookTracki
         <>
             <Form onSubmit={(e) => {
                 e.preventDefault();
-                onRemove();
+                onRemove(new FormData(e.currentTarget));
             }}>
                 <Text>
                     Are you sure you want to remove tracking for {book.title}?
@@ -50,7 +48,7 @@ function BookTrackingRemoveConfirmModal({ book, onCancel, onRemove }: BookTracki
 export function showBookTrackingRemoveConfirmModal(
     modalsContext: ModalsContextProps,
     book: Book,
-    onRemove: () => void
+    onRemove: (formData: FormData) => void
 ) {
     const id = modalsContext.openModal({
         title: "Confirm removal",
@@ -59,31 +57,32 @@ export function showBookTrackingRemoveConfirmModal(
             <BookTrackingRemoveConfirmModal
                 book={book}
                 onCancel={() => modalsContext.closeModal(id)}
-                onRemove={() => {
-                    showNotification({
-                        title: 'Successfully removed tracked game',
-                        message: `Removed ${book.title} from tracking.`,
-                        icon: <TrashX size={16}/>,
-                        color: "red"
-                    });
-                    
-                    onRemove();
-                    
+                onRemove={(formData) => {
+                    onRemove(formData);
+
                     modalsContext.closeAll();
-                }} />
+                }}/>
         )
     });
 }
 
 interface BookTrackingEditorModalProps {
+    modalsContext: ModalsContextProps;
     book: Book;
     selectedBookTracking: BookTracking | null;
     onUpdate: (formData: FormData) => void;
     onAdd: (formData: FormData) => void;
-    onRemove: () => void;
+    onRemove: (formData: FormData) => void;
 }
 
-function BookTrackingEditorModal({ book, selectedBookTracking, onUpdate, onAdd, onRemove }: BookTrackingEditorModalProps) {
+function BookTrackingEditorModal({
+                                     modalsContext,
+                                     book,
+                                     selectedBookTracking,
+                                     onUpdate,
+                                     onAdd,
+                                     onRemove
+                                 }: BookTrackingEditorModalProps) {
     // Get all statuses, formats and ownerships.
     const bookStatuses = Object.keys(BookTrackingStatus)
         .filter((s) => isNaN(Number(s)))
@@ -96,13 +95,13 @@ function BookTrackingEditorModal({ book, selectedBookTracking, onUpdate, onAdd, 
     const bookOwnerships = Object.keys(BookTrackingOwnership)
         .filter((s) => isNaN(Number(s)))
         .map((value, index) => ({ value: index.toString(), label: value }))
-    
+
     return (
         <Form onSubmit={(e) => {
             e.preventDefault();
 
             const formData = new FormData(e.currentTarget);
-            
+
             if (selectedBookTracking) {
                 onUpdate(formData);
             } else {
@@ -130,7 +129,7 @@ function BookTrackingEditorModal({ book, selectedBookTracking, onUpdate, onAdd, 
                 <Group position={"left"}>
                     {selectedBookTracking &&
                         <Button color={"red"}
-                                onClick={onRemove}>
+                                onClick={() => showBookTrackingRemoveConfirmModal(modalsContext, book, onRemove)}>
                             Remove
                         </Button>}
                 </Group>
@@ -150,41 +149,30 @@ export function showBookTrackingEditorModal(
     selectedBookTracking: BookTracking | null,
     onAdd: (formData: FormData) => void,
     onUpdate: (formData: FormData) => void,
-    onRemove: () => void
+    onRemove: (formData: FormData) => void
 ) {
     const id = modalsContext.openModal({
-        title: selectedBookTracking ? "Edit tracked book" : "Add tracked book",
+        title: selectedBookTracking ? "Edit book tracking" : "Add book tracking",
         centered: true,
         children: (
-            <BookTrackingEditorModal 
-                book={book} 
-                selectedBookTracking={selectedBookTracking} 
+            <BookTrackingEditorModal
+                modalsContext={modalsContext}
+                book={book}
+                selectedBookTracking={selectedBookTracking}
                 onUpdate={(formData) => {
-                    showNotification({
-                        title: 'Successfully updated tracked book',
-                        message: `Updated tracking for ${book.title}.`,
-                        icon: <Pencil size={16}/>,
-                        color: "green"
-                    });
-                    
                     onUpdate(formData);
 
                     modalsContext.closeAll();
-                }} 
+                }}
                 onAdd={(formData) => {
-                    showNotification({
-                        title: 'Successfully added tracked book',
-                        message: `Added ${book.title} for tracking.`,
-                        icon: <PlaylistAdd size={16}/>,
-                        color: "green"
-                    });
-
                     onAdd(formData);
-                    
+
                     modalsContext.closeAll();
-                }} 
-                onRemove={() => {
-                    showBookTrackingRemoveConfirmModal(modalsContext, book, onRemove);
+                }}
+                onRemove={(formData) => {
+                    onRemove(formData);
+
+                    modalsContext.closeAll();
                 }}
             />
         )

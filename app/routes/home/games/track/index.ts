@@ -10,6 +10,8 @@ import {
     GetAllGameTrackingsItemResult,
 } from "backend";
 
+//region Server
+
 interface LoaderData {
     gameTrackings: GetAllGameTrackingsItemResult[],
     currentPage: number;
@@ -56,6 +58,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         totalPages: getGameTrackingsBackendAPIResponse.result.totalPages ?? 0
     });
 }
+
+//endregion
+
+//region Client
 
 interface AllGameTrackingsStateAndFunc {
     allTrackings: GetAllGameTrackingsItemResult[];
@@ -112,3 +118,5 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         isLoading
     }
 }
+
+//endregion
