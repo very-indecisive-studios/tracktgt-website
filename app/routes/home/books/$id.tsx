@@ -105,7 +105,7 @@ function TrackingButton({ book }: TrackingButtonProps) {
                             onClick={onClick}
                             leftIcon={<Edit size={20}/>}
                             loading={isLoading}>
-                        Edit tracking
+                        Manage tracking
                     </Button>
             }
         </>

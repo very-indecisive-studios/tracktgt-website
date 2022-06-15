@@ -4,22 +4,20 @@ test.describe("Books > ID", () => {
     // Auth before each test.
     test.use({ storageState: 'storageState.json' });
 
-    test("Add book", async ({ page }) => {
+    test("Add book tracking", async ({ page }) => {
         await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
-        // Click button:has-text("Create tracking") >> nth=1
-        await page.locator('button:has-text("Create tracking")').nth(1).click();
-        // Click button:has-text("Add")
-        await page.locator('button:has-text("Add")').click();
+        await page.locator('button:has-text("Add tracking")').nth(1).click();
+        await page.locator('div[role="dialog"] button:has-text("Add")').click();
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
 
         await page.goto("/home", { waitUntil: "networkidle" });
         await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
-        await expect(await page.locator('button:has-text("Edit tracking")').count()).toBeTruthy();
+        await expect(await page.locator('button:has-text("Manage tracking")').count()).toBeTruthy();
     });
 
-    test("Edit book", async ({ page }) => {
+    test("Edit book tracking", async ({ page }) => {
         await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
-        await page.locator('button:has-text("Edit tracking")').nth(1).click();
+        await page.locator('button:has-text("Manage tracking")').nth(1).click();
         await page.locator('input[name="chaptersRead"]').click();
         await page.locator('input[name="chaptersRead"]').fill("10");
         await page.locator('button:has-text("Save")').click();
@@ -27,20 +25,39 @@ test.describe("Books > ID", () => {
 
         await page.goto("/home", { waitUntil: "networkidle" });
         await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
-        await page.locator('button:has-text("Edit tracking")').nth(1).click();
+        await page.locator('button:has-text("Manage tracking")').nth(1).click();
         
         await expect(await page.locator('input[name="chaptersRead"]').inputValue()).toBe("10");
     });
 
-    test("Delete book", async ({ page }) => {
+    test("Remove book tracking", async ({ page }) => {
         await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
-        await page.locator('button:has-text("Edit tracking")').nth(1).click();
+        await page.locator('button:has-text("Manage tracking")').nth(1).click();
         await page.locator('button:has-text("Remove")').click();
         await page.locator('button:has-text("Yes, I am sure")').click();
         await expect(page).toHaveURL('/home/books/XfFvDwAAQBAJ');
 
         await page.goto("/home", { waitUntil: "networkidle" });
         await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
-        await expect(await page.locator('button:has-text("Edit tracking")').count()).toBeFalsy();
+        await expect(await page.locator('button:has-text("Manage tracking")').count()).toBeFalsy();
+    });
+
+    test("Add book wishlist", async ({ page }) => {
+        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+        await page.locator('button:has-text("Add to wishlist")').nth(1).click();
+
+        await page.goto("/home", { waitUntil: "networkidle" });
+        await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
+        await expect(await page.locator('button:has-text("Remove from wishlist")').count()).toBeTruthy();
+    });
+
+    test("Remove book wishlist", async ({ page }) => {
+        await page.goto('/home/books/XfFvDwAAQBAJ', { waitUntil: "networkidle" });
+        await page.locator('button:has-text("Remove from wishlist")').nth(1).click();
+        await page.locator('button:has-text("Yes, I am sure")').click();
+
+        await page.goto("/home", { waitUntil: "networkidle" });
+        await page.goto("/home/books/XfFvDwAAQBAJ", { waitUntil: "networkidle" });
+        await expect(await page.locator('button:has-text("Remove from wishlist")').count()).toBeFalsy();
     });
 });

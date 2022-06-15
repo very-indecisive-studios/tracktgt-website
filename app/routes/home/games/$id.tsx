@@ -97,7 +97,7 @@ function TrackingButton({ game }: TrackingButtonProps) {
                         )}
                         leftIcon={<Plus size={20}/>}
                         loading={isLoading}>
-                    Create tracking
+                    Add tracking
                 </Button> :
                 <Button color={"orange"}
                         onClick={() => showGameTrackingsSelectorModal(
@@ -164,7 +164,7 @@ function WishlistButton({ game }: WishlistButtonProps) {
                             }}
                             leftIcon={<Star size={20}/>}
                             loading={isLoading}>
-                        Edit wishlist
+                        Manage wishlist
                     </Button>
             }
         </>
