@@ -1,7 +1,12 @@
 ﻿import { Badge, Card, Center, Container, Group, Image, Stack, Text, Title } from "@mantine/core";
 import React from "react";
 import { json, LoaderFunction } from "@remix-run/node";
-import { backendAPIClientInstance, GetAllBookTrackingsItemResult, GetAllGameTrackingsItemResult } from "backend";
+import {
+    backendAPIClientInstance,
+    GetAllBookTrackingsItemResult,
+    GetAllGameTrackingsItemResult,
+    GetAllShowTrackingsItemResult
+} from "backend";
 import { requireUserId } from "~/utils/session.server";
 import { Link, useLoaderData } from "@remix-run/react";
 import { MoodSad } from "tabler-icons-react";
@@ -9,6 +14,7 @@ import { MoodSad } from "tabler-icons-react";
 interface LoaderData {
     games: GetAllGameTrackingsItemResult[];
     books: GetAllBookTrackingsItemResult[];
+    shows: GetAllShowTrackingsItemResult[];
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -26,7 +32,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         4
     );
 
-    const getBookTrackingsResponse = await backendAPIClientInstance.book_GetAllBookTrackings(
+    const getAllBookTrackingsResponse = await backendAPIClientInstance.book_GetAllBookTrackings(
         userId,
         null,
         true,
@@ -37,9 +43,19 @@ export const loader: LoaderFunction = async ({ request }) => {
         4
     );
 
+    const getAllShowTrackingsResponse = await backendAPIClientInstance.show_GetAllShowTrackings(
+        userId,
+        null,
+        true,
+        false,
+        1,
+        4
+    );
+
     return json<LoaderData>({
         games: getAllGameTrackingsResponse.result.items ?? [],
-        books: getBookTrackingsResponse.result.items ?? []
+        books: getAllBookTrackingsResponse.result.items ?? [],
+        shows: getAllShowTrackingsResponse.result.items ?? []
     });
 }
 
@@ -117,6 +133,25 @@ export default function Home() {
                                        title={gt.title ?? ""}
                                        coverImageURL={gt.coverImageURL ?? ""}
                                        tag={gt.platform ?? ""} />
+                ))}
+            </Group>
+
+            <Title mt={48} order={2} sx={(theme) => ({
+                color: theme.colors.gray[6]
+            })}>
+                Recent shows
+            </Title>
+            <Group py={16} mt={16} sx={() => ({
+                flexWrap: "nowrap",
+                overflowX: "auto"
+            })}>
+                {loaderData.shows.length === 0 && <Empty type={"shows"} />}
+
+                {loaderData.shows.map((st) => (
+                    <MediaTrackingCard key={`${st.showRemoteId}`}
+                                       link={`/home/shows/${st.showRemoteId}`}
+                                       title={st.title ?? ""}
+                                       coverImageURL={st.coverImageURL ?? ""} />
                 ))}
             </Group>
 
