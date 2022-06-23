@@ -1,11 +1,35 @@
-﻿import { Badge, Button, Container, Group, MediaQuery, Stack, Text, ThemeIcon, Title, } from "@mantine/core";
+﻿import {
+    Badge,
+    Button,
+    Container,
+    Group,
+    Image,
+    MediaQuery,
+    Stack, 
+    Table,
+    Tabs,
+    Text,
+    ThemeIcon,
+    Title,
+} from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import {
     backendAPIClientInstance,
     GetGameResult,
 } from "backend";
-import { Edit, Heart, Pencil, PlaylistAdd, Plus, Star, StarOff, TrashX } from "tabler-icons-react";
+import {
+    CurrencyDollar,
+    Edit,
+    Heart,
+    InfoCircle,
+    Pencil,
+    PlaylistAdd,
+    Plus,
+    Star,
+    StarOff,
+    TrashX
+} from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
@@ -15,6 +39,9 @@ import { useGameTrackings } from "~/routes/home/games/track/$id";
 import { showGameTrackingEditorModal, showGameTrackingsSelectorModal } from "~/components/home/games/GameTrackingModals";
 import React, { useEffect } from "react";
 import { showNotification } from "@mantine/notifications";
+import tabStyles from "~/styles/tabStyles";
+import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
+import { useMobileQuery } from "~/utils/hooks";
 
 //region Server
 
@@ -215,6 +242,8 @@ export function GameHeader({ game }: GameHeaderProps) {
 }
 
 export default function Game() {
+    const isMobile = useMobileQuery();
+    
     const data = useLoaderData<LoaderData>();
 
     const gameHeader = <GameHeader game={data.game} />
@@ -233,10 +262,45 @@ export default function Game() {
                 </Group>
             </MediaQuery>
 
-            <Stack mt={48}>
-                <Title order={2}>Summary</Title>
-                <Text sx={(theme) => ({ color: theme.colors.gray[6] })}>{data.game.summary}</Text>
-            </Stack>
+            <Tabs grow
+                  mt={48}
+                  variant={"unstyled"}
+                  styles={(theme) => tabStyles(theme, theme.colors.blue[8])}>
+                <Tabs.Tab label={isMobile ? "" : "Info"}
+                          icon={<InfoCircle size={18}/>}>
+                    <Title order={2} mt={16}>Summary</Title>
+                    <Text mt={8} sx={(theme) => ({ color: theme.colors.gray[6] })}>{data.game.summary}</Text>
+                </Tabs.Tab>
+                
+                <Tabs.Tab label={isMobile ? "" : "Pricing"}
+                          icon={<CurrencyDollar size={18}/>}>
+                    <Table mt={16} striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                        <thead>
+                            <tr>
+                               <th></th> 
+                               <th>
+                                   <Group align={"center"} spacing={"xs"}>
+                                       <Text>Price</Text>
+                                       <Badge size={"xs"} color={"red"}>Beta</Badge>
+                                   </Group>
+                               </th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.game.platforms?.includes("Switch") &&
+                                <tr>
+                                    <td>
+                                        <Image px={16} src={"/eshop.svg"} width={100} />
+                                    </td>
+                                    <td>
+                                        <SwitchGamePrice region={"AU"} gameRemoteId={data.game.remoteId!!} />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </Table>
+                </Tabs.Tab>
+            </Tabs>
         </Container>
     );
 }
