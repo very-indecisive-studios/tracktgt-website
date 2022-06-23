@@ -37,7 +37,13 @@ export default function SearchBar() {
     useEffect(() => {
         const path = location.pathname.slice(1).split("/");
         if (path.length > 1) {
-            setType(path[1]);
+            let newType = path[1];
+            
+            if (newType == "settings") {
+                newType = "";
+            }
+            
+            setType(newType);
         } else {
             setType("");
         }
