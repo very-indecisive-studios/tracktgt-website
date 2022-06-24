@@ -8,7 +8,7 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 export class ExtBackendAPIClient {
     protected async transformOptions(options: RequestInit): Promise<RequestInit> {
@@ -1443,112 +1443,6 @@ export class BackendAPIClient extends ExtBackendAPIClient {
             });
         }
         return Promise.resolve<BackendAPIResponse<SearchGamesResult>>(new BackendAPIResponse(status, _headers, null as any));
-    }
-
-    price_GetSwitchGamePrice(region: string | null, id: number): Promise<BackendAPIResponse<GetSwitchGamePriceResult>> {
-        let url_ = this.baseUrl + "/api/price/switch/{region}/{id}";
-        if (region === undefined || region === null)
-            throw new Error("The parameter 'region' must be defined.");
-        url_ = url_.replace("{region}", encodeURIComponent("" + region));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.http.fetch(url_, transformedOptions_);
-        }).then((_response: Response) => {
-            return this.processPrice_GetSwitchGamePrice(_response);
-        });
-    }
-
-    protected processPrice_GetSwitchGamePrice(response: Response): Promise<BackendAPIResponse<GetSwitchGamePriceResult>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetSwitchGamePriceResult.fromJS(resultData200);
-            return new BackendAPIResponse(status, _headers, result200);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status === 403) {
-            return response.text().then((_responseText) => {
-            let result403: any = null;
-            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result403 = ProblemDetails.fromJS(resultData403);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<BackendAPIResponse<GetSwitchGamePriceResult>>(new BackendAPIResponse(status, _headers, null as any));
-    }
-
-    price_GetSwitchGameStoreRegions(): Promise<BackendAPIResponse<GetSwitchGamePriceResult>> {
-        let url_ = this.baseUrl + "/api/price/switch/regions";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.transformOptions(options_).then(transformedOptions_ => {
-            return this.http.fetch(url_, transformedOptions_);
-        }).then((_response: Response) => {
-            return this.processPrice_GetSwitchGameStoreRegions(_response);
-        });
-    }
-
-    protected processPrice_GetSwitchGameStoreRegions(response: Response): Promise<BackendAPIResponse<GetSwitchGamePriceResult>> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetSwitchGamePriceResult.fromJS(resultData200);
-            return new BackendAPIResponse(status, _headers, result200);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status === 403) {
-            return response.text().then((_responseText) => {
-            let result403: any = null;
-            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result403 = ProblemDetails.fromJS(resultData403);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<BackendAPIResponse<GetSwitchGamePriceResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
     show_AddShowTracking(addShowTrackingCommand: AddShowTrackingCommand): Promise<BackendAPIResponse<Unit>> {
@@ -3871,58 +3765,6 @@ export interface ISearchGamesItemResult {
     title?: string;
     coverImageURL?: string;
     platforms?: string[];
-}
-
-export class GetSwitchGamePriceResult implements IGetSwitchGamePriceResult {
-    url?: string;
-    currency?: string;
-    price?: number;
-    isOnSale?: boolean;
-    saleEnd?: dayjs.Dayjs | undefined;
-
-    constructor(data?: IGetSwitchGamePriceResult) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.url = _data["url"];
-            this.currency = _data["currency"];
-            this.price = _data["price"];
-            this.isOnSale = _data["isOnSale"];
-            this.saleEnd = _data["saleEnd"] ? dayjs(_data["saleEnd"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): GetSwitchGamePriceResult {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetSwitchGamePriceResult();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["url"] = this.url;
-        data["currency"] = this.currency;
-        data["price"] = this.price;
-        data["isOnSale"] = this.isOnSale;
-        data["saleEnd"] = this.saleEnd ? this.saleEnd.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IGetSwitchGamePriceResult {
-    url?: string;
-    currency?: string;
-    price?: number;
-    isOnSale?: boolean;
-    saleEnd?: dayjs.Dayjs | undefined;
 }
 
 export class AddShowTrackingCommand implements IAddShowTrackingCommand {

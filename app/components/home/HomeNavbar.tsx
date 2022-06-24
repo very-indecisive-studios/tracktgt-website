@@ -11,7 +11,7 @@ import {
     UnstyledButton,
     useMantineTheme
 } from "@mantine/core";
-import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings } from "tabler-icons-react";
+import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout } from "tabler-icons-react";
 import { Link, useFetcher, useSubmit } from "@remix-run/react";
 import { UserLoaderData } from "~/routes/home/user";
 import { GetUserResult } from "backend";
@@ -92,11 +92,7 @@ const UserButton = forwardRef<HTMLButtonElement, UserButtonProps>(
     )
 );
 
-interface NavbarUserProps {
-    onNavigate: () => void;
-}
-
-function NavbarUser({ onNavigate }: NavbarUserProps) {
+function NavbarUser() {
     const theme = useMantineTheme();
     const submit = useSubmit();
 
@@ -126,14 +122,9 @@ function NavbarUser({ onNavigate }: NavbarUserProps) {
                 }
             >
                 <Menu.Label>Account</Menu.Label>
-                <Menu.Item component={Link} to={"/home/settings"} onClick={onNavigate} icon={<Settings size={24} />}>
-                    Settings
-                </Menu.Item>
                 <Menu.Item onClick={() => {
                     submit(null, { method: "post", action: "/account/logout" });
-                }} icon={<Logout size={24} color={theme.colors.red[6]}/>}>
-                    Logout
-                </Menu.Item>
+                }} icon={<Logout size={24} color={theme.colors.red[6]}/>}>Logout</Menu.Item>
             </Menu>
         </Group>
     );
@@ -160,7 +151,7 @@ export default function HomeNavbar({ opened, onNavigate }: HomeNavbarProps) {
                 </Navbar.Section>
                 <Divider my="sm"/>
                 <Navbar.Section>
-                    <NavbarUser onNavigate={onNavigate}/>
+                    <NavbarUser/>
                 </Navbar.Section>
             </Navbar>
         </Navbar>
