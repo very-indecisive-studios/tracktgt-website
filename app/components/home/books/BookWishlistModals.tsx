@@ -3,8 +3,8 @@ import { Button, Group, Text } from "@mantine/core";
 import { ModalsContextProps } from "@mantine/modals/lib/context";
 
 interface Book {
-    title?: string | undefined;
-    remoteId?: string | undefined;
+    title: string;
+    remoteId: string;
 }
 
 interface BookWishlistRemoveConfirmModalProps {

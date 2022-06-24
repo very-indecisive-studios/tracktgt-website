@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     const backendAPIResponse = await backendAPIClientInstance.game_GetGameWishlists(userId, gameId);
 
     return json<LoaderData>({
-        gameWishlists: backendAPIResponse.result.items ?? []
+        gameWishlists: backendAPIResponse.result.items
     });
 }
 

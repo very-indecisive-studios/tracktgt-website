@@ -3850,8 +3850,8 @@ export class GetGameResult implements IGetGameResult {
     title!: string;
     summary!: string;
     rating!: number;
-    platforms?: string[] | undefined;
-    companies?: string[] | undefined;
+    platforms!: string[];
+    companies!: string[];
 
     constructor(data?: IGetGameResult) {
         if (data) {
@@ -3859,6 +3859,10 @@ export class GetGameResult implements IGetGameResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.platforms = [];
+            this.companies = [];
         }
     }
 
@@ -3916,8 +3920,8 @@ export interface IGetGameResult {
     title: string;
     summary: string;
     rating: number;
-    platforms?: string[] | undefined;
-    companies?: string[] | undefined;
+    platforms: string[];
+    companies: string[];
 }
 
 export class SearchGamesResult implements ISearchGamesResult {

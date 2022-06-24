@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 interface SearchResultItemProps {
     id: number;
     title: string;
-    coverImageURL: string | undefined;
+    coverImageURL: string;
     platforms: string[];
 }
 
@@ -58,12 +58,12 @@ export default function Search() {
         <Container py={16}>
             <Title mb={32} order={2}>Search results for "{title}"</Title>
             <Stack>
-                {searchResults?.items?.map(g => (
-                    <SearchResultItem key={g.remoteId ?? 0}
-                                      id={g.remoteId ?? 0}
-                                      title={g.title ?? ""}
+                {searchResults.items.map(g => (
+                    <SearchResultItem key={g.remoteId}
+                                      id={g.remoteId}
+                                      title={g.title}
                                       coverImageURL={g.coverImageURL}
-                                      platforms={g.platforms ?? []}
+                                      platforms={g.platforms}
                     />
                 ))}
             </Stack>

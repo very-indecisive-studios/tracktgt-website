@@ -40,10 +40,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 //region Client
 
 interface Book {
-    remoteId?: string | undefined; 
-    coverImageURL?: string | undefined;
-    title?: string | undefined;
-    authors?: string[] | undefined;
+    remoteId: string; 
+    coverImageURL: string;
+    title: string;
+    authors: string[];
 }
 
 interface TrackingButtonProps {
@@ -54,7 +54,7 @@ function TrackingButton({ book }: TrackingButtonProps) {
     const modals = useModals();
 
     const { tracking, addTracking, updateTracking, removeTracking, actionDone, isLoading } 
-        = useBookTracking(book.remoteId ?? "");
+        = useBookTracking(book.remoteId);
 
     // Action notifications
     useEffect(() => {
@@ -120,7 +120,7 @@ function WishlistButton({ book }: WishlistButtonProps) {
     const modals = useModals();
     
     const { hasWishlist, addToWishlist, removeFromWishlist, actionDone, isLoading } 
-        = useBookWishlist(book.remoteId ?? "");
+        = useBookWishlist(book.remoteId);
 
     // Action notifications
     useEffect(() => {
@@ -184,7 +184,7 @@ export function BookHeader({ book }: BookHeaderProps) {
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {book.authors?.join(", ")}
+                    {book.authors.join(", ")}
                 </Title>
             </Stack>
         </>
@@ -213,7 +213,7 @@ export default function Book() {
             <Stack mt={48}>
                 <Title order={2}>Summary</Title>
                 <Text
-                    sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.book.summary?.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
+                    sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.book.summary.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
             </Stack>
         </Container>
     );

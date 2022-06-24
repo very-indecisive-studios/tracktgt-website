@@ -105,19 +105,19 @@ export default function GameTrackingStatusTable({ status }: GameTrackingStatusTa
                                 {!isMobile &&
                                     <>
                                         <td>{gt.hoursPlayed}</td>
-                                        <td>{GameTrackingFormat[gt.format!!]}</td>
-                                        <td>{GameTrackingStatus[gt.status!!]}</td>
-                                        <td>{GameTrackingOwnership[gt.ownership!!]}</td>
+                                        <td>{GameTrackingFormat[gt.format]}</td>
+                                        <td>{GameTrackingStatus[gt.status]}</td>
+                                        <td>{GameTrackingOwnership[gt.ownership]}</td>
                                     </>}
                                 <td>
                                     <ActionIcon onClick={() => showGameTrackingEditorModal(
                                         modals,
-                                        gt,
+                                        { ...gt, remoteId: gt.gameRemoteId, platforms: [gt.platform] },
                                         gt,
                                         [gt],
                                         () => {},
-                                        (formData) => updateTracking(gt.gameRemoteId!!, formData),
-                                        (formData) => removeTracking(gt.gameRemoteId!!, formData)
+                                        (formData) => updateTracking(gt.gameRemoteId, formData),
+                                        (formData) => removeTracking(gt.gameRemoteId, formData)
                                     )}>
                                         <Edit/>
                                     </ActionIcon>

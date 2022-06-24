@@ -9,17 +9,17 @@ import {
 import { ModalsContextProps } from "@mantine/modals/lib/context";
 
 interface Game {
-    title?: string;
-    remoteId?: number;
-    platforms?: string[];
+    title: string;
+    remoteId: number;
+    platforms: string[];
 }
 
 interface GameTracking {
-    platform?: string;
-    hoursPlayed?: number;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    platform: string;
+    hoursPlayed: number;
+    format: GameTrackingFormat;
+    status: GameTrackingStatus;
+    ownership: GameTrackingOwnership;
 }
 
 interface GameTrackingRemoveConfirmModalProps {
@@ -111,11 +111,10 @@ function GameTrackingEditorModal({
         .map((value, index) => ({ value: index.toString(), label: value }))
 
     const availableGamePlatforms = game.platforms
-        ?.filter(value => !gameTrackings.map(gt => gt.platform).includes(value)) ?? [];
+        .filter(value => !gameTrackings.map(gt => gt.platform).includes(value));
 
     const gameTrackingsPlatforms = gameTrackings
-        .map(gt => gt.platform ?? "")
-        .filter(platform => platform);
+        .map(gt => gt.platform)
 
     return (
         <Form onSubmit={(e) => {
@@ -139,17 +138,17 @@ function GameTrackingEditorModal({
             <Select name="status"
                     label="Status"
                     mt={16}
-                    defaultValue={selectedGameTracking?.status?.toString() ?? gameStatuses[0].value}
+                    defaultValue={selectedGameTracking?.status.toString() ?? gameStatuses[0].value}
                     data={gameStatuses}/>
             <Select name="format"
                     label="Format"
                     mt={16}
-                    defaultValue={selectedGameTracking?.format?.toString() ?? gameFormats[0].value}
+                    defaultValue={selectedGameTracking?.format.toString() ?? gameFormats[0].value}
                     data={gameFormats}/>
             <Select name="ownership"
                     label="Ownership"
                     mt={16}
-                    defaultValue={selectedGameTracking?.ownership?.toString() ?? gameOwnerships[0].value}
+                    defaultValue={selectedGameTracking?.ownership.toString() ?? gameOwnerships[0].value}
                     data={gameOwnerships}/>
             <Group mt={32} grow>
                 <Group position={"left"}>
@@ -242,7 +241,7 @@ export function showGameTrackingsSelectorModal(
                     </Card>
                 ))}
                 
-                {(gameTrackings.length < (game.platforms?.length ?? 0)) &&
+                {(gameTrackings.length < game.platforms.length) &&
                     <>
                         <Divider my="xs" label="or" labelProps={{ size: "md" }} labelPosition="center"/>
                         <Button fullWidth

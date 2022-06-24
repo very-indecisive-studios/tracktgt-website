@@ -53,9 +53,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        gameTrackings: getGameTrackingsBackendAPIResponse.result.items ?? [],
-        currentPage: getGameTrackingsBackendAPIResponse.result.page ?? 0,
-        totalPages: getGameTrackingsBackendAPIResponse.result.totalPages ?? 0
+        gameTrackings: getGameTrackingsBackendAPIResponse.result.items,
+        currentPage: getGameTrackingsBackendAPIResponse.result.page,
+        totalPages: getGameTrackingsBackendAPIResponse.result.totalPages
     });
 }
 

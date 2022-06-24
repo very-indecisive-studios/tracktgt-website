@@ -30,9 +30,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        gameWishlists: backendAPIResponse.result.items ?? [],
-        currentPage: backendAPIResponse.result.page ?? 1,
-        totalPages: backendAPIResponse.result.totalPages ?? 0
+        gameWishlists: backendAPIResponse.result.items,
+        currentPage: backendAPIResponse.result.page,
+        totalPages: backendAPIResponse.result.totalPages
     });
 }
 

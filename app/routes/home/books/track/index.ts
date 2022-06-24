@@ -52,9 +52,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        bookTrackings: getAllBookTrackingResponse.result.items ?? [],
-        currentPage: getAllBookTrackingResponse.result.page ?? 1,
-        totalPages: getAllBookTrackingResponse.result.totalPages ?? 0
+        bookTrackings: getAllBookTrackingResponse.result.items,
+        currentPage: getAllBookTrackingResponse.result.page,
+        totalPages: getAllBookTrackingResponse.result.totalPages
     });
 }
 

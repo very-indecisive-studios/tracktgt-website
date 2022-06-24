@@ -8,15 +8,15 @@ import {
 import { ModalsContextProps } from "@mantine/modals/lib/context";
 
 interface Book {
-    title?: string;
-    remoteId?: string;
+    title: string;
+    remoteId: string;
 }
 
 interface BookTracking {
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    chaptersRead: number;
+    format: BookTrackingFormat;
+    status: BookTrackingStatus;
+    ownership: BookTrackingOwnership;
 }
 
 interface BookTrackingRemoveConfirmModalProps {
@@ -113,17 +113,17 @@ function BookTrackingEditorModal({
             <Select name="status"
                     label="Status"
                     mt={16}
-                    defaultValue={selectedBookTracking?.status?.toString() ?? bookStatuses[0].value}
+                    defaultValue={selectedBookTracking?.status.toString() ?? bookStatuses[0].value}
                     data={bookStatuses}/>
             <Select name="format"
                     label="Format"
                     mt={16}
-                    defaultValue={selectedBookTracking?.format?.toString() ?? bookFormats[0].value}
+                    defaultValue={selectedBookTracking?.format.toString() ?? bookFormats[0].value}
                     data={bookFormats}/>
             <Select name="ownership"
                     label="Ownership"
                     mt={16}
-                    defaultValue={selectedBookTracking?.ownership?.toString() ?? bookOwnerships[0].value}
+                    defaultValue={selectedBookTracking?.ownership.toString() ?? bookOwnerships[0].value}
                     data={bookOwnerships}/>
             <Group mt={32} grow>
                 <Group position={"left"}>

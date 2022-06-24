@@ -18,8 +18,9 @@ export default function SwitchGamePrice({ gameRemoteId }: SwitchGamePriceProps) 
                     <Text>N/A</Text>:
                     <Group spacing={"xs"}>
                         { price.isOnSale ? <TrendingDown color={"green"} size={22} /> : <Minus size={22} />}
+                        
                         <Text variant={"link"} component={"a"} href={price.url} sx={(theme) => ({
-                            color: price?.isOnSale ? theme.colors.green[4] : theme.colors.dark[1],
+                            color: price.isOnSale ? theme.colors.green[4] : theme.colors.dark[1],
                             textDecoration: "none"
                         })}>
                             {price.currency} {price.price?.toFixed(2)}

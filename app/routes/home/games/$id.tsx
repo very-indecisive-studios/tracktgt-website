@@ -65,12 +65,12 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 //region Client
 
 interface Game {
-    remoteId?: number | undefined;
-    coverImageURL?: string | undefined;
-    title?: string | undefined;
-    rating?: number | undefined;
-    platforms?: string[] | undefined;
-    companies?: string[] | undefined;
+    remoteId: number;
+    coverImageURL: string;
+    title: string;
+    rating: number;
+    platforms: string[];
+    companies: string[];
 }
 
 interface TrackingButtonProps {
@@ -81,7 +81,7 @@ function TrackingButton({ game }: TrackingButtonProps) {
     const modals = useModals();
     
     const { trackings, addTracking, updateTracking, removeTracking, actionDone, isLoading } 
-        = useGameTrackings(game.remoteId ?? 0);
+        = useGameTrackings(game.remoteId);
 
     // Action notifications
     useEffect(() => {
@@ -150,7 +150,7 @@ interface WishlistButtonProps {
 
 function WishlistButton({ game }: WishlistButtonProps) {
     const { wishlists, addToWishlist, removeFromWishlist, actionDone, isLoading } 
-        = useGamesWishlist(game.remoteId ?? 0);
+        = useGamesWishlist(game.remoteId);
     const modals = useModals();
 
     // Action notifications
@@ -220,7 +220,7 @@ export function GameHeader({ game }: GameHeaderProps) {
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {game.companies?.join(", ")}
+                    {game.companies.join(", ")}
                 </Title>
 
                 <Group>
@@ -228,12 +228,12 @@ export function GameHeader({ game }: GameHeaderProps) {
                         <Heart size={16}/>
                     </ThemeIcon>
                     <Text sx={(theme) => ({ color: theme.colors.gray[6] })} size={"sm"}>
-                        {game.rating === 0 ? "No rating" : `${game.rating?.toFixed(0)}%`}
+                        {game.rating === 0 ? "No rating" : `${game.rating.toFixed(0)}%`}
                     </Text>
                 </Group>
 
                 <Group mt={16}>
-                    {game.platforms?.map(platform => (
+                    {game.platforms.map(platform => (
                         <Badge color={"gray"} size={"lg"} key={platform}>{platform}</Badge>))}
                 </Group>
             </Stack>
@@ -246,7 +246,7 @@ interface GamePricingProps {
 }
 
 function GamePricing({ game }: GamePricingProps) {
-    const hasAnyPricing = game.platforms?.includes("Switch");
+    const hasAnyPricing = game.platforms.includes("Switch");
     
     return (
         !hasAnyPricing ?
@@ -265,13 +265,13 @@ function GamePricing({ game }: GamePricingProps) {
                 </tr>
                 </thead>
                 <tbody>
-                {game.platforms?.includes("Switch") &&
+                {game.platforms.includes("Switch") &&
                     <tr>
                         <td>
                             <Image px={16} src={"/eshop.svg"} width={100} />
                         </td>
                         <td>
-                            <SwitchGamePrice gameRemoteId={game.remoteId!!} />
+                            <SwitchGamePrice gameRemoteId={game.remoteId} />
                         </td>
                     </tr>
                 }
