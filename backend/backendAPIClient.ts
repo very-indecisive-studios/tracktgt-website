@@ -4133,7 +4133,6 @@ export class AddShowTrackingCommand implements IAddShowTrackingCommand {
     userRemoteId!: string;
     showRemoteId!: string;
     episodesWatched!: number;
-    showType!: ShowType;
     status!: ShowTrackingStatus;
 
     constructor(data?: IAddShowTrackingCommand) {
@@ -4150,7 +4149,6 @@ export class AddShowTrackingCommand implements IAddShowTrackingCommand {
             this.userRemoteId = _data["userRemoteId"];
             this.showRemoteId = _data["showRemoteId"];
             this.episodesWatched = _data["episodesWatched"];
-            this.showType = _data["showType"];
             this.status = _data["status"];
         }
     }
@@ -4167,7 +4165,6 @@ export class AddShowTrackingCommand implements IAddShowTrackingCommand {
         data["userRemoteId"] = this.userRemoteId;
         data["showRemoteId"] = this.showRemoteId;
         data["episodesWatched"] = this.episodesWatched;
-        data["showType"] = this.showType;
         data["status"] = this.status;
         return data;
     }
@@ -4177,13 +4174,7 @@ export interface IAddShowTrackingCommand {
     userRemoteId: string;
     showRemoteId: string;
     episodesWatched: number;
-    showType: ShowType;
     status: ShowTrackingStatus;
-}
-
-export enum ShowType {
-    Movie = 0,
-    Series = 1,
 }
 
 export enum ShowTrackingStatus {
@@ -4196,7 +4187,6 @@ export enum ShowTrackingStatus {
 export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
     userRemoteId!: string;
     showRemoteId!: string;
-    showType!: ShowType;
 
     constructor(data?: IRemoveShowTrackingCommand) {
         if (data) {
@@ -4211,7 +4201,6 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
         if (_data) {
             this.userRemoteId = _data["userRemoteId"];
             this.showRemoteId = _data["showRemoteId"];
-            this.showType = _data["showType"];
         }
     }
 
@@ -4226,7 +4215,6 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
         data = typeof data === 'object' ? data : {};
         data["userRemoteId"] = this.userRemoteId;
         data["showRemoteId"] = this.showRemoteId;
-        data["showType"] = this.showType;
         return data;
     }
 }
@@ -4234,7 +4222,6 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
 export interface IRemoveShowTrackingCommand {
     userRemoteId: string;
     showRemoteId: string;
-    showType: ShowType;
 }
 
 export class UpdateShowTrackingCommand implements IUpdateShowTrackingCommand {
@@ -4424,9 +4411,13 @@ export interface IGetAllShowTrackingsItemResult {
     status: ShowTrackingStatus;
 }
 
+export enum ShowType {
+    Movie = 0,
+    Series = 1,
+}
+
 export class GetShowTrackingResult implements IGetShowTrackingResult {
     episodesWatched!: number;
-    showType!: ShowType;
     status!: ShowTrackingStatus;
 
     constructor(data?: IGetShowTrackingResult) {
@@ -4441,7 +4432,6 @@ export class GetShowTrackingResult implements IGetShowTrackingResult {
     init(_data?: any) {
         if (_data) {
             this.episodesWatched = _data["episodesWatched"];
-            this.showType = _data["showType"];
             this.status = _data["status"];
         }
     }
@@ -4456,7 +4446,6 @@ export class GetShowTrackingResult implements IGetShowTrackingResult {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["episodesWatched"] = this.episodesWatched;
-        data["showType"] = this.showType;
         data["status"] = this.status;
         return data;
     }
@@ -4464,7 +4453,6 @@ export class GetShowTrackingResult implements IGetShowTrackingResult {
 
 export interface IGetShowTrackingResult {
     episodesWatched: number;
-    showType: ShowType;
     status: ShowTrackingStatus;
 }
 

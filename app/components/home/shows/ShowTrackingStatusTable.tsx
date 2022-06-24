@@ -96,17 +96,17 @@ export function ShowTrackingStatusTable({ status }: ShowTrackingStatusTableProps
                                 <td>{st.episodesWatched}</td>
                                 {!isMobile &&
                                     <>
-                                        <td>{ShowTrackingStatus[st.status!!]}</td>
-                                        <td>{ShowType[st.showType!!]}</td>
+                                        <td>{ShowTrackingStatus[st.status]}</td>
+                                        <td>{ShowType[st.showType]}</td>
                                     </>}
                                 <td>
                                     <ActionIcon onClick={() => showShowTrackingEditorModal(
                                         modals,
-                                        st,
+                                        { ...st, remoteId: st.showRemoteId },
                                         st,
                                         () => { },
-                                        (formData) => updateTracking(st.showRemoteId!!, formData),
-                                        (formData) => removeTracking(st.showRemoteId!!, formData)
+                                        (formData) => updateTracking(st.showRemoteId, formData),
+                                        (formData) => removeTracking(st.showRemoteId, formData)
                                     )}>
                                         <Edit/>
                                     </ActionIcon>
