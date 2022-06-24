@@ -293,7 +293,7 @@ export default function Game() {
                                         <Image px={16} src={"/eshop.svg"} width={100} />
                                     </td>
                                     <td>
-                                        <SwitchGamePrice region={"AU"} gameRemoteId={data.game.remoteId!!} />
+                                        <SwitchGamePrice gameRemoteId={data.game.remoteId!!} />
                                     </td>
                                 </tr>
                             }

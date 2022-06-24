@@ -6,6 +6,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { db } from "~/utils/db.server";
 
 //region Server
 
@@ -14,12 +15,25 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-    await requireUserId(request);
-    
+    const userId = await requireUserId(request);
     const gameId: number = parseInt(params.id ?? "0");
-    const region: string = params.region ?? "";
 
-    const backendAPIResponse = await backendAPIClientInstance.price_GetSwitchGamePrice(region, gameId);
+    let userPrefsPricing = await db.userPrefsPricing.findFirst({
+        where: {
+            userId: userId
+        }
+    });
+
+    if (!userPrefsPricing) {
+        userPrefsPricing = await db.userPrefsPricing.create({
+            data: {
+                userId: userId,
+                eShopRegion: "AU"
+            }
+        })
+    }
+    
+    const backendAPIResponse = await backendAPIClientInstance.price_GetSwitchGamePrice(userPrefsPricing.eShopRegion, gameId);
 
     return json<LoaderData>({
         gamePrice: backendAPIResponse.result
@@ -35,7 +49,7 @@ interface SwitchGamePriceStateAndFunc {
     isLoading: boolean;
 }
 
-export function useSwitchGamePrice(region: string, gameRemoteId: number): SwitchGamePriceStateAndFunc {
+export function useSwitchGamePrice(gameRemoteId: number): SwitchGamePriceStateAndFunc {
     const fetcherWishlistLoader = useFetcher<LoaderData>();
 
     const [price, setPrice] = useState<GetSwitchGamePriceResult | null>(null);
@@ -45,7 +59,7 @@ export function useSwitchGamePrice(region: string, gameRemoteId: number): Switch
         fetcherWishlistLoader.submit(
             null, 
             { 
-                action: `/home/games/price/switch/${region}/${gameRemoteId}`, 
+                action: `/home/games/price/switch/${gameRemoteId}`, 
                 method: "get" 
             }
         );
