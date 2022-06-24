@@ -1,15 +1,14 @@
-import { useSwitchGamePrice } from "~/routes/home/games/price/switch/$region/$id";
+import { useSwitchGamePrice } from "~/routes/home/games/price/switch/$id";
 import { Group, Loader, Text } from "@mantine/core";
 import { Minus, TrendingDown } from "tabler-icons-react";
 import React from "react";
 
 interface SwitchGamePriceProps {
-    region: string;
     gameRemoteId: number;
 }
 
-export default function SwitchGamePrice({ region, gameRemoteId }: SwitchGamePriceProps) {
-    const { price, isLoading } = useSwitchGamePrice(region, gameRemoteId);
+export default function SwitchGamePrice({ gameRemoteId }: SwitchGamePriceProps) {
+    const { price, isLoading } = useSwitchGamePrice(gameRemoteId);
 
     return (
         <>

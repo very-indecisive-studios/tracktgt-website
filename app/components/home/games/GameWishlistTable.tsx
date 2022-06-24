@@ -97,7 +97,7 @@ export default function GameWishlistTable() {
                                 <td>{gw.platform}</td>
                                 <td>
                                     {gw.platform === "Switch" ? 
-                                        <SwitchGamePrice region={"AU"} gameRemoteId={gw.gameRemoteId!!} /> :
+                                        <SwitchGamePrice gameRemoteId={gw.gameRemoteId!!} /> :
                                         <Text>N/A</Text>
                                     }
                                 </td>
