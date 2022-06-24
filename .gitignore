@@ -15,5 +15,3 @@ node_modules
 /playwright-report/
 /playwright/.cache/
 storageState.json
-
-/prisma/dev.db

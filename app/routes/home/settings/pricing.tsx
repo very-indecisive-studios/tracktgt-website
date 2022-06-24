@@ -4,38 +4,29 @@ import { useMobileQuery } from "~/utils/hooks";
 import { Button, Container, Group, NativeSelect, Title } from "@mantine/core";
 import React from "react";
 import { Form, useLoaderData } from "@remix-run/react";
-import { db } from "~/utils/db.server";
 import { z } from "zod";
 import { badRequest } from "~/utils/response.server";
-import { showNotification, useNotifications } from "@mantine/notifications";
-import { Check, TrashX } from "tabler-icons-react";
+import { showNotification } from "@mantine/notifications";
+import { Check } from "tabler-icons-react";
+import { backendAPIClientInstance, UpdatePricingUserPreferenceCommand } from "backend";
 
 //region Server
 
 interface LoaderData {
     eShopRegion: string;
+    supportedEShopRegions: string[];
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
     const userId = await requireUserId(request);
     
-    let userPrefsPricing = await db.userPrefsPricing.findFirst({
-        where: {
-            userId: userId
-        }
-    });
+    const userPrefsPricingResponse = await backendAPIClientInstance.user_GetPricingUserPreference(userId);
     
-    if (!userPrefsPricing) {
-        userPrefsPricing = await db.userPrefsPricing.create({
-            data: {
-                userId: userId,
-                eShopRegion: "AU" 
-            }
-        })
-    }
+    const eShopRegionsResponse = await backendAPIClientInstance.price_GetSwitchGameStoreRegions();
 
     return json<LoaderData>({
-        eShopRegion: userPrefsPricing.eShopRegion
+        eShopRegion: userPrefsPricingResponse.result.eShopRegion,
+        supportedEShopRegions: eShopRegionsResponse.result.regions
     });
 }
 
@@ -59,14 +50,10 @@ export const action: ActionFunction = async ({ request }) => {
         return badRequest(parsedFormData.error.flatten().fieldErrors);
     }
 
-    await db.userPrefsPricing.update({
-        where: {
-            userId: userId
-        },
-        data: {
-            eShopRegion: parsedFormData.data.eShopRegion
-        }
-    });
+    await backendAPIClientInstance.user_UpdatePricingUserPreferenceCommand(new UpdatePricingUserPreferenceCommand({
+        userRemoteId: userId,
+        eShopRegion: parsedFormData.data.eShopRegion
+    }));
     
     return null;
 }
@@ -99,11 +86,7 @@ export default function SettingsPricing() {
                     label={"EShop Region"}
                     description={"The EShop region that will be used to fetch prices for your wishlists and when you're viewing pricing for a game."}
                     defaultValue={loaderData.eShopRegion}
-                    data={[
-                        { value: 'AU', label: 'Australia' },
-                        { value: 'NZ', label: 'New Zealand' },
-                        { value: 'GB', label: 'United Kingdom' },
-                    ]}
+                    data={loaderData.supportedEShopRegions}
                 />
                 <Group mt={16} position={"right"}>
                     <Button onClick={()=> {

@@ -6,7 +6,6 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { requireUserId } from "~/utils/session.server";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import { db } from "~/utils/db.server";
 
 //region Server
 
@@ -18,22 +17,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     const userId = await requireUserId(request);
     const gameId: number = parseInt(params.id ?? "0");
 
-    let userPrefsPricing = await db.userPrefsPricing.findFirst({
-        where: {
-            userId: userId
-        }
-    });
-
-    if (!userPrefsPricing) {
-        userPrefsPricing = await db.userPrefsPricing.create({
-            data: {
-                userId: userId,
-                eShopRegion: "AU"
-            }
-        })
-    }
+    const userPrefsPricing = await backendAPIClientInstance.user_GetPricingUserPreference(userId);
+    const eShopRegion = userPrefsPricing.result.eShopRegion;
     
-    const backendAPIResponse = await backendAPIClientInstance.price_GetSwitchGamePrice(userPrefsPricing.eShopRegion, gameId);
+    const backendAPIResponse = await backendAPIClientInstance.price_GetSwitchGamePrice(eShopRegion, gameId);
 
     return json<LoaderData>({
         gamePrice: backendAPIResponse.result
