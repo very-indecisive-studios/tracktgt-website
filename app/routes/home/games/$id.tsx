@@ -241,6 +241,45 @@ export function GameHeader({ game }: GameHeaderProps) {
     );
 }
 
+interface GamePricingProps {
+    game: Game;
+}
+
+function GamePricing({ game }: GamePricingProps) {
+    const hasAnyPricing = game.platforms?.includes("Switch");
+    
+    return (
+        !hasAnyPricing ?
+            <Text p={64} align={"center"}>No pricing available.</Text> :
+            
+            <Table mt={16} striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <Group align={"center"} spacing={"xs"}>
+                            <Text>Price</Text>
+                            <Badge size={"xs"} color={"red"}>Beta</Badge>
+                        </Group>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {game.platforms?.includes("Switch") &&
+                    <tr>
+                        <td>
+                            <Image px={16} src={"/eshop.svg"} width={100} />
+                        </td>
+                        <td>
+                            <SwitchGamePrice gameRemoteId={game.remoteId!!} />
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </Table>  
+    );
+}
+
 export default function Game() {
     const isMobile = useMobileQuery();
     
@@ -274,31 +313,7 @@ export default function Game() {
                 
                 <Tabs.Tab label={isMobile ? "" : "Pricing"}
                           icon={<CurrencyDollar size={18}/>}>
-                    <Table mt={16} striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
-                        <thead>
-                            <tr>
-                               <th></th> 
-                               <th>
-                                   <Group align={"center"} spacing={"xs"}>
-                                       <Text>Price</Text>
-                                       <Badge size={"xs"} color={"red"}>Beta</Badge>
-                                   </Group>
-                               </th> 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.game.platforms?.includes("Switch") &&
-                                <tr>
-                                    <td>
-                                        <Image px={16} src={"/eshop.svg"} width={100} />
-                                    </td>
-                                    <td>
-                                        <SwitchGamePrice gameRemoteId={data.game.remoteId!!} />
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </Table>
+                    <GamePricing game={data.game} />
                 </Tabs.Tab>
             </Tabs>
         </Container>
