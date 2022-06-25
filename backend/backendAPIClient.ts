@@ -8,8 +8,7 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import * as dayjs from 'dayjs';
-
+import dayjs from "dayjs";
 export class ExtBackendAPIClient {
     protected async transformOptions(options: RequestInit): Promise<RequestInit> {
         options.headers = {
@@ -1445,6 +1444,112 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<SearchGamesResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
+    price_GetSwitchGamePrice(region: string | null, id: number): Promise<BackendAPIResponse<GetSwitchGamePriceResult>> {
+        let url_ = this.baseUrl + "/api/price/switch/{region}/{id}";
+        if (region === undefined || region === null)
+            throw new Error("The parameter 'region' must be defined.");
+        url_ = url_.replace("{region}", encodeURIComponent("" + region));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processPrice_GetSwitchGamePrice(_response);
+        });
+    }
+
+    protected processPrice_GetSwitchGamePrice(response: Response): Promise<BackendAPIResponse<GetSwitchGamePriceResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetSwitchGamePriceResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetSwitchGamePriceResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    price_GetSwitchGameStoreRegions(): Promise<BackendAPIResponse<GetSwitchGameStoreRegionsResult>> {
+        let url_ = this.baseUrl + "/api/price/switch/regions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processPrice_GetSwitchGameStoreRegions(_response);
+        });
+    }
+
+    protected processPrice_GetSwitchGameStoreRegions(response: Response): Promise<BackendAPIResponse<GetSwitchGameStoreRegionsResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetSwitchGameStoreRegionsResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetSwitchGameStoreRegionsResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     show_AddShowTracking(addShowTrackingCommand: AddShowTrackingCommand): Promise<BackendAPIResponse<Unit>> {
         let url_ = this.baseUrl + "/api/show/track";
         url_ = url_.replace(/[?&]$/, "");
@@ -2068,6 +2173,127 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         }
         return Promise.resolve<BackendAPIResponse<GetUserResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
+
+    user_GetPricingUserPreference(userRemoteId: string | null): Promise<BackendAPIResponse<GetPricingUserPreferenceResult>> {
+        let url_ = this.baseUrl + "/api/user/preferences/pricing/{userRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_GetPricingUserPreference(_response);
+        });
+    }
+
+    protected processUser_GetPricingUserPreference(response: Response): Promise<BackendAPIResponse<GetPricingUserPreferenceResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetPricingUserPreferenceResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetPricingUserPreferenceResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    user_UpdatePricingUserPreferenceCommand(command: UpdatePricingUserPreferenceCommand): Promise<BackendAPIResponse<Unit>> {
+        let url_ = this.baseUrl + "/api/user/preferences/pricing";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_UpdatePricingUserPreferenceCommand(_response);
+        });
+    }
+
+    protected processUser_UpdatePricingUserPreferenceCommand(response: Response): Promise<BackendAPIResponse<Unit>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Unit.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
+    }
 }
 
 export class Unit implements IUnit {
@@ -2153,8 +2379,8 @@ export interface IProblemDetails {
 }
 
 export class AddBookWishlistCommand implements IAddBookWishlistCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
+    userRemoteId!: string;
+    bookRemoteId!: string;
 
     constructor(data?: IAddBookWishlistCommand) {
         if (data) {
@@ -2188,13 +2414,13 @@ export class AddBookWishlistCommand implements IAddBookWishlistCommand {
 }
 
 export interface IAddBookWishlistCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
+    userRemoteId: string;
+    bookRemoteId: string;
 }
 
 export class RemoveBookWishlistCommand implements IRemoveBookWishlistCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
+    userRemoteId!: string;
+    bookRemoteId!: string;
 
     constructor(data?: IRemoveBookWishlistCommand) {
         if (data) {
@@ -2228,21 +2454,21 @@ export class RemoveBookWishlistCommand implements IRemoveBookWishlistCommand {
 }
 
 export interface IRemoveBookWishlistCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
+    userRemoteId: string;
+    bookRemoteId: string;
 }
 
 export class PagedListResultOfGetAllBookWishlistsItemResult implements IPagedListResultOfGetAllBookWishlistsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllBookWishlistsItemResult[];
+    page!: number;
+    totalPages!: number;
+    pageSize!: number;
+    currentPageSize!: number;
+    currentStartIndex!: number;
+    currentEndIndex!: number;
+    totalCount!: number;
+    hasPrevious!: boolean;
+    hasNext!: boolean;
+    items!: GetAllBookWishlistsItemResult[];
 
     constructor(data?: IPagedListResultOfGetAllBookWishlistsItemResult) {
         if (data) {
@@ -2250,6 +2476,9 @@ export class PagedListResultOfGetAllBookWishlistsItemResult implements IPagedLis
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -2300,22 +2529,22 @@ export class PagedListResultOfGetAllBookWishlistsItemResult implements IPagedLis
 }
 
 export interface IPagedListResultOfGetAllBookWishlistsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllBookWishlistsItemResult[];
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    currentPageSize: number;
+    currentStartIndex: number;
+    currentEndIndex: number;
+    totalCount: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+    items: GetAllBookWishlistsItemResult[];
 }
 
 export class GetAllBookWishlistsItemResult implements IGetAllBookWishlistsItemResult {
-    bookRemoteId?: string;
-    title?: string;
-    coverImageURL?: string;
+    bookRemoteId!: string;
+    title!: string;
+    coverImageURL!: string;
 
     constructor(data?: IGetAllBookWishlistsItemResult) {
         if (data) {
@@ -2351,18 +2580,18 @@ export class GetAllBookWishlistsItemResult implements IGetAllBookWishlistsItemRe
 }
 
 export interface IGetAllBookWishlistsItemResult {
-    bookRemoteId?: string;
-    title?: string;
-    coverImageURL?: string;
+    bookRemoteId: string;
+    title: string;
+    coverImageURL: string;
 }
 
 export class AddBookTrackingCommand implements IAddBookTrackingCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    userRemoteId!: string;
+    bookRemoteId!: string;
+    chaptersRead!: number;
+    format!: BookTrackingFormat;
+    status!: BookTrackingStatus;
+    ownership!: BookTrackingOwnership;
 
     constructor(data?: IAddBookTrackingCommand) {
         if (data) {
@@ -2404,12 +2633,12 @@ export class AddBookTrackingCommand implements IAddBookTrackingCommand {
 }
 
 export interface IAddBookTrackingCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    userRemoteId: string;
+    bookRemoteId: string;
+    chaptersRead: number;
+    format: BookTrackingFormat;
+    status: BookTrackingStatus;
+    ownership: BookTrackingOwnership;
 }
 
 export enum BookTrackingFormat {
@@ -2430,8 +2659,8 @@ export enum BookTrackingOwnership {
 }
 
 export class RemoveBookTrackingCommand implements IRemoveBookTrackingCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
+    userRemoteId!: string;
+    bookRemoteId!: string;
 
     constructor(data?: IRemoveBookTrackingCommand) {
         if (data) {
@@ -2465,17 +2694,17 @@ export class RemoveBookTrackingCommand implements IRemoveBookTrackingCommand {
 }
 
 export interface IRemoveBookTrackingCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
+    userRemoteId: string;
+    bookRemoteId: string;
 }
 
 export class UpdateBookTrackingCommand implements IUpdateBookTrackingCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    userRemoteId!: string;
+    bookRemoteId!: string;
+    chaptersRead!: number;
+    format!: BookTrackingFormat;
+    status!: BookTrackingStatus;
+    ownership!: BookTrackingOwnership;
 
     constructor(data?: IUpdateBookTrackingCommand) {
         if (data) {
@@ -2517,25 +2746,25 @@ export class UpdateBookTrackingCommand implements IUpdateBookTrackingCommand {
 }
 
 export interface IUpdateBookTrackingCommand {
-    userRemoteId?: string;
-    bookRemoteId?: string;
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    userRemoteId: string;
+    bookRemoteId: string;
+    chaptersRead: number;
+    format: BookTrackingFormat;
+    status: BookTrackingStatus;
+    ownership: BookTrackingOwnership;
 }
 
 export class PagedListResultOfGetAllBookTrackingsItemResult implements IPagedListResultOfGetAllBookTrackingsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllBookTrackingsItemResult[];
+    page!: number;
+    totalPages!: number;
+    pageSize!: number;
+    currentPageSize!: number;
+    currentStartIndex!: number;
+    currentEndIndex!: number;
+    totalCount!: number;
+    hasPrevious!: boolean;
+    hasNext!: boolean;
+    items!: GetAllBookTrackingsItemResult[];
 
     constructor(data?: IPagedListResultOfGetAllBookTrackingsItemResult) {
         if (data) {
@@ -2543,6 +2772,9 @@ export class PagedListResultOfGetAllBookTrackingsItemResult implements IPagedLis
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -2593,26 +2825,26 @@ export class PagedListResultOfGetAllBookTrackingsItemResult implements IPagedLis
 }
 
 export interface IPagedListResultOfGetAllBookTrackingsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllBookTrackingsItemResult[];
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    currentPageSize: number;
+    currentStartIndex: number;
+    currentEndIndex: number;
+    totalCount: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+    items: GetAllBookTrackingsItemResult[];
 }
 
 export class GetAllBookTrackingsItemResult implements IGetAllBookTrackingsItemResult {
-    bookRemoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    bookRemoteId!: string;
+    title!: string;
+    coverImageURL!: string;
+    chaptersRead!: number;
+    format!: BookTrackingFormat;
+    status!: BookTrackingStatus;
+    ownership!: BookTrackingOwnership;
 
     constructor(data?: IGetAllBookTrackingsItemResult) {
         if (data) {
@@ -2656,20 +2888,20 @@ export class GetAllBookTrackingsItemResult implements IGetAllBookTrackingsItemRe
 }
 
 export interface IGetAllBookTrackingsItemResult {
-    bookRemoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    bookRemoteId: string;
+    title: string;
+    coverImageURL: string;
+    chaptersRead: number;
+    format: BookTrackingFormat;
+    status: BookTrackingStatus;
+    ownership: BookTrackingOwnership;
 }
 
 export class GetBookTrackingResult implements IGetBookTrackingResult {
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    chaptersRead!: number;
+    format!: BookTrackingFormat;
+    status!: BookTrackingStatus;
+    ownership!: BookTrackingOwnership;
 
     constructor(data?: IGetBookTrackingResult) {
         if (data) {
@@ -2707,18 +2939,18 @@ export class GetBookTrackingResult implements IGetBookTrackingResult {
 }
 
 export interface IGetBookTrackingResult {
-    chaptersRead?: number;
-    format?: BookTrackingFormat;
-    status?: BookTrackingStatus;
-    ownership?: BookTrackingOwnership;
+    chaptersRead: number;
+    format: BookTrackingFormat;
+    status: BookTrackingStatus;
+    ownership: BookTrackingOwnership;
 }
 
 export class GetBookResult implements IGetBookResult {
-    remoteId?: string;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
-    authors?: string[];
+    remoteId!: string;
+    coverImageURL!: string;
+    title!: string;
+    summary!: string;
+    authors!: string[];
 
     constructor(data?: IGetBookResult) {
         if (data) {
@@ -2726,6 +2958,9 @@ export class GetBookResult implements IGetBookResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.authors = [];
         }
     }
 
@@ -2766,15 +3001,15 @@ export class GetBookResult implements IGetBookResult {
 }
 
 export interface IGetBookResult {
-    remoteId?: string;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
-    authors?: string[];
+    remoteId: string;
+    coverImageURL: string;
+    title: string;
+    summary: string;
+    authors: string[];
 }
 
 export class SearchBooksResult implements ISearchBooksResult {
-    items?: SearchBooksItemResult[];
+    items!: SearchBooksItemResult[];
 
     constructor(data?: ISearchBooksResult) {
         if (data) {
@@ -2782,6 +3017,9 @@ export class SearchBooksResult implements ISearchBooksResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -2814,14 +3052,14 @@ export class SearchBooksResult implements ISearchBooksResult {
 }
 
 export interface ISearchBooksResult {
-    items?: SearchBooksItemResult[];
+    items: SearchBooksItemResult[];
 }
 
 export class SearchBooksItemResult implements ISearchBooksItemResult {
-    remoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    authors?: string[];
+    remoteId!: string;
+    title!: string;
+    coverImageURL!: string;
+    authors!: string[];
 
     constructor(data?: ISearchBooksItemResult) {
         if (data) {
@@ -2829,6 +3067,9 @@ export class SearchBooksItemResult implements ISearchBooksItemResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.authors = [];
         }
     }
 
@@ -2867,16 +3108,16 @@ export class SearchBooksItemResult implements ISearchBooksItemResult {
 }
 
 export interface ISearchBooksItemResult {
-    remoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    authors?: string[];
+    remoteId: string;
+    title: string;
+    coverImageURL: string;
+    authors: string[];
 }
 
 export class AddGameWishlistCommand implements IAddGameWishlistCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
+    userRemoteId!: string;
+    gameRemoteId!: number;
+    platform!: string;
 
     constructor(data?: IAddGameWishlistCommand) {
         if (data) {
@@ -2912,15 +3153,15 @@ export class AddGameWishlistCommand implements IAddGameWishlistCommand {
 }
 
 export interface IAddGameWishlistCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
+    userRemoteId: string;
+    gameRemoteId: number;
+    platform: string;
 }
 
 export class RemoveGameWishlistCommand implements IRemoveGameWishlistCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
+    userRemoteId!: string;
+    gameRemoteId!: number;
+    platform!: string;
 
     constructor(data?: IRemoveGameWishlistCommand) {
         if (data) {
@@ -2956,22 +3197,22 @@ export class RemoveGameWishlistCommand implements IRemoveGameWishlistCommand {
 }
 
 export interface IRemoveGameWishlistCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
+    userRemoteId: string;
+    gameRemoteId: number;
+    platform: string;
 }
 
 export class PagedListResultOfGetAllGameWishlistsItemResult implements IPagedListResultOfGetAllGameWishlistsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllGameWishlistsItemResult[];
+    page!: number;
+    totalPages!: number;
+    pageSize!: number;
+    currentPageSize!: number;
+    currentStartIndex!: number;
+    currentEndIndex!: number;
+    totalCount!: number;
+    hasPrevious!: boolean;
+    hasNext!: boolean;
+    items!: GetAllGameWishlistsItemResult[];
 
     constructor(data?: IPagedListResultOfGetAllGameWishlistsItemResult) {
         if (data) {
@@ -2979,6 +3220,9 @@ export class PagedListResultOfGetAllGameWishlistsItemResult implements IPagedLis
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -3029,23 +3273,23 @@ export class PagedListResultOfGetAllGameWishlistsItemResult implements IPagedLis
 }
 
 export interface IPagedListResultOfGetAllGameWishlistsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllGameWishlistsItemResult[];
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    currentPageSize: number;
+    currentStartIndex: number;
+    currentEndIndex: number;
+    totalCount: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+    items: GetAllGameWishlistsItemResult[];
 }
 
 export class GetAllGameWishlistsItemResult implements IGetAllGameWishlistsItemResult {
-    gameRemoteId?: number;
-    title?: string;
-    coverImageURL?: string;
-    platform?: string;
+    gameRemoteId!: number;
+    title!: string;
+    coverImageURL!: string;
+    platform!: string;
 
     constructor(data?: IGetAllGameWishlistsItemResult) {
         if (data) {
@@ -3083,14 +3327,14 @@ export class GetAllGameWishlistsItemResult implements IGetAllGameWishlistsItemRe
 }
 
 export interface IGetAllGameWishlistsItemResult {
-    gameRemoteId?: number;
-    title?: string;
-    coverImageURL?: string;
-    platform?: string;
+    gameRemoteId: number;
+    title: string;
+    coverImageURL: string;
+    platform: string;
 }
 
 export class GetGameWishlistsResult implements IGetGameWishlistsResult {
-    items?: GetGameWishlistItemResult[];
+    items!: GetGameWishlistItemResult[];
 
     constructor(data?: IGetGameWishlistsResult) {
         if (data) {
@@ -3098,6 +3342,9 @@ export class GetGameWishlistsResult implements IGetGameWishlistsResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -3130,11 +3377,11 @@ export class GetGameWishlistsResult implements IGetGameWishlistsResult {
 }
 
 export interface IGetGameWishlistsResult {
-    items?: GetGameWishlistItemResult[];
+    items: GetGameWishlistItemResult[];
 }
 
 export class GetGameWishlistItemResult implements IGetGameWishlistItemResult {
-    platform?: string;
+    platform!: string;
 
     constructor(data?: IGetGameWishlistItemResult) {
         if (data) {
@@ -3166,17 +3413,17 @@ export class GetGameWishlistItemResult implements IGetGameWishlistItemResult {
 }
 
 export interface IGetGameWishlistItemResult {
-    platform?: string;
+    platform: string;
 }
 
 export class AddGameTrackingCommand implements IAddGameTrackingCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    hoursPlayed?: number;
-    platform?: string;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    userRemoteId!: string;
+    gameRemoteId!: number;
+    hoursPlayed!: number;
+    platform!: string;
+    format!: GameTrackingFormat;
+    status!: GameTrackingStatus;
+    ownership!: GameTrackingOwnership;
 
     constructor(data?: IAddGameTrackingCommand) {
         if (data) {
@@ -3220,13 +3467,13 @@ export class AddGameTrackingCommand implements IAddGameTrackingCommand {
 }
 
 export interface IAddGameTrackingCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    hoursPlayed?: number;
-    platform?: string;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    userRemoteId: string;
+    gameRemoteId: number;
+    hoursPlayed: number;
+    platform: string;
+    format: GameTrackingFormat;
+    status: GameTrackingStatus;
+    ownership: GameTrackingOwnership;
 }
 
 export enum GameTrackingFormat {
@@ -3248,9 +3495,9 @@ export enum GameTrackingOwnership {
 }
 
 export class RemoveGameTrackingCommand implements IRemoveGameTrackingCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
+    userRemoteId!: string;
+    gameRemoteId!: number;
+    platform!: string;
 
     constructor(data?: IRemoveGameTrackingCommand) {
         if (data) {
@@ -3286,19 +3533,19 @@ export class RemoveGameTrackingCommand implements IRemoveGameTrackingCommand {
 }
 
 export interface IRemoveGameTrackingCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
+    userRemoteId: string;
+    gameRemoteId: number;
+    platform: string;
 }
 
 export class UpdateGameTrackingCommand implements IUpdateGameTrackingCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
-    hoursPlayed?: number;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    userRemoteId!: string;
+    gameRemoteId!: number;
+    platform!: string;
+    hoursPlayed!: number;
+    format!: GameTrackingFormat;
+    status!: GameTrackingStatus;
+    ownership!: GameTrackingOwnership;
 
     constructor(data?: IUpdateGameTrackingCommand) {
         if (data) {
@@ -3342,26 +3589,26 @@ export class UpdateGameTrackingCommand implements IUpdateGameTrackingCommand {
 }
 
 export interface IUpdateGameTrackingCommand {
-    userRemoteId?: string;
-    gameRemoteId?: number;
-    platform?: string;
-    hoursPlayed?: number;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    userRemoteId: string;
+    gameRemoteId: number;
+    platform: string;
+    hoursPlayed: number;
+    format: GameTrackingFormat;
+    status: GameTrackingStatus;
+    ownership: GameTrackingOwnership;
 }
 
 export class PagedListResultOfGetAllGameTrackingsItemResult implements IPagedListResultOfGetAllGameTrackingsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllGameTrackingsItemResult[];
+    page!: number;
+    totalPages!: number;
+    pageSize!: number;
+    currentPageSize!: number;
+    currentStartIndex!: number;
+    currentEndIndex!: number;
+    totalCount!: number;
+    hasPrevious!: boolean;
+    hasNext!: boolean;
+    items!: GetAllGameTrackingsItemResult[];
 
     constructor(data?: IPagedListResultOfGetAllGameTrackingsItemResult) {
         if (data) {
@@ -3369,6 +3616,9 @@ export class PagedListResultOfGetAllGameTrackingsItemResult implements IPagedLis
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -3419,27 +3669,27 @@ export class PagedListResultOfGetAllGameTrackingsItemResult implements IPagedLis
 }
 
 export interface IPagedListResultOfGetAllGameTrackingsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllGameTrackingsItemResult[];
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    currentPageSize: number;
+    currentStartIndex: number;
+    currentEndIndex: number;
+    totalCount: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+    items: GetAllGameTrackingsItemResult[];
 }
 
 export class GetAllGameTrackingsItemResult implements IGetAllGameTrackingsItemResult {
-    gameRemoteId?: number;
-    title?: string;
-    coverImageURL?: string;
-    hoursPlayed?: number;
-    platform?: string;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    gameRemoteId!: number;
+    title!: string;
+    coverImageURL!: string;
+    hoursPlayed!: number;
+    platform!: string;
+    format!: GameTrackingFormat;
+    status!: GameTrackingStatus;
+    ownership!: GameTrackingOwnership;
 
     constructor(data?: IGetAllGameTrackingsItemResult) {
         if (data) {
@@ -3485,18 +3735,18 @@ export class GetAllGameTrackingsItemResult implements IGetAllGameTrackingsItemRe
 }
 
 export interface IGetAllGameTrackingsItemResult {
-    gameRemoteId?: number;
-    title?: string;
-    coverImageURL?: string;
-    hoursPlayed?: number;
-    platform?: string;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    gameRemoteId: number;
+    title: string;
+    coverImageURL: string;
+    hoursPlayed: number;
+    platform: string;
+    format: GameTrackingFormat;
+    status: GameTrackingStatus;
+    ownership: GameTrackingOwnership;
 }
 
 export class GetGameTrackingsResult implements IGetGameTrackingsResult {
-    items?: GetGameTrackingsItemResult[];
+    items!: GetGameTrackingsItemResult[];
 
     constructor(data?: IGetGameTrackingsResult) {
         if (data) {
@@ -3504,6 +3754,9 @@ export class GetGameTrackingsResult implements IGetGameTrackingsResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -3536,15 +3789,15 @@ export class GetGameTrackingsResult implements IGetGameTrackingsResult {
 }
 
 export interface IGetGameTrackingsResult {
-    items?: GetGameTrackingsItemResult[];
+    items: GetGameTrackingsItemResult[];
 }
 
 export class GetGameTrackingsItemResult implements IGetGameTrackingsItemResult {
-    hoursPlayed?: number;
-    platform?: string;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    hoursPlayed!: number;
+    platform!: string;
+    format!: GameTrackingFormat;
+    status!: GameTrackingStatus;
+    ownership!: GameTrackingOwnership;
 
     constructor(data?: IGetGameTrackingsItemResult) {
         if (data) {
@@ -3584,21 +3837,21 @@ export class GetGameTrackingsItemResult implements IGetGameTrackingsItemResult {
 }
 
 export interface IGetGameTrackingsItemResult {
-    hoursPlayed?: number;
-    platform?: string;
-    format?: GameTrackingFormat;
-    status?: GameTrackingStatus;
-    ownership?: GameTrackingOwnership;
+    hoursPlayed: number;
+    platform: string;
+    format: GameTrackingFormat;
+    status: GameTrackingStatus;
+    ownership: GameTrackingOwnership;
 }
 
 export class GetGameResult implements IGetGameResult {
-    remoteId?: number;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
-    rating?: number;
-    platforms?: string[] | undefined;
-    companies?: string[] | undefined;
+    remoteId!: number;
+    coverImageURL!: string;
+    title!: string;
+    summary!: string;
+    rating!: number;
+    platforms!: string[];
+    companies!: string[];
 
     constructor(data?: IGetGameResult) {
         if (data) {
@@ -3606,6 +3859,10 @@ export class GetGameResult implements IGetGameResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.platforms = [];
+            this.companies = [];
         }
     }
 
@@ -3658,17 +3915,17 @@ export class GetGameResult implements IGetGameResult {
 }
 
 export interface IGetGameResult {
-    remoteId?: number;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
-    rating?: number;
-    platforms?: string[] | undefined;
-    companies?: string[] | undefined;
+    remoteId: number;
+    coverImageURL: string;
+    title: string;
+    summary: string;
+    rating: number;
+    platforms: string[];
+    companies: string[];
 }
 
 export class SearchGamesResult implements ISearchGamesResult {
-    items?: SearchGamesItemResult[];
+    items!: SearchGamesItemResult[];
 
     constructor(data?: ISearchGamesResult) {
         if (data) {
@@ -3676,6 +3933,9 @@ export class SearchGamesResult implements ISearchGamesResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -3708,14 +3968,14 @@ export class SearchGamesResult implements ISearchGamesResult {
 }
 
 export interface ISearchGamesResult {
-    items?: SearchGamesItemResult[];
+    items: SearchGamesItemResult[];
 }
 
 export class SearchGamesItemResult implements ISearchGamesItemResult {
-    remoteId?: number;
-    title?: string;
-    coverImageURL?: string;
-    platforms?: string[];
+    remoteId!: number;
+    title!: string;
+    coverImageURL!: string;
+    platforms!: string[];
 
     constructor(data?: ISearchGamesItemResult) {
         if (data) {
@@ -3723,6 +3983,9 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.platforms = [];
         }
     }
 
@@ -3761,18 +4024,116 @@ export class SearchGamesItemResult implements ISearchGamesItemResult {
 }
 
 export interface ISearchGamesItemResult {
-    remoteId?: number;
-    title?: string;
-    coverImageURL?: string;
-    platforms?: string[];
+    remoteId: number;
+    title: string;
+    coverImageURL: string;
+    platforms: string[];
+}
+
+export class GetSwitchGamePriceResult implements IGetSwitchGamePriceResult {
+    url!: string;
+    currency!: string;
+    price!: number;
+    isOnSale!: boolean;
+    saleEnd?: dayjs.Dayjs | undefined;
+
+    constructor(data?: IGetSwitchGamePriceResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.url = _data["url"];
+            this.currency = _data["currency"];
+            this.price = _data["price"];
+            this.isOnSale = _data["isOnSale"];
+            this.saleEnd = _data["saleEnd"] ? dayjs(_data["saleEnd"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetSwitchGamePriceResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSwitchGamePriceResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["url"] = this.url;
+        data["currency"] = this.currency;
+        data["price"] = this.price;
+        data["isOnSale"] = this.isOnSale;
+        data["saleEnd"] = this.saleEnd ? this.saleEnd.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGetSwitchGamePriceResult {
+    url: string;
+    currency: string;
+    price: number;
+    isOnSale: boolean;
+    saleEnd?: dayjs.Dayjs | undefined;
+}
+
+export class GetSwitchGameStoreRegionsResult implements IGetSwitchGameStoreRegionsResult {
+    regions!: string[];
+
+    constructor(data?: IGetSwitchGameStoreRegionsResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.regions = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["regions"])) {
+                this.regions = [] as any;
+                for (let item of _data["regions"])
+                    this.regions!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): GetSwitchGameStoreRegionsResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetSwitchGameStoreRegionsResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.regions)) {
+            data["regions"] = [];
+            for (let item of this.regions)
+                data["regions"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IGetSwitchGameStoreRegionsResult {
+    regions: string[];
 }
 
 export class AddShowTrackingCommand implements IAddShowTrackingCommand {
-    userRemoteId?: string;
-    showRemoteId?: string;
-    episodesWatched?: number;
-    showType?: ShowType;
-    status?: ShowTrackingStatus;
+    userRemoteId!: string;
+    showRemoteId!: string;
+    episodesWatched!: number;
+    status!: ShowTrackingStatus;
 
     constructor(data?: IAddShowTrackingCommand) {
         if (data) {
@@ -3788,7 +4149,6 @@ export class AddShowTrackingCommand implements IAddShowTrackingCommand {
             this.userRemoteId = _data["userRemoteId"];
             this.showRemoteId = _data["showRemoteId"];
             this.episodesWatched = _data["episodesWatched"];
-            this.showType = _data["showType"];
             this.status = _data["status"];
         }
     }
@@ -3805,23 +4165,16 @@ export class AddShowTrackingCommand implements IAddShowTrackingCommand {
         data["userRemoteId"] = this.userRemoteId;
         data["showRemoteId"] = this.showRemoteId;
         data["episodesWatched"] = this.episodesWatched;
-        data["showType"] = this.showType;
         data["status"] = this.status;
         return data;
     }
 }
 
 export interface IAddShowTrackingCommand {
-    userRemoteId?: string;
-    showRemoteId?: string;
-    episodesWatched?: number;
-    showType?: ShowType;
-    status?: ShowTrackingStatus;
-}
-
-export enum ShowType {
-    Movie = 0,
-    Series = 1,
+    userRemoteId: string;
+    showRemoteId: string;
+    episodesWatched: number;
+    status: ShowTrackingStatus;
 }
 
 export enum ShowTrackingStatus {
@@ -3832,9 +4185,8 @@ export enum ShowTrackingStatus {
 }
 
 export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
-    userRemoteId?: string;
-    showRemoteId?: string;
-    showType?: ShowType;
+    userRemoteId!: string;
+    showRemoteId!: string;
 
     constructor(data?: IRemoveShowTrackingCommand) {
         if (data) {
@@ -3849,7 +4201,6 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
         if (_data) {
             this.userRemoteId = _data["userRemoteId"];
             this.showRemoteId = _data["showRemoteId"];
-            this.showType = _data["showType"];
         }
     }
 
@@ -3864,22 +4215,20 @@ export class RemoveShowTrackingCommand implements IRemoveShowTrackingCommand {
         data = typeof data === 'object' ? data : {};
         data["userRemoteId"] = this.userRemoteId;
         data["showRemoteId"] = this.showRemoteId;
-        data["showType"] = this.showType;
         return data;
     }
 }
 
 export interface IRemoveShowTrackingCommand {
-    userRemoteId?: string;
-    showRemoteId?: string;
-    showType?: ShowType;
+    userRemoteId: string;
+    showRemoteId: string;
 }
 
 export class UpdateShowTrackingCommand implements IUpdateShowTrackingCommand {
-    userRemoteId?: string;
-    showRemoteId?: string;
-    episodesWatched?: number;
-    status?: ShowTrackingStatus;
+    userRemoteId!: string;
+    showRemoteId!: string;
+    episodesWatched!: number;
+    status!: ShowTrackingStatus;
 
     constructor(data?: IUpdateShowTrackingCommand) {
         if (data) {
@@ -3917,23 +4266,23 @@ export class UpdateShowTrackingCommand implements IUpdateShowTrackingCommand {
 }
 
 export interface IUpdateShowTrackingCommand {
-    userRemoteId?: string;
-    showRemoteId?: string;
-    episodesWatched?: number;
-    status?: ShowTrackingStatus;
+    userRemoteId: string;
+    showRemoteId: string;
+    episodesWatched: number;
+    status: ShowTrackingStatus;
 }
 
 export class PagedListResultOfGetAllShowTrackingsItemResult implements IPagedListResultOfGetAllShowTrackingsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllShowTrackingsItemResult[];
+    page!: number;
+    totalPages!: number;
+    pageSize!: number;
+    currentPageSize!: number;
+    currentStartIndex!: number;
+    currentEndIndex!: number;
+    totalCount!: number;
+    hasPrevious!: boolean;
+    hasNext!: boolean;
+    items!: GetAllShowTrackingsItemResult[];
 
     constructor(data?: IPagedListResultOfGetAllShowTrackingsItemResult) {
         if (data) {
@@ -3941,6 +4290,9 @@ export class PagedListResultOfGetAllShowTrackingsItemResult implements IPagedLis
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -3991,25 +4343,25 @@ export class PagedListResultOfGetAllShowTrackingsItemResult implements IPagedLis
 }
 
 export interface IPagedListResultOfGetAllShowTrackingsItemResult {
-    page?: number;
-    totalPages?: number;
-    pageSize?: number;
-    currentPageSize?: number;
-    currentStartIndex?: number;
-    currentEndIndex?: number;
-    totalCount?: number;
-    hasPrevious?: boolean;
-    hasNext?: boolean;
-    items?: GetAllShowTrackingsItemResult[];
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    currentPageSize: number;
+    currentStartIndex: number;
+    currentEndIndex: number;
+    totalCount: number;
+    hasPrevious: boolean;
+    hasNext: boolean;
+    items: GetAllShowTrackingsItemResult[];
 }
 
 export class GetAllShowTrackingsItemResult implements IGetAllShowTrackingsItemResult {
-    showRemoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    episodesWatched?: number;
-    showType?: ShowType;
-    status?: ShowTrackingStatus;
+    showRemoteId!: string;
+    title!: string;
+    coverImageURL!: string;
+    episodesWatched!: number;
+    showType!: ShowType;
+    status!: ShowTrackingStatus;
 
     constructor(data?: IGetAllShowTrackingsItemResult) {
         if (data) {
@@ -4051,18 +4403,22 @@ export class GetAllShowTrackingsItemResult implements IGetAllShowTrackingsItemRe
 }
 
 export interface IGetAllShowTrackingsItemResult {
-    showRemoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    episodesWatched?: number;
-    showType?: ShowType;
-    status?: ShowTrackingStatus;
+    showRemoteId: string;
+    title: string;
+    coverImageURL: string;
+    episodesWatched: number;
+    showType: ShowType;
+    status: ShowTrackingStatus;
+}
+
+export enum ShowType {
+    Movie = 0,
+    Series = 1,
 }
 
 export class GetShowTrackingResult implements IGetShowTrackingResult {
-    episodesWatched?: number;
-    showType?: ShowType;
-    status?: ShowTrackingStatus;
+    episodesWatched!: number;
+    status!: ShowTrackingStatus;
 
     constructor(data?: IGetShowTrackingResult) {
         if (data) {
@@ -4076,7 +4432,6 @@ export class GetShowTrackingResult implements IGetShowTrackingResult {
     init(_data?: any) {
         if (_data) {
             this.episodesWatched = _data["episodesWatched"];
-            this.showType = _data["showType"];
             this.status = _data["status"];
         }
     }
@@ -4091,24 +4446,22 @@ export class GetShowTrackingResult implements IGetShowTrackingResult {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["episodesWatched"] = this.episodesWatched;
-        data["showType"] = this.showType;
         data["status"] = this.status;
         return data;
     }
 }
 
 export interface IGetShowTrackingResult {
-    episodesWatched?: number;
-    showType?: ShowType;
-    status?: ShowTrackingStatus;
+    episodesWatched: number;
+    status: ShowTrackingStatus;
 }
 
 export class GetShowResult implements IGetShowResult {
-    remoteId?: string;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
-    showType?: ShowType;
+    remoteId!: string;
+    coverImageURL!: string;
+    title!: string;
+    summary!: string;
+    showType!: ShowType;
 
     constructor(data?: IGetShowResult) {
         if (data) {
@@ -4148,15 +4501,15 @@ export class GetShowResult implements IGetShowResult {
 }
 
 export interface IGetShowResult {
-    remoteId?: string;
-    coverImageURL?: string;
-    title?: string;
-    summary?: string;
-    showType?: ShowType;
+    remoteId: string;
+    coverImageURL: string;
+    title: string;
+    summary: string;
+    showType: ShowType;
 }
 
 export class SearchShowsResult implements ISearchShowsResult {
-    items?: SearchShowsItemResult[];
+    items!: SearchShowsItemResult[];
 
     constructor(data?: ISearchShowsResult) {
         if (data) {
@@ -4164,6 +4517,9 @@ export class SearchShowsResult implements ISearchShowsResult {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.items = [];
         }
     }
 
@@ -4196,14 +4552,14 @@ export class SearchShowsResult implements ISearchShowsResult {
 }
 
 export interface ISearchShowsResult {
-    items?: SearchShowsItemResult[];
+    items: SearchShowsItemResult[];
 }
 
 export class SearchShowsItemResult implements ISearchShowsItemResult {
-    remoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    showType?: ShowType;
+    remoteId!: string;
+    title!: string;
+    coverImageURL!: string;
+    showType!: ShowType;
 
     constructor(data?: ISearchShowsItemResult) {
         if (data) {
@@ -4241,16 +4597,16 @@ export class SearchShowsItemResult implements ISearchShowsItemResult {
 }
 
 export interface ISearchShowsItemResult {
-    remoteId?: string;
-    title?: string;
-    coverImageURL?: string;
-    showType?: ShowType;
+    remoteId: string;
+    title: string;
+    coverImageURL: string;
+    showType: ShowType;
 }
 
 export class RegisterUserCommand implements IRegisterUserCommand {
-    userRemoteId?: string;
-    email?: string;
-    userName?: string;
+    userRemoteId!: string;
+    email!: string;
+    userName!: string;
 
     constructor(data?: IRegisterUserCommand) {
         if (data) {
@@ -4286,14 +4642,14 @@ export class RegisterUserCommand implements IRegisterUserCommand {
 }
 
 export interface IRegisterUserCommand {
-    userRemoteId?: string;
-    email?: string;
-    userName?: string;
+    userRemoteId: string;
+    email: string;
+    userName: string;
 }
 
 export class CheckUserExistResult implements ICheckUserExistResult {
-    isUserNameTaken?: boolean;
-    isEmailTaken?: boolean;
+    isUserNameTaken!: boolean;
+    isEmailTaken!: boolean;
 
     constructor(data?: ICheckUserExistResult) {
         if (data) {
@@ -4327,13 +4683,13 @@ export class CheckUserExistResult implements ICheckUserExistResult {
 }
 
 export interface ICheckUserExistResult {
-    isUserNameTaken?: boolean;
-    isEmailTaken?: boolean;
+    isUserNameTaken: boolean;
+    isEmailTaken: boolean;
 }
 
 export class GetUserResult implements IGetUserResult {
-    userName?: string;
-    email?: string;
+    userName!: string;
+    email!: string;
 
     constructor(data?: IGetUserResult) {
         if (data) {
@@ -4367,8 +4723,84 @@ export class GetUserResult implements IGetUserResult {
 }
 
 export interface IGetUserResult {
-    userName?: string;
-    email?: string;
+    userName: string;
+    email: string;
+}
+
+export class GetPricingUserPreferenceResult implements IGetPricingUserPreferenceResult {
+    eShopRegion!: string;
+
+    constructor(data?: IGetPricingUserPreferenceResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.eShopRegion = _data["eShopRegion"];
+        }
+    }
+
+    static fromJS(data: any): GetPricingUserPreferenceResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetPricingUserPreferenceResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["eShopRegion"] = this.eShopRegion;
+        return data;
+    }
+}
+
+export interface IGetPricingUserPreferenceResult {
+    eShopRegion: string;
+}
+
+export class UpdatePricingUserPreferenceCommand implements IUpdatePricingUserPreferenceCommand {
+    userRemoteId!: string;
+    eShopRegion!: string;
+
+    constructor(data?: IUpdatePricingUserPreferenceCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userRemoteId = _data["userRemoteId"];
+            this.eShopRegion = _data["eShopRegion"];
+        }
+    }
+
+    static fromJS(data: any): UpdatePricingUserPreferenceCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePricingUserPreferenceCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userRemoteId"] = this.userRemoteId;
+        data["eShopRegion"] = this.eShopRegion;
+        return data;
+    }
+}
+
+export interface IUpdatePricingUserPreferenceCommand {
+    userRemoteId: string;
+    eShopRegion: string;
 }
 
 export class BackendAPIResponse<TResult> {

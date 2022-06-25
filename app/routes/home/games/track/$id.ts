@@ -27,7 +27,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetGameTrackings(userId, gameId);
 
     return json<LoaderData>({
-        gameTrackings: getGameTrackingsBackendAPIResponse.result.items ?? []
+        gameTrackings: getGameTrackingsBackendAPIResponse.result.items
     });
 }
 

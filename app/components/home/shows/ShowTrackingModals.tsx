@@ -4,14 +4,14 @@ import { ModalsContextProps } from "@mantine/modals/lib/context";
 import { ShowTrackingStatus, ShowType } from "backend";
 
 interface Show {
-    title?: string;
-    remoteId?: string;
-    showType?: ShowType;
+    title: string;
+    remoteId: string;
+    showType: ShowType;
 }
 
 interface ShowTracking {
-    episodesWatched?: number;
-    status?: ShowTrackingStatus;
+    episodesWatched: number;
+    status: ShowTrackingStatus;
 }
 
 interface ShowTrackingRemoveConfirmModalProps {
@@ -108,7 +108,7 @@ function ShowTrackingEditorModal({
             <Select name="status"
                     label="Status"
                     mt={16}
-                    defaultValue={selectedShowTracking?.status?.toString() ?? showStatuses[0].value}
+                    defaultValue={selectedShowTracking?.status.toString() ?? showStatuses[0].value}
                     data={showStatuses}/>
             <Group mt={32} grow>
                 <Group position={"left"}>

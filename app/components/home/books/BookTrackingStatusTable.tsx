@@ -103,18 +103,18 @@ export default function BookTrackingStatusTable({ status }: BookTrackingStatusTa
                                 <td>{bt.chaptersRead}</td>
                                 {!isMobile &&
                                     <>
-                                        <td>{BookTrackingFormat[bt.format!!]}</td>
-                                        <td>{BookTrackingStatus[bt.status!!]}</td>
-                                        <td>{BookTrackingOwnership[bt.ownership!!]}</td>
+                                        <td>{BookTrackingFormat[bt.format]}</td>
+                                        <td>{BookTrackingStatus[bt.status]}</td>
+                                        <td>{BookTrackingOwnership[bt.ownership]}</td>
                                     </>}
                                 <td>
                                     <ActionIcon onClick={() => showBookTrackingEditorModal(
                                         modals,
+                                        { ...bt, remoteId: bt.bookRemoteId },
                                         bt,
-                                        bt,
-                                        (formData) => addTracking(bt.bookRemoteId!!, formData),
-                                        (formData) => updateTracking(bt.bookRemoteId!!, formData),
-                                        (formData) => removeTracking(bt.bookRemoteId!!, formData)
+                                        (formData) => addTracking(bt.bookRemoteId, formData),
+                                        (formData) => updateTracking(bt.bookRemoteId, formData),
+                                        (formData) => removeTracking(bt.bookRemoteId, formData)
                                     )}>
                                         <Edit/>
                                     </ActionIcon>

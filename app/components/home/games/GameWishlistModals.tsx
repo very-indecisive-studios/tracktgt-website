@@ -4,13 +4,13 @@ import { ModalsContextProps } from "@mantine/modals/lib/context";
 import { Plus, TrashX } from "tabler-icons-react";
 
 interface Game {
-    title?: string;
-    remoteId?: number;
-    platforms?: string[];
+    title: string;
+    remoteId: number;
+    platforms: string[];
 }
 
 interface GameWishlist {
-    platform?: string;
+    platform: string;
 }
 
 interface GameWishlistRemoveConfirmModalProps {
@@ -95,7 +95,7 @@ export function showGameWishlistEditorModal(
     onAdd: (formData: FormData) => void,
 ) {
     const availableGamePlatforms = game.platforms
-        ?.filter(value => !gameWishlists.map(gw => gw.platform).includes(value)) ?? [];
+        .filter(value => !gameWishlists.map(gw => gw.platform).includes(value));
 
     const id = modalsContext.openModal({
         title: "Add to wishlist",
@@ -139,7 +139,7 @@ export function showGameWishlistManageModal(
                         </Card>
                     ))}
                 </Stack>
-                {(gameWishlists.length < (game.platforms?.length ?? 0)) &&
+                {(gameWishlists.length < game.platforms.length) &&
                     <>
                         <Divider my="xs" label="or" labelProps={{ size: "md" }} labelPosition="center" />
                         <Button fullWidth

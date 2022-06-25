@@ -38,10 +38,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 //region Client
 
 interface Show {
-    remoteId?: string | undefined;
-    coverImageURL?: string | undefined;
-    title?: string | undefined;
-    showType?: ShowType | undefined;
+    remoteId: string;
+    coverImageURL: string;
+    title: string;
+    showType: ShowType;
 }
 
 interface TrackingButtonProps {
@@ -133,7 +133,7 @@ export function ShowHeader({ show }: ShowHeaderProps) {
                 <Title order={4} sx={(theme) => ({
                     color: theme.colors.gray[6],
                 })}>
-                    {(ShowType[show.showType!!])}
+                    {(ShowType[show.showType])}
                 </Title>
             </Stack>
         </>
@@ -164,7 +164,7 @@ export default function Show() {
             <Stack mt={48}>
                 <Title order={2}>Summary</Title>
                 <Text
-                    sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.show.summary?.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
+                    sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.show.summary.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
             </Stack>
         </Container>
     );

@@ -1,6 +1,16 @@
 import { Link } from "@remix-run/react";
 import React, { useEffect } from "react";
-import { ActionIcon, Center, LoadingOverlay, Pagination, Stack, Table, Text, useMantineTheme } from "@mantine/core";
+import {
+    ActionIcon,
+    Badge,
+    Center, Group, Loader,
+    LoadingOverlay,
+    Pagination,
+    Stack,
+    Table,
+    Text,
+    useMantineTheme
+} from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { StarOff, TrashX } from "tabler-icons-react";
@@ -9,6 +19,7 @@ import { useAllGamesWishlist } from "~/routes/home/games/wishlist";
 import { useGamesWishlistActions } from "~/routes/home/games/wishlist/$id";
 import CoverImage from "~/components/home/CoverImage";
 import { showGameWishlistRemoveConfirmModal } from "~/components/home/games/GameWishlistModals";
+import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
 
 export default function GameWishlistTable() {
     const theme = useMantineTheme();
@@ -55,6 +66,12 @@ export default function GameWishlistTable() {
                             <th></th>
                             <th>Title</th>
                             <th>Platform</th>
+                            <th>
+                                <Group align={"center"} spacing={"xs"}>
+                                    <Text>Price</Text>
+                                    <Badge size={"xs"} color={"red"}>Beta</Badge>
+                                </Group>
+                            </th>
                             <th></th>
                         </tr>
                         </thead>
@@ -79,11 +96,17 @@ export default function GameWishlistTable() {
                                 </td>
                                 <td>{gw.platform}</td>
                                 <td>
+                                    {gw.platform === "Switch" ? 
+                                        <SwitchGamePrice gameRemoteId={gw.gameRemoteId} /> :
+                                        <Text>N/A</Text>
+                                    }
+                                </td>
+                                <td>
                                     <ActionIcon onClick={() => showGameWishlistRemoveConfirmModal(
-                                        modals, 
+                                        modals,
+                                        { ...gw, remoteId: gw.gameRemoteId, platforms: [gw.platform] },
                                         gw,
-                                        gw,
-                                        (formData) => removeFromWishlist(gw.gameRemoteId!!, formData)
+                                        (formData) => removeFromWishlist(gw.gameRemoteId, formData)
                                     )}>
                                         <TrashX color={"red"}/>
                                     </ActionIcon>

@@ -50,9 +50,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        showTrackings: getAllShowTrackingResponse.result.items ?? [],
-        currentPage: getAllShowTrackingResponse.result.page ?? 0,
-        totalPages: getAllShowTrackingResponse.result.totalPages ?? 0
+        showTrackings: getAllShowTrackingResponse.result.items,
+        currentPage: getAllShowTrackingResponse.result.page,
+        totalPages: getAllShowTrackingResponse.result.totalPages
     });
 }
 

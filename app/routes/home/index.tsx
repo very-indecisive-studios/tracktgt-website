@@ -1,4 +1,4 @@
-﻿import { Badge, Card, Center, Container, Group, Image, Stack, Text, Title } from "@mantine/core";
+﻿import { Badge, Card, Container, Group, Image, Stack, Text, Title } from "@mantine/core";
 import React from "react";
 import { json, LoaderFunction } from "@remix-run/node";
 import {
@@ -53,9 +53,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        games: getAllGameTrackingsResponse.result.items ?? [],
-        books: getAllBookTrackingsResponse.result.items ?? [],
-        shows: getAllShowTrackingsResponse.result.items ?? []
+        games: getAllGameTrackingsResponse.result.items,
+        books: getAllBookTrackingsResponse.result.items,
+        shows: getAllShowTrackingsResponse.result.items
     });
 }
 
@@ -130,9 +130,9 @@ export default function Home() {
                 {loaderData.games.map((gt) => (
                     <MediaTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
                                        link={`/home/games/${gt.gameRemoteId}`}
-                                       title={gt.title ?? ""}
-                                       coverImageURL={gt.coverImageURL ?? ""}
-                                       tag={gt.platform ?? ""} />
+                                       title={gt.title}
+                                       coverImageURL={gt.coverImageURL}
+                                       tag={gt.platform} />
                 ))}
             </Group>
 
@@ -150,8 +150,8 @@ export default function Home() {
                 {loaderData.shows.map((st) => (
                     <MediaTrackingCard key={`${st.showRemoteId}`}
                                        link={`/home/shows/${st.showRemoteId}`}
-                                       title={st.title ?? ""}
-                                       coverImageURL={st.coverImageURL ?? ""} />
+                                       title={st.title}
+                                       coverImageURL={st.coverImageURL} />
                 ))}
             </Group>
 
@@ -169,8 +169,8 @@ export default function Home() {
                 {loaderData.books.map((bt) => (
                     <MediaTrackingCard key={`${bt.bookRemoteId}`}
                                        link={`/home/books/${bt.bookRemoteId}`}
-                                       title={bt.title ?? ""}
-                                       coverImageURL={bt.coverImageURL ?? ""} />
+                                       title={bt.title}
+                                       coverImageURL={bt.coverImageURL} />
                 ))}
             </Group>
         </Container>

@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     const backendResult = await backendAPIClientInstance.book_SearchBooks(title);
 
     return json<LoaderData>({
-        items: backendResult.result.items ?? []
+        items: backendResult.result.items
     });
 }
 
@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 interface SearchResultItemProps {
     id: string;
     title: string;
-    coverImageURL: string | undefined;
+    coverImageURL: string;
     authors: string[];
 }
 
@@ -63,11 +63,11 @@ export default function Search() {
             <Title mb={32} order={2}>Search results for "{title}"</Title>
             <Stack>
                 {loaderData.items.map(b => (
-                    <SearchResultItem key={b.remoteId ?? ""}
-                                      id={b.remoteId ?? ""}
-                                      title={b.title ?? ""}
+                    <SearchResultItem key={b.remoteId}
+                                      id={b.remoteId}
+                                      title={b.title}
                                       coverImageURL={b.coverImageURL}
-                                      authors={b.authors ?? []}
+                                      authors={b.authors}
                     />
                 ))}
             </Stack>

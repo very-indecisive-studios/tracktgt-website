@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     const backendResult = await backendAPIClientInstance.show_SearchShows(title);
 
     return json<LoaderData>({
-        items: backendResult.result.items ?? []
+        items: backendResult.result.items
     });
 }
 
@@ -63,11 +63,11 @@ export default function Search() {
             <Title mb={32} order={2}>Search results for "{title}"</Title>
             <Stack>
                 {loaderData.items.map(s => (
-                    <SearchResultItem key={s.remoteId ?? ""}
-                                      id={s.remoteId ?? ""}
-                                      title={s.title ?? ""}
+                    <SearchResultItem key={s.remoteId}
+                                      id={s.remoteId}
+                                      title={s.title}
                                       coverImageURL={s.coverImageURL}
-                                      showType={s.showType ?? ShowType.Movie}
+                                      showType={s.showType}
                     />
                 ))}
             </Stack>

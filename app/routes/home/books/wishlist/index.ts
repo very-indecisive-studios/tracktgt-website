@@ -29,9 +29,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        bookWishlists: backendAPIResponse.result.items ?? [],
-        currentPage: backendAPIResponse.result.page ?? 1,
-        totalPages: backendAPIResponse.result.totalPages ?? 0
+        bookWishlists: backendAPIResponse.result.items,
+        currentPage: backendAPIResponse.result.page,
+        totalPages: backendAPIResponse.result.totalPages
     });
 }
 

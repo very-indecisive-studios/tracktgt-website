@@ -79,8 +79,8 @@ export default function BookWishlistTable() {
                                 <td>
                                     <ActionIcon onClick={() => showBookWishlistRemoveConfirmModal(
                                         modals,
-                                        bw,
-                                        (formData) => removeFromWishlist(bw.bookRemoteId!!, formData)
+                                        { ...bw, remoteId: bw.bookRemoteId },
+                                        (formData) => removeFromWishlist(bw.bookRemoteId, formData)
                                     )}>
                                         <TrashX color={"red"}/>
                                     </ActionIcon>
