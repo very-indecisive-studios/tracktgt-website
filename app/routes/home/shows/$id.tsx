@@ -1,7 +1,7 @@
 ﻿import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
 import React, { useEffect } from "react";
-import { Button, Container, Group, MediaQuery, Stack, Text, Title } from "@mantine/core";
+import { Box, Button, Container, Group, Image, MediaQuery, Stack, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useModals } from "@mantine/modals";
 import { Edit, Pencil, PlaylistAdd, Plus, TrashX } from "tabler-icons-react";
@@ -148,15 +148,29 @@ export default function Show() {
     const showHeader = <ShowHeader show={loaderData.show}/>
 
     return (
-        <Container py={16}>
+        <Container py={16} sx={() => ({
+            position: "relative"
+        })}>
+            <Box sx={() => ({
+                position: "absolute",
+                top: "0",
+                left: "0",
+                height: "300px",
+                width: "100%",
+            })}>
+                <Image radius={"sm"} src={loaderData.show.coverImageURL} height={300} sx={() => ({
+                    filter: "brightness(0.4)"
+                })} />
+            </Box>
+            
             <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
-                <Stack>
+                <Stack mt={128}>
                     {showHeader}
                 </Stack>
             </MediaQuery>
 
             <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
-                <Group align={"end"} noWrap>
+                <Group mt={128} align={"end"} noWrap>
                     {showHeader}
                 </Group>
             </MediaQuery>

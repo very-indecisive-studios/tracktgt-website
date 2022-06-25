@@ -1,4 +1,6 @@
 ﻿import {
+    Box,
+    BackgroundImage,
     Badge,
     Button,
     Container,
@@ -292,15 +294,29 @@ export default function Game() {
     const gameHeader = <GameHeader game={data.game} />
 
     return (
-        <Container py={16}>
+        <Container py={16} sx={() => ({
+            position: "relative"
+        })}>
+            <Box sx={() => ({
+                position: "absolute",
+                top: "0",
+                left: "0",
+                height: "300px",
+                width: "100%",
+            })}>
+                <Image radius={"sm"} src={data.game.coverImageURL} height={300} sx={() => ({
+                    filter: "brightness(0.4)"
+                })} />
+            </Box>
+
             <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
-                <Stack>
+                <Stack mt={128}>
                     {gameHeader}
                 </Stack>
             </MediaQuery>
 
-            <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
-                <Group align={"end"} noWrap>
+            <MediaQuery  styles={{ display: "none" }} smallerThan={"sm"}>
+                <Group mt={128} align={"end"} noWrap>
                     {gameHeader}
                 </Group>
             </MediaQuery>

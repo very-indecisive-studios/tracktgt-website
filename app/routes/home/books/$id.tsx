@@ -2,7 +2,7 @@
 import { useLoaderData} from "@remix-run/react";
 import React, { useEffect } from "react";
 import { showNotification } from "@mantine/notifications";
-import { Button, Container, Group, MediaQuery, Stack, Text, Title, } from "@mantine/core";
+import { Box, Button, Container, Group, Image, MediaQuery, Stack, Text, Title, } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { Edit, Pencil, PlaylistAdd, Plus, Star, StarOff, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
@@ -197,15 +197,29 @@ export default function Book() {
     const bookHeader = <BookHeader book={loaderData.book} />
 
     return (
-        <Container py={16}>
+        <Container py={16} sx={() => ({
+            position: "relative"
+        })}>
+            <Box sx={() => ({
+                position: "absolute",
+                top: "0",
+                left: "0",
+                height: "300px",
+                width: "100%",
+            })}>
+                <Image radius={"sm"} src={loaderData.book.coverImageURL} height={300} sx={() => ({
+                    filter: "brightness(0.4)"
+                })} />
+            </Box>
+
             <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
-                <Stack>
+                <Stack mt={128}>
                     {bookHeader}
                 </Stack>
             </MediaQuery>
 
             <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
-                <Group align={"end"} noWrap>
+                <Group mt={128} align={"end"} noWrap>
                     {bookHeader}
                 </Group>
             </MediaQuery>
