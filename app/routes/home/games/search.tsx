@@ -1,8 +1,9 @@
-﻿import { Card, Chip, Container, Group, Stack, Title } from "@mantine/core";
+﻿import { Badge, Card, Chip, Container, Group, Stack, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { backendAPIClientInstance, SearchGamesResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
+import PlatformIcon from "~/components/home/games/PlatformIcon";
 
 //region Server
 
@@ -39,7 +40,11 @@ function SearchResultItem({ id, title, coverImageURL, platforms }: SearchResultI
                         <Stack ml={8}>
                             <Title order={3}>{title}</Title>
                             <Group>
-                                {platforms.map(platform => (<Chip size={"sm"} key={platform}>{platform}</Chip>))}
+                                {platforms.map(platform => (
+                                    <Badge radius={"sm"} leftSection={<PlatformIcon platform={platform} />} py={4} color={"gray"} size={"lg"} key={platform}>
+                                        {platform}
+                                    </Badge>
+                                ))}
                             </Group>
                         </Stack>
                     </Group>

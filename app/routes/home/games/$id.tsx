@@ -42,6 +42,7 @@ import { showNotification } from "@mantine/notifications";
 import tabStyles from "~/styles/tabStyles";
 import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
 import { useMobileQuery } from "~/utils/hooks";
+import PlatformIcon from "~/components/home/games/PlatformIcon";
 
 //region Server
 
@@ -234,7 +235,10 @@ export function GameHeader({ game }: GameHeaderProps) {
 
                 <Group mt={16}>
                     {game.platforms.map(platform => (
-                        <Badge color={"gray"} size={"lg"} key={platform}>{platform}</Badge>))}
+                        <Badge radius={"sm"} leftSection={<PlatformIcon platform={platform} />} py={4} color={"gray"} size={"lg"} key={platform}>
+                            {platform}
+                        </Badge>
+                    ))}
                 </Group>
             </Stack>
         </>
