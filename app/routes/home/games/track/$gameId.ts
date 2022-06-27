@@ -21,7 +21,7 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-    const gameId: number = parseInt(params.id ?? "0");
+    const gameId: number = parseInt(params.gameId ?? "0");
     const userId = await requireUserId(request);
 
     const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetGameTrackings(userId, gameId);
@@ -133,7 +133,7 @@ const handlePut = async (gameId: number, request: Request) => {
 }
 
 export const action: ActionFunction = async ({ params, request }) => {
-    const gameId = parseInt(params.id ?? "0")
+    const gameId = parseInt(params.gameId ?? "0")
 
     if (request.method === "POST") {
         return handlePost(gameId, request);

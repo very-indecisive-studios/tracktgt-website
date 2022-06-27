@@ -9,8 +9,8 @@ import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { showBookWishlistRemoveConfirmModal } from "~/components/home/books/BookWishlistModals";
 import { showBookTrackingEditorModal } from "~/components/home/books/BookTrackingModals";
-import { useBookWishlist } from "~/routes/home/books/wishlist/$id";
-import { useBookTracking } from "~/routes/home/books/track/$id";
+import { useBookWishlist } from "~/routes/home/books/wishlist/$bookId";
+import { useBookTracking } from "~/routes/home/books/track/$bookId";
 import {
     backendAPIClientInstance,
     GetBookResult,

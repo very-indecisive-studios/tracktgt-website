@@ -1,18 +1,25 @@
-﻿import { LoaderFunction } from "@remix-run/node";
+﻿import { json, LoaderFunction } from "@remix-run/node";
 import React from "react";
 import { Container, Tabs, Title } from "@mantine/core";
 import { Eye } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import { useMobileQuery } from "~/utils/hooks";
-import tabStyles from "~/styles/tabStyles";
+import { mediaTabStyles } from "~/styles/tabStyles";
 import ShowTrackingStatusTabs from "~/components/home/shows/ShowTrackingStatusTabs";
+import { useLoaderData } from "@remix-run/react";
 
 //region Server
 
-export const loader: LoaderFunction = async ({ request }) => {
-    await requireUserId(request);
+interface LoaderData {
+    userId: string;
+}
 
-    return null;
+export const loader: LoaderFunction = async ({ request }) => {
+    const userId = await requireUserId(request);
+
+    return json<LoaderData>({
+        userId
+    });
 }
 
 //endregion
@@ -20,6 +27,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 //region Client
 
 export default function Shows() {
+    const loaderData = useLoaderData<LoaderData>();
     const isMobile = useMobileQuery();
 
     return (
@@ -28,10 +36,10 @@ export default function Shows() {
 
             <Tabs grow
                   variant={"unstyled"}
-                  styles={(theme) => tabStyles(theme, theme.colors.red[8])}>
+                  styles={(theme) => mediaTabStyles(theme, theme.colors.red[8])}>
                 <Tabs.Tab label={isMobile ? "" : "Tracking"}
                           icon={<Eye size={18}/>}>
-                    <ShowTrackingStatusTabs />
+                    <ShowTrackingStatusTabs readOnly={false} userId={loaderData.userId} />
                 </Tabs.Tab>
             </Tabs>
         </Container>

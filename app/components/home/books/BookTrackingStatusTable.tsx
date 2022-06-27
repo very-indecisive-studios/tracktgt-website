@@ -7,8 +7,8 @@ import { Edit, Pencil, TrashX } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
 import CoverImage from "~/components/home/CoverImage";
 import { showBookTrackingEditorModal } from "~/components/home/books/BookTrackingModals";
-import { useAllBooksTrackings } from "~/routes/home/books/track";
-import { useBookTrackingActions } from "~/routes/home/books/track/$id";
+import { useAllBooksTrackings } from "~/routes/home/books/track/all/$userId";
+import { useBookTrackingActions } from "~/routes/home/books/track/$bookId";
 import {
     BookTrackingFormat,
     BookTrackingOwnership,
@@ -16,15 +16,17 @@ import {
 } from "backend";
 
 interface BookTrackingStatusTableProps {
+    userId: string;
     status: BookTrackingStatus;
+    readOnly: boolean;
 }
 
-export default function BookTrackingStatusTable({ status }: BookTrackingStatusTableProps) {
+export default function BookTrackingStatusTable({ userId, status, readOnly }: BookTrackingStatusTableProps) {
     const theme = useMantineTheme();
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksTrackings(status);
+    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksTrackings(userId, status);
     const { addTracking, updateTracking, removeTracking, actionDone, isLoading: isActionLoading } = useBookTrackingActions();
     useEffect(() => {
         if (!isActionLoading) {
@@ -63,7 +65,7 @@ export default function BookTrackingStatusTable({ status }: BookTrackingStatusTa
             
             {(!isFetcherLoading && allTrackings.length === 0) ?
                 <Center p={64}>
-                    <Text align={"center"}>You do not have {BookTrackingStatus[status].toLowerCase()} books.</Text>
+                    <Text align={"center"}>There are no {BookTrackingStatus[status].toLowerCase()} books.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -78,7 +80,7 @@ export default function BookTrackingStatusTable({ status }: BookTrackingStatusTa
                                     <th>Status</th>
                                     <th>Ownership</th>
                                 </>)}
-                            <th></th>
+                            {!readOnly && <th></th>}
                         </tr>
                         </thead>
                         <tbody>
@@ -107,18 +109,20 @@ export default function BookTrackingStatusTable({ status }: BookTrackingStatusTa
                                         <td>{BookTrackingStatus[bt.status]}</td>
                                         <td>{BookTrackingOwnership[bt.ownership]}</td>
                                     </>}
-                                <td>
-                                    <ActionIcon onClick={() => showBookTrackingEditorModal(
-                                        modals,
-                                        { ...bt, remoteId: bt.bookRemoteId },
-                                        bt,
-                                        (formData) => addTracking(bt.bookRemoteId, formData),
-                                        (formData) => updateTracking(bt.bookRemoteId, formData),
-                                        (formData) => removeTracking(bt.bookRemoteId, formData)
-                                    )}>
-                                        <Edit/>
-                                    </ActionIcon>
-                                </td>
+                                {!readOnly && 
+                                    <td>
+                                        <ActionIcon onClick={() => showBookTrackingEditorModal(
+                                            modals,
+                                            { ...bt, remoteId: bt.bookRemoteId },
+                                            bt,
+                                            (formData) => addTracking(bt.bookRemoteId, formData),
+                                            (formData) => updateTracking(bt.bookRemoteId, formData),
+                                            (formData) => removeTracking(bt.bookRemoteId, formData)
+                                        )}>
+                                            <Edit/>
+                                        </ActionIcon>
+                                    </td>
+                                }
                             </tr>))}
                         </tbody>
                     </Table>

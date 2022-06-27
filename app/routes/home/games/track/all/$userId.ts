@@ -6,27 +6,29 @@ import { requireUserId } from "~/utils/session.server";
 import { badRequest } from "~/utils/response.server";
 import {
     backendAPIClientInstance,
-    GetAllShowTrackingsItemResult,
-    ShowTrackingStatus
+    GameTrackingStatus,
+    GetAllGameTrackingsItemResult,
 } from "backend";
 
 //region Server
 
 interface LoaderData {
-    showTrackings: GetAllShowTrackingsItemResult[],
-    currentPage: number,
-    totalPages: number
+    gameTrackings: GetAllGameTrackingsItemResult[],
+    currentPage: number;
+    totalPages: number;
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
 
     let url = new URL(request.url);
     let queryData = {
         page: url.searchParams.get("page"),
         status: url.searchParams.get("status")
     }
-
+    
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
@@ -40,19 +42,22 @@ export const loader: LoaderFunction = async ({ request }) => {
         return badRequest(parsedQueryData.error.flatten().fieldErrors);
     }
 
-    const getAllShowTrackingResponse = await backendAPIClientInstance.show_GetAllShowTrackings(
+    const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetAllGameTrackings(
         userId,
-        ShowTrackingStatus[parsedQueryData.data.status as keyof typeof ShowTrackingStatus],
+        GameTrackingStatus[parsedQueryData.data.status as keyof typeof GameTrackingStatus],
         true,
+        false,
+        false,
+        false,
         false,
         parsedQueryData.data.page,
         5
     );
 
     return json<LoaderData>({
-        showTrackings: getAllShowTrackingResponse.result.items,
-        currentPage: getAllShowTrackingResponse.result.page,
-        totalPages: getAllShowTrackingResponse.result.totalPages
+        gameTrackings: getGameTrackingsBackendAPIResponse.result.items,
+        currentPage: getGameTrackingsBackendAPIResponse.result.page,
+        totalPages: getGameTrackingsBackendAPIResponse.result.totalPages
     });
 }
 
@@ -60,19 +65,27 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 //region Client
 
-export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
+interface AllGameTrackingsStateAndFunc {
+    allTrackings: GetAllGameTrackingsItemResult[];
+    currentPage: number;
+    totalPages: number;
+    fetchPage: (page: number) => void;
+    isLoading: boolean;
+}
+
+export function useAllGamesTrackings(userId: string, status: GameTrackingStatus, initialPage?: number): AllGameTrackingsStateAndFunc {
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
     const [totalPages, setTotalPages] = useState(1);
-    const [allTrackings, setAllTrackings] = useState<GetAllShowTrackingsItemResult[]>([]);
+    const [allTrackings, setAllTrackings] = useState<GetAllGameTrackingsItemResult[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/shows/track?index&status=${ShowTrackingStatus[status]}&page=${currentPage}`,
+                action: `/home/games/track/all/${userId}?status=${GameTrackingStatus[status]}&page=${currentPage}`,
                 method: "get"
             }
         );
@@ -81,7 +94,7 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
-            setAllTrackings(fetcherAllTrackingsLoader.data.showTrackings);
+            setAllTrackings(fetcherAllTrackingsLoader.data.gameTrackings);
             setTotalPages(fetcherAllTrackingsLoader.data.totalPages);
             setCurrentPage(fetcherAllTrackingsLoader.data.currentPage);
             setIsLoading(false);
@@ -92,7 +105,7 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/shows/track?index&status=${ShowTrackingStatus[status]}&page=${page}`,
+                action: `/home/games/track/all/${userId}?status=${GameTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
@@ -106,14 +119,6 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
         fetchPage,
         isLoading
     }
-}
-
-interface AllShowTrackingsStateAndFunc {
-    allTrackings: GetAllShowTrackingsItemResult[];
-    currentPage: number;
-    totalPages: number;
-    fetchPage: (page: number) => void;
-    isLoading: boolean;
 }
 
 //endregion

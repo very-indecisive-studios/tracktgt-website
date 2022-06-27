@@ -11,7 +11,7 @@ import {
     UnstyledButton,
     useMantineTheme
 } from "@mantine/core";
-import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings } from "tabler-icons-react";
+import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings, UserCircle } from "tabler-icons-react";
 import { Link, useFetcher, useSubmit } from "@remix-run/react";
 import { UserLoaderData } from "~/routes/home/user";
 import { GetUserResult } from "backend";
@@ -126,6 +126,9 @@ function NavbarUser({ onNavigate }: NavbarUserProps) {
                 }
             >
                 <Menu.Label>Account</Menu.Label>
+                <Menu.Item component={Link} to={`/home/members/${user?.userName}`} onClick={onNavigate} icon={<UserCircle size={24} />}>
+                    Profile
+                </Menu.Item>
                 <Menu.Item component={Link} to={"/home/settings"} onClick={onNavigate} icon={<Settings size={24} />}>
                     Settings
                 </Menu.Item>

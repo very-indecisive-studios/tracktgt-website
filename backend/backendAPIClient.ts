@@ -2054,7 +2054,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 
     user_CheckUserExist(userName: string | null | undefined, email: string | null | undefined): Promise<BackendAPIResponse<CheckUserExistResult>> {
-        let url_ = this.baseUrl + "/api/user/checkuserexist?";
+        let url_ = this.baseUrl + "/api/user/exist?";
         if (userName !== undefined && userName !== null)
             url_ += "UserName=" + encodeURIComponent("" + userName) + "&";
         if (email !== undefined && email !== null)
@@ -2115,7 +2115,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
     }
 
     user_GetUser(userRemoteId: string | null): Promise<BackendAPIResponse<GetUserResult>> {
-        let url_ = this.baseUrl + "/api/user/{userRemoteId}";
+        let url_ = this.baseUrl + "/api/user/id/{userRemoteId}";
         if (userRemoteId === undefined || userRemoteId === null)
             throw new Error("The parameter 'userRemoteId' must be defined.");
         url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
@@ -2172,6 +2172,126 @@ export class BackendAPIClient extends ExtBackendAPIClient {
             });
         }
         return Promise.resolve<BackendAPIResponse<GetUserResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    user_GetUserByUserName(userName: string | null): Promise<BackendAPIResponse<GetUserByUserNameResult>> {
+        let url_ = this.baseUrl + "/api/user/username/{userName}";
+        if (userName === undefined || userName === null)
+            throw new Error("The parameter 'userName' must be defined.");
+        url_ = url_.replace("{userName}", encodeURIComponent("" + userName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_GetUserByUserName(_response);
+        });
+    }
+
+    protected processUser_GetUserByUserName(response: Response): Promise<BackendAPIResponse<GetUserByUserNameResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetUserByUserNameResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetUserByUserNameResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
+    user_GetUserStats(userId: string | null): Promise<BackendAPIResponse<GetUserStatsResult>> {
+        let url_ = this.baseUrl + "/api/user/stats/{userId}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_GetUserStats(_response);
+        });
+    }
+
+    protected processUser_GetUserStats(response: Response): Promise<BackendAPIResponse<GetUserStatsResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetUserStatsResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetUserStatsResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
     user_GetPricingUserPreference(userRemoteId: string | null): Promise<BackendAPIResponse<GetPricingUserPreferenceResult>> {
@@ -4725,6 +4845,110 @@ export class GetUserResult implements IGetUserResult {
 export interface IGetUserResult {
     userName: string;
     email: string;
+}
+
+export class GetUserByUserNameResult implements IGetUserByUserNameResult {
+    remoteId!: string;
+    profilePictureURL!: string;
+    userName!: string;
+    email!: string;
+    bio!: string;
+
+    constructor(data?: IGetUserByUserNameResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.remoteId = _data["remoteId"];
+            this.profilePictureURL = _data["profilePictureURL"];
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.bio = _data["bio"];
+        }
+    }
+
+    static fromJS(data: any): GetUserByUserNameResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserByUserNameResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["remoteId"] = this.remoteId;
+        data["profilePictureURL"] = this.profilePictureURL;
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["bio"] = this.bio;
+        return data;
+    }
+}
+
+export interface IGetUserByUserNameResult {
+    remoteId: string;
+    profilePictureURL: string;
+    userName: string;
+    email: string;
+    bio: string;
+}
+
+export class GetUserStatsResult implements IGetUserStatsResult {
+    gamingHours!: number;
+    episodesWatched!: number;
+    chaptersRead!: number;
+    following!: number;
+    followers!: number;
+
+    constructor(data?: IGetUserStatsResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.gamingHours = _data["gamingHours"];
+            this.episodesWatched = _data["episodesWatched"];
+            this.chaptersRead = _data["chaptersRead"];
+            this.following = _data["following"];
+            this.followers = _data["followers"];
+        }
+    }
+
+    static fromJS(data: any): GetUserStatsResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserStatsResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["gamingHours"] = this.gamingHours;
+        data["episodesWatched"] = this.episodesWatched;
+        data["chaptersRead"] = this.chaptersRead;
+        data["following"] = this.following;
+        data["followers"] = this.followers;
+        return data;
+    }
+}
+
+export interface IGetUserStatsResult {
+    gamingHours: number;
+    episodesWatched: number;
+    chaptersRead: number;
+    following: number;
+    followers: number;
 }
 
 export class GetPricingUserPreferenceResult implements IGetPricingUserPreferenceResult {

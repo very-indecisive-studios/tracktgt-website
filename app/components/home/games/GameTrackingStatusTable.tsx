@@ -10,21 +10,23 @@ import {
 import { Link } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 import { Edit, Pencil, TrashX } from "tabler-icons-react";
-import { useAllGamesTrackings } from "~/routes/home/games/track";
-import { useGameTrackingsActions } from "~/routes/home/games/track/$id";
+import { useAllGamesTrackings } from "~/routes/home/games/track/all/$userId";
+import { useGameTrackingsActions } from "~/routes/home/games/track/$gameId";
 import { showGameTrackingEditorModal } from "~/components/home/games/GameTrackingModals";
 import { showNotification } from "@mantine/notifications";
 
 interface GameTrackingStatusTableProps {
+    userId: string;
     status: GameTrackingStatus;
+    readOnly: boolean;
 }
 
-export default function GameTrackingStatusTable({ status }: GameTrackingStatusTableProps) {
+export default function GameTrackingStatusTable({ userId, status, readOnly }: GameTrackingStatusTableProps) {
     const theme = useMantineTheme();
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesTrackings(status);
+    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesTrackings(userId, status);
     const { updateTracking, removeTracking, actionDone, isLoading: isActionLoading } = useGameTrackingsActions();
     useEffect(() => {
         if (!isActionLoading) {
@@ -63,7 +65,7 @@ export default function GameTrackingStatusTable({ status }: GameTrackingStatusTa
 
             {(!isFetcherLoading && allTrackings.length === 0) ?
                 <Center p={64}>
-                    <Text align={"center"}>You do not have {GameTrackingStatus[status].toLowerCase()} games.</Text>
+                    <Text align={"center"}>There are no {GameTrackingStatus[status].toLowerCase()} games.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -79,7 +81,7 @@ export default function GameTrackingStatusTable({ status }: GameTrackingStatusTa
                                     <th>Status</th>
                                     <th>Ownership</th>
                                 </>)}
-                            <th></th>
+                            {!readOnly && <th></th>}
                         </tr>
                         </thead>
                         <tbody>
@@ -109,19 +111,21 @@ export default function GameTrackingStatusTable({ status }: GameTrackingStatusTa
                                         <td>{GameTrackingStatus[gt.status]}</td>
                                         <td>{GameTrackingOwnership[gt.ownership]}</td>
                                     </>}
-                                <td>
-                                    <ActionIcon onClick={() => showGameTrackingEditorModal(
-                                        modals,
-                                        { ...gt, remoteId: gt.gameRemoteId, platforms: [gt.platform] },
-                                        gt,
-                                        [gt],
-                                        () => {},
-                                        (formData) => updateTracking(gt.gameRemoteId, formData),
-                                        (formData) => removeTracking(gt.gameRemoteId, formData)
-                                    )}>
-                                        <Edit/>
-                                    </ActionIcon>
-                                </td>
+                                {!readOnly && 
+                                    <td>
+                                        <ActionIcon onClick={() => showGameTrackingEditorModal(
+                                            modals,
+                                            { ...gt, remoteId: gt.gameRemoteId, platforms: [gt.platform] },
+                                            gt,
+                                            [gt],
+                                            () => {},
+                                            (formData) => updateTracking(gt.gameRemoteId, formData),
+                                            (formData) => removeTracking(gt.gameRemoteId, formData)
+                                        )}>
+                                            <Edit/>
+                                        </ActionIcon>
+                                    </td>
+                                }
                             </tr>))}
                         </tbody>
                     </Table>

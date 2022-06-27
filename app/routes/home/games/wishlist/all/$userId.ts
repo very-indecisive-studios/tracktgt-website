@@ -1,35 +1,38 @@
-import {
-    backendAPIClientInstance, 
-    GetAllBookWishlistsItemResult,
-} from "backend";
 import { json, LoaderFunction } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { requireUserId } from "~/utils/session.server";
+import {
+    backendAPIClientInstance,
+    GetAllGameWishlistsItemResult
+} from "backend";
 
 //region Server
 
 interface LoaderData {
-    bookWishlists: GetAllBookWishlistsItemResult[];
+    gameWishlists: GetAllGameWishlistsItemResult[];
     currentPage: number;
     totalPages: number;
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
-    
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
+
     const url = new URL(request.url);
     const urlSearchParams = url.searchParams;
     const page = parseInt(urlSearchParams.get("page") ?? "1");
-    
-    const backendAPIResponse = await backendAPIClientInstance.book_GetAllBookWishlists(
+
+    const backendAPIResponse = await backendAPIClientInstance.game_GetAllGameWishlists(
         userId,
+        false,
         page,
         5
     );
 
     return json<LoaderData>({
-        bookWishlists: backendAPIResponse.result.items,
+        gameWishlists: backendAPIResponse.result.items,
         currentPage: backendAPIResponse.result.page,
         totalPages: backendAPIResponse.result.totalPages
     });
@@ -39,36 +42,36 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 //region Client
 
-interface BookWishlistStateAndFunc {
-    allWishlists: GetAllBookWishlistsItemResult[];
+interface GameWishlistStateAndFunc {
+    allWishlists: GetAllGameWishlistsItemResult[];
     currentPage: number;
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
 }
 
-export function useAllBooksWishlist(initialPage?: number): BookWishlistStateAndFunc {
+export function useAllGamesWishlist(userId: string, initialPage?: number): GameWishlistStateAndFunc {
     const fetcherAllWishlistLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
     const [totalPages, setTotalPages] = useState(1);
-    const [allWishlists, setAllWishlists] = useState<GetAllBookWishlistsItemResult[]>([]);
+    const [allWishlists, setAllWishlists] = useState<GetAllGameWishlistsItemResult[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetcherAllWishlistLoader.submit(
             null, 
-            { 
-                action: `/home/books/wishlist?index&page=${currentPage}`, 
-                method: "get" 
+            {
+                action: `/home/games/wishlist/all/${userId}?page=${currentPage}`,
+                method: "get"
             }
         );
         setIsLoading(true);
     }, []);
-    
+
     useEffect(() => {
         if (fetcherAllWishlistLoader.type === "done") {
-            setAllWishlists(fetcherAllWishlistLoader.data.bookWishlists);
+            setAllWishlists(fetcherAllWishlistLoader.data.gameWishlists);
             setTotalPages(fetcherAllWishlistLoader.data.totalPages);
             setCurrentPage(fetcherAllWishlistLoader.data.currentPage);
             setIsLoading(false);
@@ -79,13 +82,13 @@ export function useAllBooksWishlist(initialPage?: number): BookWishlistStateAndF
         fetcherAllWishlistLoader.submit(
             null, 
             { 
-                action: `/home/books/wishlist?index&page=${page}`, 
+                action: `/home/games/wishlist/all/${userId}?page=${page}`, 
                 method: "get" 
             }
         );
         setIsLoading(true);
     };
-    
+
     return {
         allWishlists,
         currentPage,

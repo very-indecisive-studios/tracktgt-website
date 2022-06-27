@@ -8,7 +8,7 @@ import { Edit, Pencil, PlaylistAdd, Plus, TrashX } from "tabler-icons-react";
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { showShowTrackingEditorModal } from "~/components/home/shows/ShowTrackingModals";
-import { useShowTracking } from "~/routes/home/shows/track/$id";
+import { useShowTracking } from "~/routes/home/shows/track/$showId";
 import {
     backendAPIClientInstance,
     GetShowResult,

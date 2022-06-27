@@ -1,32 +1,34 @@
-import { json, LoaderFunction } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import { z } from "zod";
-import { requireUserId } from "~/utils/session.server";
-import { badRequest } from "~/utils/response.server";
 import {
     backendAPIClientInstance,
-    GameTrackingStatus,
-    GetAllGameTrackingsItemResult,
+    BookTrackingStatus,
+    GetAllBookTrackingsItemResult,
 } from "backend";
+import { json, LoaderFunction } from "@remix-run/node";
+import { requireUserId } from "~/utils/session.server";
+import { z } from "zod";
+import { badRequest } from "~/utils/response.server";
+import { useFetcher } from "@remix-run/react";
+import { useEffect, useState } from "react";
 
 //region Server
 
 interface LoaderData {
-    gameTrackings: GetAllGameTrackingsItemResult[],
+    bookTrackings: GetAllBookTrackingsItemResult[],
     currentPage: number;
     totalPages: number;
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
 
     let url = new URL(request.url);
     let queryData = {
         page: url.searchParams.get("page"),
         status: url.searchParams.get("status")
     }
-    
+
     const preProcessToNumber = (value: unknown) => (typeof value === "string" ? parseInt(value) : value);
     const formDataSchema = z
         .object({
@@ -40,11 +42,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         return badRequest(parsedQueryData.error.flatten().fieldErrors);
     }
 
-    const getGameTrackingsBackendAPIResponse = await backendAPIClientInstance.game_GetAllGameTrackings(
+    const getAllBookTrackingResponse = await backendAPIClientInstance.book_GetAllBookTrackings(
         userId,
-        GameTrackingStatus[parsedQueryData.data.status as keyof typeof GameTrackingStatus],
+        BookTrackingStatus[parsedQueryData.data.status as keyof typeof BookTrackingStatus],
         true,
-        false,
         false,
         false,
         false,
@@ -53,9 +54,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     return json<LoaderData>({
-        gameTrackings: getGameTrackingsBackendAPIResponse.result.items,
-        currentPage: getGameTrackingsBackendAPIResponse.result.page,
-        totalPages: getGameTrackingsBackendAPIResponse.result.totalPages
+        bookTrackings: getAllBookTrackingResponse.result.items,
+        currentPage: getAllBookTrackingResponse.result.page,
+        totalPages: getAllBookTrackingResponse.result.totalPages
     });
 }
 
@@ -63,28 +64,28 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 //region Client
 
-interface AllGameTrackingsStateAndFunc {
-    allTrackings: GetAllGameTrackingsItemResult[];
+interface AllBookTrackingsStateAndFunc {
+    allTrackings: GetAllBookTrackingsItemResult[];
     currentPage: number;
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
 }
 
-export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: number): AllGameTrackingsStateAndFunc {
+export function useAllBooksTrackings(userId: string, status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
     const [totalPages, setTotalPages] = useState(1);
-    const [allTrackings, setAllTrackings] = useState<GetAllGameTrackingsItemResult[]>([]);
+    const [allTrackings, setAllTrackings] = useState<GetAllBookTrackingsItemResult[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetcherAllTrackingsLoader.submit(
-            null,
-            {
-                action: `/home/games/track?index&status=${GameTrackingStatus[status]}&page=${currentPage}`,
-                method: "get"
+            null, 
+            { 
+                action: `/home/books/track/all/${userId}?status=${BookTrackingStatus[status]}&page=${currentPage}`, 
+                method: "get" 
             }
         );
         setIsLoading(true);
@@ -92,7 +93,7 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
-            setAllTrackings(fetcherAllTrackingsLoader.data.gameTrackings);
+            setAllTrackings(fetcherAllTrackingsLoader.data.bookTrackings);
             setTotalPages(fetcherAllTrackingsLoader.data.totalPages);
             setCurrentPage(fetcherAllTrackingsLoader.data.currentPage);
             setIsLoading(false);
@@ -103,7 +104,7 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/games/track?index&status=${GameTrackingStatus[status]}&page=${page}`,
+                action: `/home/books/trackall/${userId}?status=${BookTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );

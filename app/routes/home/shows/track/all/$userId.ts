@@ -1,25 +1,27 @@
-import {
-    backendAPIClientInstance,
-    BookTrackingStatus,
-    GetAllBookTrackingsItemResult,
-} from "backend";
 import { json, LoaderFunction } from "@remix-run/node";
-import { requireUserId } from "~/utils/session.server";
-import { z } from "zod";
-import { badRequest } from "~/utils/response.server";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
+import { requireUserId } from "~/utils/session.server";
+import { badRequest } from "~/utils/response.server";
+import {
+    backendAPIClientInstance,
+    GetAllShowTrackingsItemResult,
+    ShowTrackingStatus
+} from "backend";
 
 //region Server
 
 interface LoaderData {
-    bookTrackings: GetAllBookTrackingsItemResult[],
-    currentPage: number;
-    totalPages: number;
+    showTrackings: GetAllShowTrackingsItemResult[],
+    currentPage: number,
+    totalPages: number
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
 
     let url = new URL(request.url);
     let queryData = {
@@ -40,21 +42,19 @@ export const loader: LoaderFunction = async ({ request }) => {
         return badRequest(parsedQueryData.error.flatten().fieldErrors);
     }
 
-    const getAllBookTrackingResponse = await backendAPIClientInstance.book_GetAllBookTrackings(
+    const getAllShowTrackingResponse = await backendAPIClientInstance.show_GetAllShowTrackings(
         userId,
-        BookTrackingStatus[parsedQueryData.data.status as keyof typeof BookTrackingStatus],
+        ShowTrackingStatus[parsedQueryData.data.status as keyof typeof ShowTrackingStatus],
         true,
-        false,
-        false,
         false,
         parsedQueryData.data.page,
         5
     );
 
     return json<LoaderData>({
-        bookTrackings: getAllBookTrackingResponse.result.items,
-        currentPage: getAllBookTrackingResponse.result.page,
-        totalPages: getAllBookTrackingResponse.result.totalPages
+        showTrackings: getAllShowTrackingResponse.result.items,
+        currentPage: getAllShowTrackingResponse.result.page,
+        totalPages: getAllShowTrackingResponse.result.totalPages
     });
 }
 
@@ -62,28 +62,20 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 //region Client
 
-interface AllBookTrackingsStateAndFunc {
-    allTrackings: GetAllBookTrackingsItemResult[];
-    currentPage: number;
-    totalPages: number;
-    fetchPage: (page: number) => void;
-    isLoading: boolean;
-}
-
-export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
+export function useAllShowsTrackings(userId: string, status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
     const [totalPages, setTotalPages] = useState(1);
-    const [allTrackings, setAllTrackings] = useState<GetAllBookTrackingsItemResult[]>([]);
+    const [allTrackings, setAllTrackings] = useState<GetAllShowTrackingsItemResult[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetcherAllTrackingsLoader.submit(
-            null, 
-            { 
-                action: `/home/books/track?index&status=${BookTrackingStatus[status]}&page=${currentPage}`, 
-                method: "get" 
+            null,
+            {
+                action: `/home/shows/track/all/${userId}?status=${ShowTrackingStatus[status]}&page=${currentPage}`,
+                method: "get"
             }
         );
         setIsLoading(true);
@@ -91,7 +83,7 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
-            setAllTrackings(fetcherAllTrackingsLoader.data.bookTrackings);
+            setAllTrackings(fetcherAllTrackingsLoader.data.showTrackings);
             setTotalPages(fetcherAllTrackingsLoader.data.totalPages);
             setCurrentPage(fetcherAllTrackingsLoader.data.currentPage);
             setIsLoading(false);
@@ -102,7 +94,7 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/books/track?index&status=${BookTrackingStatus[status]}&page=${page}`,
+                action: `/home/shows/track/all/${userId}?status=${ShowTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
@@ -116,6 +108,14 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         fetchPage,
         isLoading
     }
+}
+
+interface AllShowTrackingsStateAndFunc {
+    allTrackings: GetAllShowTrackingsItemResult[];
+    currentPage: number;
+    totalPages: number;
+    fetchPage: (page: number) => void;
+    isLoading: boolean;
 }
 
 //endregion
