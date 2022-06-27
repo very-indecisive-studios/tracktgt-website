@@ -15,6 +15,8 @@ function SearchBarType({ type }: SearchBarTypeProps) {
         color = "red";
     } else if (type === "books") {
         color = "yellow";
+    } else if (type === "members") {
+        color = "violet";
     }
 
     return (                    

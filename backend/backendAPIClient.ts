@@ -2294,6 +2294,66 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<GetUserStatsResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
+    user_SearchUsers(userName: string | null): Promise<BackendAPIResponse<SearchUsersResult>> {
+        let url_ = this.baseUrl + "/api/user/search/{userName}";
+        if (userName === undefined || userName === null)
+            throw new Error("The parameter 'userName' must be defined.");
+        url_ = url_.replace("{userName}", encodeURIComponent("" + userName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_SearchUsers(_response);
+        });
+    }
+
+    protected processUser_SearchUsers(response: Response): Promise<BackendAPIResponse<SearchUsersResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SearchUsersResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<SearchUsersResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
+
     user_GetPricingUserPreference(userRemoteId: string | null): Promise<BackendAPIResponse<GetPricingUserPreferenceResult>> {
         let url_ = this.baseUrl + "/api/user/preferences/pricing/{userRemoteId}";
         if (userRemoteId === undefined || userRemoteId === null)
@@ -4949,6 +5009,97 @@ export interface IGetUserStatsResult {
     chaptersRead: number;
     following: number;
     followers: number;
+}
+
+export class SearchUsersResult implements ISearchUsersResult {
+    items!: SearchUsersItemResult[];
+
+    constructor(data?: ISearchUsersResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.items = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(SearchUsersItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SearchUsersResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchUsersResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISearchUsersResult {
+    items: SearchUsersItemResult[];
+}
+
+export class SearchUsersItemResult implements ISearchUsersItemResult {
+    userName!: string;
+    profilePictureURL!: string;
+    bio!: string;
+
+    constructor(data?: ISearchUsersItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.profilePictureURL = _data["profilePictureURL"];
+            this.bio = _data["bio"];
+        }
+    }
+
+    static fromJS(data: any): SearchUsersItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SearchUsersItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["profilePictureURL"] = this.profilePictureURL;
+        data["bio"] = this.bio;
+        return data;
+    }
+}
+
+export interface ISearchUsersItemResult {
+    userName: string;
+    profilePictureURL: string;
+    bio: string;
 }
 
 export class GetPricingUserPreferenceResult implements IGetPricingUserPreferenceResult {

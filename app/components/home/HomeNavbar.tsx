@@ -11,7 +11,7 @@ import {
     UnstyledButton,
     useMantineTheme
 } from "@mantine/core";
-import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings, UserCircle } from "tabler-icons-react";
+import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings, UserCircle, Users } from "tabler-icons-react";
 import { Link, useFetcher, useSubmit } from "@remix-run/react";
 import { UserLoaderData } from "~/routes/home/user";
 import { GetUserResult } from "backend";
@@ -160,6 +160,8 @@ export default function HomeNavbar({ opened, onNavigate }: HomeNavbarProps) {
                                 color={"red"}/>
                     <NavbarLink onClick={onNavigate} to={"/home/books"} icon={<Book2 size={18}/>} label={"Books"}
                                 color={"yellow"}/>
+                    <NavbarLink onClick={onNavigate} to={"/home/members"} icon={<Users size={18}/>} label={"Members"}
+                                color={"violet"}/>
                 </Navbar.Section>
                 <Divider my="sm"/>
                 <Navbar.Section>
