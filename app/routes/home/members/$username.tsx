@@ -1,9 +1,9 @@
-import { Container, Divider, Group, Image, Stack, Tabs, Text, Title } from "@mantine/core";
+import { Button, Container, Divider, Group, Image, Stack, Tabs, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance } from "backend";
 import { notFound } from "remix-utils";
-import { Book2, DeviceGamepad, DeviceTv, Eye, Star } from "tabler-icons-react";
+import { Book2, DeviceGamepad, DeviceTv, Eye, Star, UserMinus, UserPlus } from "tabler-icons-react";
 import BooksTrackingTabs from "~/components/home/books/BookTrackingStatusTabs";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 import GameTrackingTabs from "~/components/home/games/GameTrackingStatusTabs";
@@ -12,10 +12,14 @@ import ShowTrackingStatusTabs from "~/components/home/shows/ShowTrackingStatusTa
 import { trackingMediaTabStyles, wishlistMediaTabStyles } from "~/styles/tabStyles";
 import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
+import { useUserFollow } from "~/routes/home/members/follow/$targetUserId";
+import { useEffect } from "react";
+import { showNotification } from "@mantine/notifications";
 
 //region Server
 
 interface LoaderData {
+    isSelf: boolean;
     userId: string;
     profilePictureURL: string;
     userName: string;
@@ -26,7 +30,7 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-    await requireUserId(request);
+    const userId = await requireUserId(request);
     
     try {
         const getUserByUserNameResponse = await backendAPIClientInstance.user_GetUserByUserName(params.username ?? "");
@@ -36,6 +40,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         const { gamingHours, episodesWatched, chaptersRead } = getUserStatsResponse.result;
 
         return json<LoaderData>({
+            isSelf: userId === remoteId,
             userId: remoteId,
             profilePictureURL,
             userName,
@@ -56,6 +61,25 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export default function UserProfile() {
     const loaderData = useLoaderData<LoaderData>();
     const isMobile = useMobileQuery();
+    const { isFollowing, followUser, unfollowUser, isLoading, actionDone: followActionDone } = useUserFollow(loaderData.userId);
+
+    useEffect(() => {
+        if (followActionDone == "add") {
+            showNotification({
+                title: 'Successfully followed user.',
+                message: `You are now following ${loaderData.userName}.`,
+                icon: <UserPlus size={16}/>,
+                color: "green"
+            });
+        } else if (followActionDone == "remove") {
+            showNotification({
+                title: 'Successfully unfollowed user.',
+                message: `You are no longer following ${loaderData.userName}.`,
+                icon: <UserMinus size={16}/>,
+                color: "red"
+            });
+        }
+    }, [followActionDone])
 
     return (
         <Container py={16}>
@@ -65,9 +89,33 @@ export default function UserProfile() {
                 <Stack ml={32} sx={() => ({
                     flex: 1
                 })}>
-                    <Title>{loaderData.userName}</Title>
+                    <Group grow>
+                        <Group position="left">
+                            <Title>{loaderData.userName}</Title>
+                        </Group>
+                        {!loaderData.isSelf &&                        
+                            <Group position="right">
+                                {!isFollowing ? 
+                                    <Button loading={isLoading} 
+                                        leftIcon={<UserPlus size={20} />} 
+                                        onClick={() => followUser()}>
+                                        Follow
+                                    </Button> :
+                                    <Button loading={isLoading} 
+                                        leftIcon={<UserMinus size={20} />} onClick={() => unfollowUser()}
+                                        color={"red"}
+                                        variant={"outline"}>
+                                        Unfollow
+                                    </Button>
+                                }
+                            </Group>
+                        }
+                    </Group>
+                    
                     <Text>{loaderData.bio ?? <i>{loaderData.userName} has not provided any description yet.</i>}</Text>
-                    <Group spacing={"xl"}>
+                    
+                    
+                    <Group spacing={"xl"} position="center">
                         <Group>
                             <Text size="xl"><b>{loaderData.gamingHours}</b></Text>
                             <Text size="md">gaming hours</Text>
