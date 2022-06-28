@@ -1,4 +1,4 @@
-import { Button, Container, Divider, Group, Image, Stack, Tabs, Text, Title } from "@mantine/core";
+import { Button, Container, Divider, Group, Image, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance } from "backend";
@@ -84,24 +84,26 @@ export default function UserProfile() {
     return (
         <Container py={16}>
             <Group mb={32}>
-                <Image radius={200} height={200} width={200} src={loaderData.profilePictureURL ?? "/default_user.svg"} />
+                <Image radius={isMobile ? 100 : 200} height={isMobile ? 100 : 200} width={isMobile ? 100 : 200} src={loaderData.profilePictureURL ?? "/default_user.svg"} />
 
-                <Stack ml={32} sx={() => ({
+                <Stack ml={isMobile ? 8 : 32} sx={() => ({
                     flex: 1
                 })}>
                     <Group grow>
                         <Group position="left">
-                            <Title>{loaderData.userName}</Title>
+                            <Title order={isMobile ? 3 : 1}>{loaderData.userName}</Title>
                         </Group>
                         {!loaderData.isSelf &&                        
                             <Group position="right">
                                 {!isFollowing ? 
-                                    <Button loading={isLoading} 
+                                    <Button size={isMobile ? "xs" : "sm"} 
+                                        loading={isLoading} 
                                         leftIcon={<UserPlus size={20} />} 
                                         onClick={() => followUser()}>
                                         Follow
                                     </Button> :
-                                    <Button loading={isLoading} 
+                                    <Button size={isMobile ? "xs" : "sm"} 
+                                        loading={isLoading} 
                                         leftIcon={<UserMinus size={20} />} onClick={() => unfollowUser()}
                                         color={"red"}
                                         variant={"outline"}>
@@ -112,27 +114,56 @@ export default function UserProfile() {
                         }
                     </Group>
                     
-                    <Text>{loaderData.bio ?? <i>{loaderData.userName} has not provided any description yet.</i>}</Text>
-                    
-                    
-                    <Group spacing={"xl"} position="center">
-                        <Group>
-                            <Text size="xl"><b>{loaderData.gamingHours}</b></Text>
-                            <Text size="md">gaming hours</Text>
-                        </Group>
-                        <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
-                        <Group>
-                            <Text size="xl"><b>{loaderData.episodesWatched}</b></Text>
-                            <Text size="md">episodes watched</Text>
-                        </Group>
-                        <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
-                        <Group>
-                            <Text size="xl"><b>{loaderData.chaptersRead}</b></Text>
-                            <Text size="md">chapters read</Text>
-                        </Group>
-                    </Group>
+                    <Text size={isMobile ? "sm" : "md"}>{loaderData.bio ?? <i>{loaderData.userName} has not provided any description yet.</i>}</Text>
                 </Stack>
             </Group>
+
+            <Stack my={isMobile ? 32 : 48}>
+                <Divider />
+
+                <MediaQuery smallerThan={"sm"} styles={{
+                    display: "none"
+                }}>
+                    <Group spacing={"xl"} position="center">
+                        <Group spacing={"xs"}>
+                            <Text size={"xl"}><b>{loaderData.gamingHours}</b></Text>
+                            <Text size={"md"}>gaming hours</Text>
+                        </Group>
+                        <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
+                        <Group spacing={"xs"}>
+                            <Text size={"xl"}><b>{loaderData.episodesWatched}</b></Text>
+                            <Text size={"md"}>episodes watched</Text>
+                        </Group>
+                        <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
+                        <Group spacing={"xs"}>
+                            <Text size={"xl"}><b>{loaderData.chaptersRead}</b></Text>
+                            <Text size={"md"}>chapters read</Text>
+                        </Group>
+                    </Group>
+                </MediaQuery>
+
+                
+                <MediaQuery largerThan={"sm"} styles={{
+                    display: "none"
+                }}>
+                    <Stack spacing={"xs"} align="center">
+                        <Group spacing={"xs"}>
+                            <Text size={"sm"}><b>{loaderData.gamingHours}</b></Text>
+                            <Text size={"sm"}>gaming hours</Text>
+                        </Group>
+                        <Group spacing={"xs"}>
+                            <Text size={"sm"}><b>{loaderData.episodesWatched}</b></Text>
+                            <Text size={"sm"}>episodes watched</Text>
+                        </Group>
+                        <Group spacing={"xs"}>
+                            <Text size={"sm"}><b>{loaderData.chaptersRead}</b></Text>
+                            <Text size={"sm"}>chapters read</Text>
+                        </Group>
+                    </Stack>
+                </MediaQuery>    
+
+                <Divider />
+            </Stack>
             
             <Tabs grow mb={16} variant={"outline"} tabPadding={32}>
                 <Tabs.Tab label={isMobile ? "" : "Trackings"}
