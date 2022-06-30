@@ -142,17 +142,17 @@ export default function UserProfile() {
                     </Group>
                     
                     <Group spacing={"xs"}>
-                        <Button variant="subtle" onClick={() => showUserFollowListModal(modals, followers, "Followers")}>
+                        <Button variant="light" onClick={() => showUserFollowListModal(modals, followers, "Followers")}>
                             <Group spacing={"xs"}>
-                                <Text size={"xl"}><b>{followers.length}</b></Text>
-                                <Text size={"md"}>followers</Text>
+                                <Text size={isMobile ? "sm" : "md"}><b>{followers.length}</b></Text>
+                                <Text size={isMobile ? "sm" : "md"}>followers</Text>
                             </Group>
                         </Button>
 
-                        <Button variant="subtle" onClick={() => showUserFollowListModal(modals, followings, "Followings")}>
+                        <Button variant="light" onClick={() => showUserFollowListModal(modals, followings, "Followings")}>
                             <Group spacing={"xs"}>
-                                <Text size={"xl"}><b>{followings.length}</b></Text>
-                                <Text size={"md"}>followings</Text>
+                                <Text size={isMobile ? "sm" : "md"}><b>{followings.length}</b></Text>
+                                <Text size={isMobile ? "sm" : "md"}>followings</Text>
                             </Group>
                         </Button>
                     </Group>

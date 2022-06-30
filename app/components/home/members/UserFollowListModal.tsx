@@ -25,7 +25,7 @@ function UserFollowListModal({ users, onUserClick }: UserFollowListModalProps) {
                 </Stack>
             }
             {users.map(u => (
-                <Link to={`/home/members/${u.userName}`} style={{ textDecoration: "none" }} onClick={onUserClick}>
+                <Link key={u.userName} to={`/home/members/${u.userName}`} style={{ textDecoration: "none" }} onClick={onUserClick}>
                     <Card>
                         <Group align={"end"}>
                             <Image src={u.profilePictureURL ?? "/default_user.svg"} radius={25} width={25} height={25}/>
