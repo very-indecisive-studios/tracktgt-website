@@ -2597,7 +2597,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<GetUserFollowersResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    user_GetUserFollowing(userRemoteId: string | null): Promise<BackendAPIResponse<GetUserFollowingResult>> {
+    user_GetUserFollowings(userRemoteId: string | null): Promise<BackendAPIResponse<GetUserFollowingsResult>> {
         let url_ = this.baseUrl + "/api/user/follow/following/{userRemoteId}";
         if (userRemoteId === undefined || userRemoteId === null)
             throw new Error("The parameter 'userRemoteId' must be defined.");
@@ -2614,18 +2614,18 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return this.transformOptions(options_).then(transformedOptions_ => {
             return this.http.fetch(url_, transformedOptions_);
         }).then((_response: Response) => {
-            return this.processUser_GetUserFollowing(_response);
+            return this.processUser_GetUserFollowings(_response);
         });
     }
 
-    protected processUser_GetUserFollowing(response: Response): Promise<BackendAPIResponse<GetUserFollowingResult>> {
+    protected processUser_GetUserFollowings(response: Response): Promise<BackendAPIResponse<GetUserFollowingsResult>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GetUserFollowingResult.fromJS(resultData200);
+            result200 = GetUserFollowingsResult.fromJS(resultData200);
             return new BackendAPIResponse(status, _headers, result200);
             });
         } else if (status === 400) {
@@ -2654,7 +2654,7 @@ export class BackendAPIClient extends ExtBackendAPIClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<BackendAPIResponse<GetUserFollowingResult>>(new BackendAPIResponse(status, _headers, null as any));
+        return Promise.resolve<BackendAPIResponse<GetUserFollowingsResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
     user_UpdateProfilePic(updateProfilePicCommand: UpdateProfilePicCommand): Promise<BackendAPIResponse<Unit>> {
@@ -5652,7 +5652,7 @@ export interface ICheckUserFollowingResult {
 }
 
 export class GetUserFollowersResult implements IGetUserFollowersResult {
-    followersList!: string[];
+    items!: GetUserFollowersItemResult[];
 
     constructor(data?: IGetUserFollowersResult) {
         if (data) {
@@ -5662,16 +5662,16 @@ export class GetUserFollowersResult implements IGetUserFollowersResult {
             }
         }
         if (!data) {
-            this.followersList = [];
+            this.items = [];
         }
     }
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["followersList"])) {
-                this.followersList = [] as any;
-                for (let item of _data["followersList"])
-                    this.followersList!.push(item);
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetUserFollowersItemResult.fromJS(item));
             }
         }
     }
@@ -5685,23 +5685,63 @@ export class GetUserFollowersResult implements IGetUserFollowersResult {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.followersList)) {
-            data["followersList"] = [];
-            for (let item of this.followersList)
-                data["followersList"].push(item);
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
         }
         return data;
     }
 }
 
 export interface IGetUserFollowersResult {
-    followersList: string[];
+    items: GetUserFollowersItemResult[];
 }
 
-export class GetUserFollowingResult implements IGetUserFollowingResult {
-    followingList!: string[];
+export class GetUserFollowersItemResult implements IGetUserFollowersItemResult {
+    userName!: string;
+    profilePictureURL!: string;
 
-    constructor(data?: IGetUserFollowingResult) {
+    constructor(data?: IGetUserFollowersItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.profilePictureURL = _data["profilePictureURL"];
+        }
+    }
+
+    static fromJS(data: any): GetUserFollowersItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserFollowersItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["profilePictureURL"] = this.profilePictureURL;
+        return data;
+    }
+}
+
+export interface IGetUserFollowersItemResult {
+    userName: string;
+    profilePictureURL: string;
+}
+
+export class GetUserFollowingsResult implements IGetUserFollowingsResult {
+    items!: GetUserFollowingsItemResult[];
+
+    constructor(data?: IGetUserFollowingsResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5709,40 +5749,80 @@ export class GetUserFollowingResult implements IGetUserFollowingResult {
             }
         }
         if (!data) {
-            this.followingList = [];
+            this.items = [];
         }
     }
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["followingList"])) {
-                this.followingList = [] as any;
-                for (let item of _data["followingList"])
-                    this.followingList!.push(item);
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetUserFollowingsItemResult.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): GetUserFollowingResult {
+    static fromJS(data: any): GetUserFollowingsResult {
         data = typeof data === 'object' ? data : {};
-        let result = new GetUserFollowingResult();
+        let result = new GetUserFollowingsResult();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.followingList)) {
-            data["followingList"] = [];
-            for (let item of this.followingList)
-                data["followingList"].push(item);
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
         }
         return data;
     }
 }
 
-export interface IGetUserFollowingResult {
-    followingList: string[];
+export interface IGetUserFollowingsResult {
+    items: GetUserFollowingsItemResult[];
+}
+
+export class GetUserFollowingsItemResult implements IGetUserFollowingsItemResult {
+    userName!: string;
+    profilePictureURL!: string;
+
+    constructor(data?: IGetUserFollowingsItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.profilePictureURL = _data["profilePictureURL"];
+        }
+    }
+
+    static fromJS(data: any): GetUserFollowingsItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserFollowingsItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["profilePictureURL"] = this.profilePictureURL;
+        return data;
+    }
+}
+
+export interface IGetUserFollowingsItemResult {
+    userName: string;
+    profilePictureURL: string;
 }
 
 export class UpdateProfilePicCommand implements IUpdateProfilePicCommand {

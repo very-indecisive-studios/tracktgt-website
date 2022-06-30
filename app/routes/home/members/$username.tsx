@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Container, Divider, Group, Image, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
+import { ActionIcon, Button, Container, Divider, Group, Image, Loader, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance } from "backend";
@@ -15,6 +15,10 @@ import { requireUserId } from "~/utils/session.server";
 import { useUserFollow } from "~/routes/home/members/follow/$targetUserId";
 import { useEffect } from "react";
 import { showNotification } from "@mantine/notifications";
+import { useUserFollowersList } from "./followers/$userId";
+import { useUserFollowingsList } from "./followings/$userId";
+import { showUserFollowListModal } from "~/components/home/members/UserFollowListModal";
+import { useModals } from "@mantine/modals";
 
 //region Server
 
@@ -61,7 +65,14 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export default function UserProfile() {
     const loaderData = useLoaderData<LoaderData>();
     const isMobile = useMobileQuery();
-    const { isFollowing, followUser, unfollowUser, isLoading, actionDone: followActionDone } = useUserFollow(loaderData.userId);
+    const modals = useModals();
+
+    const { isFollowing, followUser, unfollowUser, isLoading: isUserFollowLoading, 
+        actionDone: followActionDone, setUserId: setUserFollowUserId } = useUserFollow(loaderData.userId);
+    const { followers, refresh: refreshFollowers, setUserId: setUserFollowersListUserId  } 
+        = useUserFollowersList(loaderData.userId);
+    const { followings, setUserId: setUserFollowingsListUserId } 
+        = useUserFollowingsList(loaderData.userId);
 
     useEffect(() => {
         if (followActionDone == "add") {
@@ -71,6 +82,8 @@ export default function UserProfile() {
                 icon: <UserPlus size={16}/>,
                 color: "green"
             });
+
+            refreshFollowers();
         } else if (followActionDone == "remove") {
             showNotification({
                 title: 'Successfully unfollowed user.',
@@ -78,8 +91,16 @@ export default function UserProfile() {
                 icon: <UserMinus size={16}/>,
                 color: "red"
             });
+
+            refreshFollowers();
         }
     }, [followActionDone])
+
+    useEffect(() => {
+        setUserFollowUserId(loaderData.userId);
+        setUserFollowersListUserId(loaderData.userId);
+        setUserFollowingsListUserId(loaderData.userId);
+    }, [loaderData.userId]);
 
     return (
         <Container py={16}>
@@ -102,16 +123,17 @@ export default function UserProfile() {
                             <Group position="right">
                                 {!isFollowing ? 
                                     <Button size={isMobile ? "xs" : "sm"} 
-                                        loading={isLoading} 
+                                        loading={isUserFollowLoading} 
                                         leftIcon={<UserPlus size={20} />} 
                                         onClick={() => followUser()}>
                                         Follow
                                     </Button> :
                                     <Button size={isMobile ? "xs" : "sm"} 
-                                        loading={isLoading} 
-                                        leftIcon={<UserMinus size={20} />} onClick={() => unfollowUser()}
+                                        loading={isUserFollowLoading} 
+                                        leftIcon={<UserMinus size={20} />} 
                                         color={"red"}
-                                        variant={"outline"}>
+                                        variant={"outline"}
+                                        onClick={() => unfollowUser()}>
                                         Unfollow
                                     </Button>
                                 }
@@ -119,7 +141,25 @@ export default function UserProfile() {
                         }
                     </Group>
                     
-                    <Text size={isMobile ? "sm" : "md"}>{loaderData.bio ?? <i>{loaderData.userName} has not provided any description yet.</i>}</Text>
+                    <Group spacing={"xs"}>
+                        <Button variant="subtle" onClick={() => showUserFollowListModal(modals, followers, "Followers")}>
+                            <Group spacing={"xs"}>
+                                <Text size={"xl"}><b>{followers.length}</b></Text>
+                                <Text size={"md"}>followers</Text>
+                            </Group>
+                        </Button>
+
+                        <Button variant="subtle" onClick={() => showUserFollowListModal(modals, followings, "Followings")}>
+                            <Group spacing={"xs"}>
+                                <Text size={"xl"}><b>{followings.length}</b></Text>
+                                <Text size={"md"}>followings</Text>
+                            </Group>
+                        </Button>
+                    </Group>
+
+                    <Text size={isMobile ? "sm" : "md"}>
+                        {loaderData.bio ?? <i>{loaderData.userName} has not provided any description yet.</i>}
+                    </Text>
                 </Stack>
             </Group>
 

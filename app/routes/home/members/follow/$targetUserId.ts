@@ -74,9 +74,12 @@ interface UserFollowActionsAndStateFunc {
     unfollowUser: () => void;
     actionDone: Actions;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
 export function useUserFollow(targetUserId: string): UserFollowActionsAndStateFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherFollowLoader = useFetcher<LoaderData>();
     const fetcherFollowAction = useFetcher();
 
@@ -86,9 +89,9 @@ export function useUserFollow(targetUserId: string): UserFollowActionsAndStateFu
     const [actionDoing, setIsActionDoing] = useState<Actions>("idle");
 
     useEffect(() => {
-        fetcherFollowLoader.submit(null, { action: `/home/members/follow/${targetUserId}`, method: "get" });
+        fetcherFollowLoader.submit(null, { action: `/home/members/follow/${userId}`, method: "get" });
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherFollowLoader.type === "done") {
@@ -99,7 +102,7 @@ export function useUserFollow(targetUserId: string): UserFollowActionsAndStateFu
 
     useEffect(() => {
         if (fetcherFollowAction.type === "done") {
-            fetcherFollowLoader.submit(null, { action: `/home/members/follow/${targetUserId}`, method: "get" });
+            fetcherFollowLoader.submit(null, { action: `/home/members/follow/${userId}`, method: "get" });
             setIsLoading(true);
             setIsActionDone(actionDoing);
         }
@@ -109,7 +112,7 @@ export function useUserFollow(targetUserId: string): UserFollowActionsAndStateFu
         fetcherFollowAction.submit(
             null,
             {
-                action: `/home/members/follow/${targetUserId}`,
+                action: `/home/members/follow/${userId}`,
                 method: "post"
             });
 
@@ -121,7 +124,7 @@ export function useUserFollow(targetUserId: string): UserFollowActionsAndStateFu
         fetcherFollowAction.submit(
             null,
             {
-                action: `/home/members/follow/${targetUserId}`,
+                action: `/home/members/follow/${userId}`,
                 method: "delete"
             });
         
@@ -134,7 +137,8 @@ export function useUserFollow(targetUserId: string): UserFollowActionsAndStateFu
         followUser,
         unfollowUser,
         actionDone,
-        isLoading
+        isLoading,
+        setUserId
     }
 }
 
