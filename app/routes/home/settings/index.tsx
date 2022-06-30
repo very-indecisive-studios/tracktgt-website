@@ -143,10 +143,10 @@ export default function SettingsPricing() {
                         <Image radius={isMobile ? 100 : 150} height={isMobile ? 100 : 150} width={isMobile ? 100 : 150} src={imageURL} />
 
                         <Group>
-                            <Button variant="outline" leftIcon={<FileUpload size={20} />} onClick={() => {
+                            <Button leftIcon={<Refresh size={20} />} onClick={() => {
                                 fileInputRef.current?.click();
                             }}>
-                                Upload picture
+                                Change picture
                             </Button>
 
                             <button
