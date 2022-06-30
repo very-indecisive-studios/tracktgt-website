@@ -120,7 +120,7 @@ function NavbarUser({ onNavigate }: NavbarUserProps) {
                 placement="end"
                 control={
                     <UserButton
-                        profileImageURL={""}
+                        profileImageURL={user?.profilePictureURL ?? "/default_user.svg"}
                         userName={user?.userName}
                     />
                 }

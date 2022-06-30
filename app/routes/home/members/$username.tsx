@@ -1,9 +1,9 @@
-import { Button, Container, Divider, Group, Image, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
+import { ActionIcon, Button, Container, Divider, Group, Image, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance } from "backend";
 import { notFound } from "remix-utils";
-import { Book2, DeviceGamepad, DeviceTv, Eye, Star, UserMinus, UserPlus } from "tabler-icons-react";
+import { Book2, DeviceGamepad, DeviceTv, Eye, Pencil, Star, UserMinus, UserPlus } from "tabler-icons-react";
 import BooksTrackingTabs from "~/components/home/books/BookTrackingStatusTabs";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 import GameTrackingTabs from "~/components/home/games/GameTrackingStatusTabs";
@@ -92,6 +92,11 @@ export default function UserProfile() {
                     <Group grow>
                         <Group position="left">
                             <Title order={isMobile ? 3 : 1}>{loaderData.userName}</Title>
+                            {loaderData.isSelf && 
+                                <ActionIcon component={Link} to={"/home/settings"}> 
+                                    <Pencil size={20} />
+                                </ActionIcon>
+                            }
                         </Group>
                         {!loaderData.isSelf &&                        
                             <Group position="right">
