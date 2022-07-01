@@ -210,7 +210,7 @@ export default function UserProfile() {
                 <Divider />
             </Stack>
             
-            <Tabs grow mb={16} variant={"outline"} tabPadding={32}>
+            <Tabs grow mb={16} tabPadding={32}>
                 <Tabs.Tab label={isMobile ? "" : "Trackings"}
                           icon={<Eye size={18}/>}>
                     <Tabs grow
