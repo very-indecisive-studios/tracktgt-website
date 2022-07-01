@@ -47,9 +47,12 @@ interface BookWishlistStateAndFunc {
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
-export function useAllBooksWishlist(userId: string, initialPage?: number): BookWishlistStateAndFunc {
+export function useAllBooksWishlist(targetUserId: string, initialPage?: number): BookWishlistStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllWishlistLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -66,7 +69,7 @@ export function useAllBooksWishlist(userId: string, initialPage?: number): BookW
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
     
     useEffect(() => {
         if (fetcherAllWishlistLoader.type === "done") {
@@ -93,7 +96,8 @@ export function useAllBooksWishlist(userId: string, initialPage?: number): BookW
         currentPage,
         totalPages,
         fetchPage,
-        isLoading: isLoading
+        isLoading,
+        setUserId
     }
 }
 

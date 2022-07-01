@@ -48,9 +48,12 @@ interface GameWishlistStateAndFunc {
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
-export function useAllGamesWishlist(userId: string, initialPage?: number): GameWishlistStateAndFunc {
+export function useAllGamesWishlist(targetUserId: string, initialPage?: number): GameWishlistStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllWishlistLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -68,6 +71,18 @@ export function useAllGamesWishlist(userId: string, initialPage?: number): GameW
         );
         setIsLoading(true);
     }, []);
+
+    useEffect(() => {
+        fetcherAllWishlistLoader.submit(
+            null, 
+            {
+                action: `/home/games/wishlist/all/${userId}?page=1`,
+                method: "get"
+            }
+        );
+        setIsLoading(true);
+        setCurrentPage(1);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllWishlistLoader.type === "done") {
@@ -94,7 +109,8 @@ export function useAllGamesWishlist(userId: string, initialPage?: number): GameW
         currentPage,
         totalPages,
         fetchPage,
-        isLoading: isLoading
+        isLoading,
+        setUserId
     }
 }
 

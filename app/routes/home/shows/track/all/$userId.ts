@@ -62,7 +62,18 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 //region Client
 
-export function useAllShowsTrackings(userId: string, status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
+interface AllShowTrackingsStateAndFunc {
+    allTrackings: GetAllShowTrackingsItemResult[];
+    currentPage: number;
+    totalPages: number;
+    fetchPage: (page: number) => void;
+    isLoading: boolean;
+    setUserId: (userId: string) => void;
+}
+
+export function useAllShowsTrackings(targetUserId: string, status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -79,7 +90,7 @@ export function useAllShowsTrackings(userId: string, status: ShowTrackingStatus,
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
@@ -106,16 +117,9 @@ export function useAllShowsTrackings(userId: string, status: ShowTrackingStatus,
         currentPage,
         totalPages,
         fetchPage,
-        isLoading
+        isLoading,
+        setUserId
     }
-}
-
-interface AllShowTrackingsStateAndFunc {
-    allTrackings: GetAllShowTrackingsItemResult[];
-    currentPage: number;
-    totalPages: number;
-    fetchPage: (page: number) => void;
-    isLoading: boolean;
 }
 
 //endregion

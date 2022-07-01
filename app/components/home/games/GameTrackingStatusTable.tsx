@@ -26,8 +26,14 @@ export default function GameTrackingStatusTable({ userId, status, readOnly }: Ga
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesTrackings(userId, status);
+    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading, setUserId: setAllGamesTrackingUserId } 
+        = useAllGamesTrackings(userId, status);
     const { updateTracking, removeTracking, actionDone, isLoading: isActionLoading } = useGameTrackingsActions();
+  
+    useEffect(() => {
+        setAllGamesTrackingUserId(userId);
+    }, [userId])
+
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);

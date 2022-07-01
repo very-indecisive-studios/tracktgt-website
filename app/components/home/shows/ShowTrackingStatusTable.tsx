@@ -22,13 +22,20 @@ export function ShowTrackingStatusTable({ userId, status, readOnly }: ShowTracki
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllShowsTrackings(userId, status);
+    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading, setUserId: setAllShowsTrackingUserId } 
+        = useAllShowsTrackings(userId, status);
     const { updateTracking, removeTracking, isLoading: isActionLoading, actionDone } = useShowTrackingActions();
+    
+    useEffect(() => {
+        setAllShowsTrackingUserId(userId);
+    }, [userId]);
+
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+   
     useEffect(() => {
         if (actionDone == "update") {
             showNotification({

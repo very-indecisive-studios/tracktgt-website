@@ -71,9 +71,12 @@ interface AllGameTrackingsStateAndFunc {
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
-export function useAllGamesTrackings(userId: string, status: GameTrackingStatus, initialPage?: number): AllGameTrackingsStateAndFunc {
+export function useAllGamesTrackings(targetUserId: string, status: GameTrackingStatus, initialPage?: number): AllGameTrackingsStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -90,7 +93,7 @@ export function useAllGamesTrackings(userId: string, status: GameTrackingStatus,
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
@@ -117,7 +120,8 @@ export function useAllGamesTrackings(userId: string, status: GameTrackingStatus,
         currentPage,
         totalPages,
         fetchPage,
-        isLoading
+        isLoading,
+        setUserId
     }
 }
 

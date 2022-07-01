@@ -70,9 +70,12 @@ interface AllBookTrackingsStateAndFunc {
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
-export function useAllBooksTrackings(userId: string, status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
+export function useAllBooksTrackings(targetUserId: string, status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -89,7 +92,7 @@ export function useAllBooksTrackings(userId: string, status: BookTrackingStatus,
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
@@ -116,7 +119,8 @@ export function useAllBooksTrackings(userId: string, status: BookTrackingStatus,
         currentPage,
         totalPages,
         fetchPage,
-        isLoading
+        isLoading,
+        setUserId
     }
 }
 

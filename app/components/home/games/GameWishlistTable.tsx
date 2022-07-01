@@ -31,8 +31,14 @@ export default function GameWishlistTable({ userId, readOnly }: GameWishlistTabl
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesWishlist(userId);
+    const { allWishlists, currentPage, totalPages, fetchPage, 
+        isLoading: isFetcherLoading, setUserId: setAllGamesWishlistUserId } = useAllGamesWishlist(userId);
     const { removeFromWishlist, actionDone, isLoading: isActionLoading } = useGamesWishlistActions();
+    
+    useEffect(() => {
+        setAllGamesWishlistUserId(userId);
+    }, [userId])
+    
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);

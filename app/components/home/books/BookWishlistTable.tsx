@@ -20,13 +20,20 @@ export default function BookWishlistTable({ userId, readOnly }: BookWishlistTabl
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksWishlist(userId);
+    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading, setUserId: setAllBooksWishlistUserId } 
+        = useAllBooksWishlist(userId);
     const { removeFromWishlist, actionDone, isLoading: isActionLoading } = useBookWishlistActions();
+   
+    useEffect(() => {
+        setAllBooksWishlistUserId(userId);
+    }, [userId]);
+   
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+    
     // Action notifications
     useEffect(() => {
         if (actionDone == "remove") {

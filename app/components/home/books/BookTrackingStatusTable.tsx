@@ -26,8 +26,14 @@ export default function BookTrackingStatusTable({ userId, status, readOnly }: Bo
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksTrackings(userId, status);
+    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading, setUserId: setAllBooksTrackingsUserId } 
+        = useAllBooksTrackings(userId, status);
     const { addTracking, updateTracking, removeTracking, actionDone, isLoading: isActionLoading } = useBookTrackingActions();
+    
+    useEffect(() => {
+        setAllBooksTrackingsUserId(userId);
+    }, [userId]);
+    
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
