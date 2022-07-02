@@ -3,6 +3,7 @@ import { Link } from "@remix-run/react";
 import { ActivityAction, ActivityMediaType, GetUserActivitiesItemResult } from "backend";
 import { useEffect } from "react";
 import { useUserActivities } from "~/routes/home/members/activity/$userId";
+import { useMobileQuery } from "~/utils/hooks";
 import CoverImage from "../CoverImage";
 
 function humanizeActivity(activity: GetUserActivitiesItemResult): string {
@@ -36,6 +37,8 @@ interface UserActivityTimelineProps {
 }
 
 export function UserActivityTimeline({ userId }: UserActivityTimelineProps) {
+    const isMobile = useMobileQuery();
+
     const theme = useMantineTheme();
     
     const { activities, isLoading, setUserId: setUserActivitiesUserId } = useUserActivities(userId);
@@ -61,13 +64,13 @@ export function UserActivityTimeline({ userId }: UserActivityTimelineProps) {
                     activities.map((activity) => (
                         <Card shadow="xs" p="lg" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
                             <Grid align={"center"}>
-                                <Grid.Col span={1}>
+                                <Grid.Col span={isMobile ? 0 : 1}>
                                     <Image radius={60} height={60} width={60} src={activity.profilePictureURL} />
                                 </Grid.Col>      
-                                <Grid.Col span={10}>
+                                <Grid.Col span={isMobile ? 9 : 10}>
                                     <Text px={8}>{humanizeActivity(activity)}</Text>
                                 </Grid.Col>                      
-                                <Grid.Col span={1}>
+                                <Grid.Col span={isMobile ? 3 : 1}>
                                     <Link to={`/home/${ActivityMediaType[activity.mediaType].toLowerCase()}s/${activity.mediaRemoteId}`}>
                                         <CoverImage src={activity.mediaCoverImageURL} width={60} height={90}/>
                                     </Link>
