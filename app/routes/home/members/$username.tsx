@@ -3,7 +3,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance } from "backend";
 import { notFound } from "remix-utils";
-import { Book2, DeviceGamepad, DeviceTv, Eye, Pencil, Star, UserMinus, UserPlus } from "tabler-icons-react";
+import { Activity, Book2, DeviceGamepad, DeviceTv, Eye, Pencil, Star, UserMinus, UserPlus } from "tabler-icons-react";
 import BooksTrackingTabs from "~/components/home/books/BookTrackingStatusTabs";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 import GameTrackingTabs from "~/components/home/games/GameTrackingStatusTabs";
@@ -19,6 +19,7 @@ import { useUserFollowersList } from "./followers/$userId";
 import { useUserFollowingsList } from "./followings/$userId";
 import { showUserFollowListModal } from "~/components/home/members/UserFollowListModal";
 import { useModals } from "@mantine/modals";
+import { UserActivityTimeline } from "~/components/home/members/UserActivityTimeline";
 
 //region Server
 
@@ -211,6 +212,14 @@ export default function UserProfile() {
             </Stack>
             
             <Tabs grow mb={16} tabPadding={32}>
+                <Tabs.Tab label={isMobile ? "" : "Activities"}
+                          icon={<Activity size={18}/>}>
+                    <UserActivityTimeline 
+                        userId={loaderData.userId} 
+                        userProfilePictureURL={loaderData.profilePictureURL} 
+                        userName={loaderData.userName} />
+                </Tabs.Tab>
+
                 <Tabs.Tab label={isMobile ? "" : "Trackings"}
                           icon={<Eye size={18}/>}>
                     <Tabs grow
