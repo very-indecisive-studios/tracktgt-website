@@ -6081,6 +6081,8 @@ export interface IGetUserActivitiesResult {
 }
 
 export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult {
+    userName!: string;
+    profilePictureURL!: string;
     mediaRemoteId!: string;
     mediaTitle!: string;
     mediaCoverImageURL!: string;
@@ -6100,6 +6102,8 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
 
     init(_data?: any) {
         if (_data) {
+            this.userName = _data["userName"];
+            this.profilePictureURL = _data["profilePictureURL"];
             this.mediaRemoteId = _data["mediaRemoteId"];
             this.mediaTitle = _data["mediaTitle"];
             this.mediaCoverImageURL = _data["mediaCoverImageURL"];
@@ -6119,6 +6123,8 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["profilePictureURL"] = this.profilePictureURL;
         data["mediaRemoteId"] = this.mediaRemoteId;
         data["mediaTitle"] = this.mediaTitle;
         data["mediaCoverImageURL"] = this.mediaCoverImageURL;
@@ -6131,6 +6137,8 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
 }
 
 export interface IGetUserActivitiesItemResult {
+    userName: string;
+    profilePictureURL: string;
     mediaRemoteId: string;
     mediaTitle: string;
     mediaCoverImageURL: string;

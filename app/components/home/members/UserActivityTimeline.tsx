@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useUserActivities } from "~/routes/home/members/activity/$userId";
 import CoverImage from "../CoverImage";
 
-function humanizeActivity(userName: string, activity: GetUserActivitiesItemResult): string {
+function humanizeActivity(activity: GetUserActivitiesItemResult): string {
     let noOfUnit = "";
     switch (activity.mediaType) {
         case ActivityMediaType.Game:
@@ -21,11 +21,11 @@ function humanizeActivity(userName: string, activity: GetUserActivitiesItemResul
 
     switch (activity.action) {
         case ActivityAction.Add:
-            return `${userName} added ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
+            return `${activity.userName} added ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
         case ActivityAction.Update:
-            return `${userName} updated ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
+            return `${activity.userName} updated ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
         case ActivityAction.Remove:
-            return `${userName} removed ${activity.mediaTitle} from ${activity.status}.`;
+            return `${activity.userName} removed ${activity.mediaTitle} from ${activity.status}.`;
     }
 }
 
@@ -35,7 +35,7 @@ interface UserActivityTimelineProps {
     userProfilePictureURL: string
 }
 
-export function UserActivityTimeline({ userId, userProfilePictureURL, userName }: UserActivityTimelineProps) {
+export function UserActivityTimeline({ userId }: UserActivityTimelineProps) {
     const theme = useMantineTheme();
     
     const { activities, isLoading, setUserId: setUserActivitiesUserId } = useUserActivities(userId);
@@ -59,13 +59,13 @@ export function UserActivityTimeline({ userId, userProfilePictureURL, userName }
                         <Text align={"center"}>There are no recent activities.</Text>
                     </Center> :
                     activities.map((activity) => (
-                        <Card shadow="xs" p="lg" key={`${userId}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
+                        <Card shadow="xs" p="lg" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
                             <Grid align={"center"}>
                                 <Grid.Col span={1}>
-                                    <Image radius={60} height={60} width={60} src={userProfilePictureURL} />
+                                    <Image radius={60} height={60} width={60} src={activity.profilePictureURL} />
                                 </Grid.Col>      
                                 <Grid.Col span={10}>
-                                    <Text px={8}>{humanizeActivity(userName, activity)}</Text>
+                                    <Text px={8}>{humanizeActivity(activity)}</Text>
                                 </Grid.Col>                      
                                 <Grid.Col span={1}>
                                     <Link to={`/home/${ActivityMediaType[activity.mediaType].toLowerCase()}s/${activity.mediaRemoteId}`}>
