@@ -62,7 +62,7 @@ export function UserActivityTimeline({ userId }: UserActivityTimelineProps) {
                         <Text align={"center"}>There are no recent activities.</Text>
                     </Center> :
                     activities.map((activity) => (
-                        <Card shadow="xs" p="lg" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
+                        <Card shadow="xs" p="md" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
                             <Grid align={"center"}>
                                 <Grid.Col span={isMobile ? 0 : 1}>
                                     <Image radius={60} height={60} width={60} src={activity.profilePictureURL} />
