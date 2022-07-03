@@ -9,6 +9,7 @@ import { Check, FileAlert, FileUpload, Refresh } from "tabler-icons-react";
 import { badRequest } from "~/utils/response.server";
 import { z } from "zod";
 import { backendAPIClientInstance, minioClientInstance, UpdateBioCommand, UpdateProfilePicCommand } from "backend";
+import dayjs from "dayjs";
 
 //region Server
 
@@ -40,6 +41,7 @@ const handlePost = async (request: Request) => {
 
     // Process profile picture
     let profilePicture = formData.get("profilePicture");
+    const oldProfilePictureURL = formData.get("oldProfilePictureURL") as string;
     if (profilePicture) {
         profilePicture = profilePicture as File;
         
@@ -47,19 +49,32 @@ const handlePost = async (request: Request) => {
             throw badRequest(null);
         }
 
-        const response = await minioClientInstance.putObject(
+        if (oldProfilePictureURL) {
+            const oldProfilePictureObjectName = oldProfilePictureURL.split("/").at(-1);
+            
+            if (oldProfilePictureObjectName) {                
+                await minioClientInstance.removeObject(
+                    "profilepictures",
+                    oldProfilePictureObjectName
+                );
+            }
+        }
+
+        const newProfilePictureObjectName = `${userId}_${dayjs().toISOString()}.jpg`;
+
+        const putObjectResponse = await minioClientInstance.putObject(
             "profilepictures",
-            `${userId}.jpg`,
+            newProfilePictureObjectName,
             Buffer.from(await profilePicture.arrayBuffer())
         );
         
-        if (!response.etag) {
+        if (!putObjectResponse.etag) {
             throw badRequest(null);
         }
 
         await backendAPIClientInstance.user_UpdateProfilePic(new UpdateProfilePicCommand({
             userRemoteId: userId,
-            profilePictureURL: `https://${process.env.STORAGE_URL}/profilepictures/${userId}.jpg`
+            profilePictureURL: `https://${process.env.STORAGE_URL}/profilepictures/${newProfilePictureObjectName}`
         }));
     }
 
@@ -140,6 +155,8 @@ export default function SettingsPricing() {
                 </Title>
                 <Group my={32}>
                     <Stack>
+                        <TextInput hidden defaultValue={loaderData.profilePictureURL} name="oldProfilePictureURL" />
+
                         <Image radius={isMobile ? 100 : 150} height={isMobile ? 100 : 150} width={isMobile ? 100 : 150} src={imageURL} />
 
                         <Group>
