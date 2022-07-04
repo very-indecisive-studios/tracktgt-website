@@ -13,18 +13,20 @@ import { showNotification } from "@mantine/notifications";
 //region Server
 
 interface LoaderData {
+    selfUserId: string;
     topMembers: GetTopUsersItemResult[];
     globalActivities: GetGlobalActivitiesItemResult[];
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-    await requireUserId(request);
+    const userId = await requireUserId(request);
     
     const topUsersResponse = await backendAPIClientInstance.user_GetTopUsers(5);
 
     const globalActivitiesResponse = await backendAPIClientInstance.user_GetGlobalActivities();
 
     return json<LoaderData>({
+        selfUserId: userId,
         topMembers: topUsersResponse.result.items,
         globalActivities: globalActivitiesResponse.result.items
     });
@@ -35,6 +37,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 //region Client
 
 interface TopMembersCardProps {
+    selfUserId: string;
     remoteId: string;
     profilePictureURL: string;
     userName: string;
@@ -42,7 +45,7 @@ interface TopMembersCardProps {
     followersCount: number;
 }
 
-function TopMembersCard({ remoteId, profilePictureURL, userName, bio, followersCount }: TopMembersCardProps) {
+function TopMembersCard({ selfUserId, remoteId, profilePictureURL, userName, bio, followersCount }: TopMembersCardProps) {
     const isMobile = useMobileQuery();
 
     const { followUser, unfollowUser, isFollowing, actionDone: followActionDone, isLoading: isUserFollowLoading } = useUserFollow(remoteId);
@@ -98,7 +101,7 @@ function TopMembersCard({ remoteId, profilePictureURL, userName, bio, followersC
                 </Text>
 
                 
-                {!isFollowing ? 
+                {(selfUserId !== remoteId) && ((!isFollowing) ? 
                     <Button size={"xs"} 
                         loading={isUserFollowLoading} 
                         leftIcon={<UserPlus size={20} />} 
@@ -113,7 +116,7 @@ function TopMembersCard({ remoteId, profilePictureURL, userName, bio, followersC
                         onClick={() => unfollowUser()}>
                         Unfollow
                     </Button>
-                }
+                )}
             </Stack>
         </Card>
     );
@@ -133,12 +136,13 @@ export default function Games() {
             })}>
                 Top members
             </Title>
-            <Group py={32} grow noWrap sx={() => ({
+            <Group align={"start"} py={32} grow noWrap sx={() => ({
                 overflowX: "auto"
             })}>
                 {loaderData.topMembers.map(m => (
                     <TopMembersCard 
                         key={m.remoteId}
+                        selfUserId={loaderData.selfUserId}
                         remoteId={m.remoteId} 
                         bio={m.bio} 
                         followersCount={m.followersCount}
