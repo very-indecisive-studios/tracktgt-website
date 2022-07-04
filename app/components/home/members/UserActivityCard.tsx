@@ -1,4 +1,4 @@
-import { Card, Grid, Image, Text } from "@mantine/core";
+import { Card, Grid, Group, Image, Stack, Text, Title } from "@mantine/core";
 import { Link } from "@remix-run/react";
 import { ActivityAction, ActivityMediaType } from "backend";
 import CoverImage from "~/components/home/CoverImage";
@@ -36,11 +36,11 @@ function humanizeActivity(activity: Activity): string {
 
     switch (activity.action) {
         case ActivityAction.Add:
-            return `${activity.userName} added ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
+            return `Added ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
         case ActivityAction.Update:
-            return `${activity.userName} updated ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
+            return `Updated ${activity.mediaTitle} with ${activity.noOf} ${noOfUnit} in ${activity.status}.`;
         case ActivityAction.Remove:
-            return `${activity.userName} removed ${activity.mediaTitle} from ${activity.status}.`;
+            return `Removed ${activity.mediaTitle} from ${activity.status}.`;
     }
 }
 
@@ -48,15 +48,29 @@ export default function UserActivityCard({ activity }: UserActivityCardProps) {
     const isMobile = useMobileQuery();
 
     return (
-        <Card shadow="xs" p="md" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
-            <Grid align={"center"}>
-                <Grid.Col span={isMobile ? 0 : 1}>
-                    <Image radius={60} height={60} width={60} src={activity.profilePictureURL} />
-                </Grid.Col>      
-                <Grid.Col span={isMobile ? 9 : 10}>
-                    <Text px={8}>{humanizeActivity(activity)}</Text>
-                </Grid.Col>                      
-                <Grid.Col span={isMobile ? 3 : 1}>
+        <Card shadow="xs" p="lg" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
+            <Grid>
+                <Grid.Col span={isMobile ? 10 : 11}>
+                    <Stack>
+                        <Group align={"end"}>
+                            <Image radius={40} height={40} width={40} src={activity.profilePictureURL} />
+                            
+                            <Link to={`/home/members/${activity.userName}`} style={{ textDecoration: "none" }}>
+                                <Title order={5} sx={(theme) => ({
+                                    color: theme.colors.gray[5]
+                                })}>{activity.userName}</Title>
+                            </Link>
+                        </Group>
+                        
+                        <Text 
+                            sx={(theme) => ({
+                                    color: theme.colors.gray[6]
+                        })}>
+                            {humanizeActivity(activity)}
+                        </Text>
+                    </Stack>
+                </Grid.Col>
+                <Grid.Col span={isMobile ? 2 : 1}>                    
                     <Link to={`/home/${ActivityMediaType[activity.mediaType].toLowerCase()}s/${activity.mediaRemoteId}`}>
                         <CoverImage src={activity.mediaCoverImageURL} width={60} height={90}/>
                     </Link>
