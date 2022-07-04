@@ -1,7 +1,8 @@
-import { Card, Container, Group, Image, Stack, Text, Title } from "@mantine/core";
+import { Card, Center, Container, Group, Image, LoadingOverlay, Stack, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { backendAPIClientInstance, GetTopUsersItemResult } from "backend";
+import { backendAPIClientInstance, GetGlobalActivitiesItemResult, GetTopUsersItemResult } from "backend";
+import UserActivityCard from "~/components/home/members/UserActivityCard";
 import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
 
@@ -9,6 +10,7 @@ import { requireUserId } from "~/utils/session.server";
 
 interface LoaderData {
     topMembers: GetTopUsersItemResult[];
+    globalActivities: GetGlobalActivitiesItemResult[];
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -16,8 +18,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     
     const topUsersResponse = await backendAPIClientInstance.user_GetTopUsers(3);
 
+    const globalActivitiesResponse = await backendAPIClientInstance.user_GetGlobalActivities();
+
     return json<LoaderData>({
-        topMembers: topUsersResponse.result.items
+        topMembers: topUsersResponse.result.items,
+        globalActivities: globalActivitiesResponse.result.items
     });
 }
 
@@ -82,6 +87,21 @@ export default function Games() {
                         profilePictureURL={m.profilePictureURL} />
                 ))}
             </Group>
+
+            <Title mt={64} order={2} sx={(theme) => ({
+                color: theme.colors.gray[6]
+            })}>
+                Global activities
+            </Title>
+            <Stack py={16}>
+                {(loaderData.globalActivities.length === 0) ?                 
+                    <Center p={64}>
+                        <Text align={"center"}>There are no recent activities.</Text>
+                    </Center> :
+                    loaderData.globalActivities.map((activity) => (
+                        <UserActivityCard activity={activity} />
+                    ))}
+            </Stack>
         </Container>
     );
 }
