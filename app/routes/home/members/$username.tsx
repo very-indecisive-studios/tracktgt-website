@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Container, Divider, Group, Image, Loader, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
+import { ActionIcon, Button, Container, Divider, Group, Image, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance, GetUserActivitiesItemResult } from "backend";
@@ -77,7 +77,9 @@ export function UserActivityTimeline({ activities }: UserActivityTimelineProps) 
         <Container>
             <Stack>
                 {activities.map((activity) => (
-                    <UserActivityCard activity={activity} />
+                    <UserActivityCard 
+                        key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`} 
+                        activity={activity} />
                 ))}
             </Stack>
         </Container>

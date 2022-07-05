@@ -6367,6 +6367,7 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
     noOf!: number;
     mediaType!: ActivityMediaType;
     action!: ActivityAction;
+    dateTime!: dayjs.Dayjs;
 
     constructor(data?: IGetUserActivitiesItemResult) {
         if (data) {
@@ -6388,6 +6389,7 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
             this.noOf = _data["noOf"];
             this.mediaType = _data["mediaType"];
             this.action = _data["action"];
+            this.dateTime = _data["dateTime"] ? dayjs(_data["dateTime"].toString()) : <any>undefined;
         }
     }
 
@@ -6409,6 +6411,7 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
         data["noOf"] = this.noOf;
         data["mediaType"] = this.mediaType;
         data["action"] = this.action;
+        data["dateTime"] = this.dateTime ? this.dateTime.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -6423,6 +6426,7 @@ export interface IGetUserActivitiesItemResult {
     noOf: number;
     mediaType: ActivityMediaType;
     action: ActivityAction;
+    dateTime: dayjs.Dayjs;
 }
 
 export enum ActivityMediaType {
@@ -6494,6 +6498,7 @@ export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemRe
     noOf!: number;
     mediaType!: ActivityMediaType;
     action!: ActivityAction;
+    dateTime!: dayjs.Dayjs;
 
     constructor(data?: IGetGlobalActivitiesItemResult) {
         if (data) {
@@ -6515,6 +6520,7 @@ export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemRe
             this.noOf = _data["noOf"];
             this.mediaType = _data["mediaType"];
             this.action = _data["action"];
+            this.dateTime = _data["dateTime"] ? dayjs(_data["dateTime"].toString()) : <any>undefined;
         }
     }
 
@@ -6536,6 +6542,7 @@ export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemRe
         data["noOf"] = this.noOf;
         data["mediaType"] = this.mediaType;
         data["action"] = this.action;
+        data["dateTime"] = this.dateTime ? this.dateTime.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -6550,6 +6557,7 @@ export interface IGetGlobalActivitiesItemResult {
     noOf: number;
     mediaType: ActivityMediaType;
     action: ActivityAction;
+    dateTime: dayjs.Dayjs;
 }
 
 export class GetUserFollowingsActivitiesResult implements IGetUserFollowingsActivitiesResult {

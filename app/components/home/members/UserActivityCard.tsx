@@ -1,6 +1,7 @@
 import { Card, Grid, Group, Image, Stack, Text, Title } from "@mantine/core";
 import { Link } from "@remix-run/react";
 import { ActivityAction, ActivityMediaType } from "backend";
+import dayjs, { Dayjs } from "dayjs";
 import CoverImage from "~/components/home/CoverImage";
 import { useMobileQuery } from "~/utils/hooks";
 
@@ -14,6 +15,7 @@ interface Activity {
     status: string;
     action: ActivityAction;
     noOf: number;
+    dateTime: Dayjs;
 }
 
 interface UserActivityCardProps {
@@ -44,27 +46,51 @@ function humanizeActivity(activity: Activity): string {
     }
 }
 
+function humanizeDateTime(dateTimeString: string): string {
+    const dateTime = dayjs(dateTimeString);
+    const today = dayjs();
+    
+    const diffDays = today.diff(dateTime, "days");
+    if (diffDays >= 1) {
+        return `${diffDays} days ago`;
+    }
+    
+    const diffHours = today.diff(dateTime, "hours");
+    if (diffHours >= 1) {
+        return `${diffDays} hours ago`;
+    }
+    
+    const diffMinutes = today.diff(dateTime, "minutes");
+    return `${diffMinutes} minutes ago`;
+}
+
 export default function UserActivityCard({ activity }: UserActivityCardProps) {
     const isMobile = useMobileQuery();
 
     return (
-        <Card shadow="xs" p="lg" key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`}>
+        <Card shadow="xs" p="lg">
             <Grid>
                 <Grid.Col span={isMobile ? 10 : 11}>
                     <Stack>
-                        <Group align={"end"}>
-                            <Image radius={40} height={40} width={40} src={activity.profilePictureURL ?? "/default_user.svg"} />
+                        <Group align={"start"}>
+                            <Image radius={50} height={50} width={50} src={activity.profilePictureURL ?? "/default_user.svg"} />
                             
-                            <Link to={`/home/members/${activity.userName}`} style={{ textDecoration: "none" }}>
-                                <Title order={5} sx={(theme) => ({
-                                    color: theme.colors.gray[5]
-                                })}>{activity.userName}</Title>
-                            </Link>
+                            <Stack spacing={0}>
+                                <Link to={`/home/members/${activity.userName}`} style={{ textDecoration: "none" }}>
+                                    <Title order={5} sx={(theme) => ({
+                                        color: theme.colors.gray[5]
+                                    })}>{activity.userName}</Title>
+                                </Link>
+                                <Text size={"sm"} sx={(theme) => ({
+                                    color: theme.colors.gray[6]
+                                })}>
+                                    {humanizeDateTime(activity.dateTime.toString())}
+                                </Text>
+                            </Stack>
                         </Group>
                         
-                        <Text 
-                            sx={(theme) => ({
-                                    color: theme.colors.gray[6]
+                        <Text py={4} sx={(theme) => ({
+                            color: theme.colors.gray[5]
                         })}>
                             {humanizeActivity(activity)}
                         </Text>

@@ -38,7 +38,9 @@ export default function Feed() {
                 </Center> :
                 <Stack>
                     {loaderData.timeline.map((activity) => (
-                        <UserActivityCard activity={activity} />
+                        <UserActivityCard 
+                            key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`} 
+                            activity={activity} />
                     ))}
                 </Stack>
             }
