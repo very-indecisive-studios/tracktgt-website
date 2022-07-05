@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Container, Divider, Group, Image, Loader, MediaQuery, Stack, Tabs, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { backendAPIClientInstance } from "backend";
+import { backendAPIClientInstance, GetUserActivitiesItemResult } from "backend";
 import { notFound } from "remix-utils";
 import { Activity, Book2, DeviceGamepad, DeviceTv, Eye, Pencil, Star, UserMinus, UserPlus } from "tabler-icons-react";
 import BooksTrackingTabs from "~/components/home/books/BookTrackingStatusTabs";
@@ -19,7 +19,7 @@ import { useUserFollowersList } from "./followers/$userId";
 import { useUserFollowingsList } from "./followings/$userId";
 import { showUserFollowListModal } from "~/components/home/members/UserFollowListModal";
 import { useModals } from "@mantine/modals";
-import { UserActivityTimeline } from "~/components/home/members/UserActivityTimeline";
+import UserActivityCard from "~/components/home/members/UserActivityCard";
 
 //region Server
 
@@ -32,6 +32,7 @@ interface LoaderData {
     gamingHours: number;
     episodesWatched: number;
     chaptersRead: number;
+    activities: GetUserActivitiesItemResult[];
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -44,6 +45,9 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         const getUserStatsResponse = await backendAPIClientInstance.user_GetUserStats(remoteId);
         const { gamingHours, episodesWatched, chaptersRead } = getUserStatsResponse.result;
 
+        const getUserActivitiesResponse = await backendAPIClientInstance.user_GetUserActivities(remoteId);
+        const { items } = getUserActivitiesResponse.result;
+
         return json<LoaderData>({
             isSelf: userId === remoteId,
             userId: remoteId,
@@ -52,7 +56,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
             bio,
             gamingHours,
             episodesWatched,
-            chaptersRead
+            chaptersRead,
+            activities: items
         });
     } catch {
         throw notFound(null);
@@ -62,6 +67,22 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 //endregion
 
 //region Client
+
+interface UserActivityTimelineProps {
+    activities: GetUserActivitiesItemResult[];
+}
+
+export function UserActivityTimeline({ activities }: UserActivityTimelineProps) {
+    return (
+        <Container>
+            <Stack>
+                {activities.map((activity) => (
+                    <UserActivityCard activity={activity} />
+                ))}
+            </Stack>
+        </Container>
+    );
+}
 
 export default function UserProfile() {
     const loaderData = useLoaderData<LoaderData>();
@@ -214,10 +235,7 @@ export default function UserProfile() {
             <Tabs grow mb={16} tabPadding={32}>
                 <Tabs.Tab label={isMobile ? "" : "Activities"}
                           icon={<Activity size={18}/>}>
-                    <UserActivityTimeline 
-                        userId={loaderData.userId} 
-                        userProfilePictureURL={loaderData.profilePictureURL} 
-                        userName={loaderData.userName} />
+                    <UserActivityTimeline activities={loaderData.activities} />
                 </Tabs.Tab>
 
                 <Tabs.Tab label={isMobile ? "" : "Trackings"}
