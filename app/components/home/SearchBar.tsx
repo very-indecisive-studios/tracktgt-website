@@ -15,6 +15,8 @@ function SearchBarType({ type }: SearchBarTypeProps) {
         color = "red";
     } else if (type === "books") {
         color = "yellow";
+    } else if (type === "members") {
+        color = "violet";
     }
 
     return (                    
@@ -39,7 +41,7 @@ export default function SearchBar() {
         if (path.length > 1) {
             let newType = path[1];
             
-            if (newType == "settings") {
+            if (newType == "settings" || newType == "feed") {
                 newType = "";
             }
             

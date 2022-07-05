@@ -35,16 +35,16 @@ import {
 import { requireUserId } from "~/utils/session.server";
 import CoverImage from "~/components/home/CoverImage";
 import { useModals } from "@mantine/modals";
-import { useGamesWishlist } from "~/routes/home/games/wishlist/$id";
+import { useGamesWishlist } from "~/routes/home/games/wishlist/$gameId";
 import { showGameWishlistEditorModal, showGameWishlistManageModal } from "~/components/home/games/GameWishlistModals";
-import { useGameTrackings } from "~/routes/home/games/track/$id";
+import { useGameTrackings } from "~/routes/home/games/track/$gameId";
 import { showGameTrackingEditorModal, showGameTrackingsSelectorModal } from "~/components/home/games/GameTrackingModals";
 import React, { useEffect } from "react";
 import { showNotification } from "@mantine/notifications";
-import tabStyles from "~/styles/tabStyles";
 import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
 import { useMobileQuery } from "~/utils/hooks";
 import PlatformIcon from "~/components/home/games/PlatformIcon";
+import { mediaTabStyles } from "~/styles/tabStyles";
 
 //region Server
 
@@ -324,7 +324,7 @@ export default function Game() {
             <Tabs grow
                   mt={48}
                   variant={"unstyled"}
-                  styles={(theme) => tabStyles(theme, theme.colors.blue[8])}>
+                  styles={(theme) => mediaTabStyles(theme, theme.colors.blue[8])}>
                 <Tabs.Tab label={isMobile ? "" : "Info"}
                           icon={<InfoCircle size={18}/>}>
                     <Title order={2} mt={16}>Summary</Title>

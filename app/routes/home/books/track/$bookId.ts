@@ -22,7 +22,7 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-    const bookId: string = params.id ?? "0";
+    const bookId: string = params.bookId ?? "0";
     const userId = await requireUserId(request);
 
     const getBookTrackingResponse = await backendAPIClientInstance.book_GetBookTracking(userId, bookId);
@@ -116,7 +116,7 @@ const handlePut = async (bookId: string, request: Request) => {
 }
 
 export const action: ActionFunction = async ({ params, request }) => {
-    const bookId: string = params.id ?? "0";
+    const bookId: string = params.bookId ?? "0";
 
     if (request.method === "POST") {
         return handlePost(bookId, request);

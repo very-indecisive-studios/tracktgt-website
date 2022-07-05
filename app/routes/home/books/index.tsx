@@ -1,19 +1,26 @@
-﻿import { LoaderFunction } from "@remix-run/node";
+﻿import { json, LoaderFunction } from "@remix-run/node";
 import React from "react";
 import { Container, Tabs, Title } from "@mantine/core";
 import { Eye, Star } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
-import tabStyles from "~/styles/tabStyles";
+import { mediaTabStyles } from "~/styles/tabStyles";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 import BooksTrackingTabs from "~/components/home/books/BookTrackingStatusTabs";
+import { useLoaderData } from "@remix-run/react";
 
 //region Server
 
+interface LoaderData {
+    userId: string;
+}
+
 export const loader: LoaderFunction = async ({ request }) => {
-    await requireUserId(request);
+    const userId = await requireUserId(request);
     
-    return null;
+    return json<LoaderData>({
+        userId
+    });
 }
 
 //endregion
@@ -21,6 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 //region Client
 
 export default function Books() {
+    const loaderData = useLoaderData<LoaderData>();
     const isMobile = useMobileQuery();
 
     return (
@@ -29,15 +37,15 @@ export default function Books() {
 
             <Tabs grow
                   variant={"unstyled"}
-                  styles={(theme) => tabStyles(theme, theme.colors.yellow[8])}>
+                  styles={(theme) => mediaTabStyles(theme, theme.colors.yellow[8])}>
                 <Tabs.Tab label={isMobile ? "" : "Tracking"}
                           icon={<Eye size={18}/>}>
-                    <BooksTrackingTabs />
+                    <BooksTrackingTabs readOnly={false} userId={loaderData.userId} />
                 </Tabs.Tab>
 
                 <Tabs.Tab label={isMobile ? "" : "Wishlist"}
                           icon={<Star size={18}/>}>
-                    <BookWishlistTable/>
+                    <BookWishlistTable readOnly={false} userId={loaderData.userId} />
                 </Tabs.Tab>
             </Tabs>
         </Container>

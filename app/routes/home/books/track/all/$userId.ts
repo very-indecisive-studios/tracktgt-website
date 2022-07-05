@@ -18,8 +18,10 @@ interface LoaderData {
     totalPages: number;
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
 
     let url = new URL(request.url);
     let queryData = {
@@ -68,9 +70,12 @@ interface AllBookTrackingsStateAndFunc {
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
-export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
+export function useAllBooksTrackings(targetUserId: string, status: BookTrackingStatus, initialPage?: number): AllBookTrackingsStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -82,12 +87,12 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null, 
             { 
-                action: `/home/books/track?index&status=${BookTrackingStatus[status]}&page=${currentPage}`, 
+                action: `/home/books/track/all/${userId}?status=${BookTrackingStatus[status]}&page=${currentPage}`, 
                 method: "get" 
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
@@ -102,7 +107,7 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/books/track?index&status=${BookTrackingStatus[status]}&page=${page}`,
+                action: `/home/books/trackall/${userId}?status=${BookTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
@@ -114,7 +119,8 @@ export function useAllBooksTrackings(status: BookTrackingStatus, initialPage?: n
         currentPage,
         totalPages,
         fetchPage,
-        isLoading
+        isLoading,
+        setUserId
     }
 }
 

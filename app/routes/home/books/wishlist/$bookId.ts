@@ -16,7 +16,7 @@ interface LoaderData {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
     const userId = await requireUserId(request);
-    const bookId = params.id ?? "";
+    const bookId = params.bookId ?? "";
 
     const backendAPIResponse = await backendAPIClientInstance.book_GetBookWishlist(userId, bookId);
 
@@ -48,7 +48,7 @@ const handlePost = async (bookId: string, request: Request) => {
 }
 
 export const action: ActionFunction = async ({ params, request }) => {
-    const bookId = params.id ?? "";
+    const bookId = params.bookId ?? "";
     
     if (request.method === "POST") {
         return handlePost(bookId, request);

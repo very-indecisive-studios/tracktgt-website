@@ -15,19 +15,30 @@ import { useModals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { StarOff, TrashX } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
-import { useAllGamesWishlist } from "~/routes/home/games/wishlist";
-import { useGamesWishlistActions } from "~/routes/home/games/wishlist/$id";
+import { useAllGamesWishlist } from "~/routes/home/games/wishlist/all/$userId";
+import { useGamesWishlistActions } from "~/routes/home/games/wishlist/$gameId";
 import CoverImage from "~/components/home/CoverImage";
 import { showGameWishlistRemoveConfirmModal } from "~/components/home/games/GameWishlistModals";
 import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
 
-export default function GameWishlistTable() {
+interface GameWishlistTableProps {
+    userId: string;
+    readOnly: boolean;
+}
+
+export default function GameWishlistTable({ userId, readOnly }: GameWishlistTableProps) {
     const theme = useMantineTheme();
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllGamesWishlist();
+    const { allWishlists, currentPage, totalPages, fetchPage, 
+        isLoading: isFetcherLoading, setUserId: setAllGamesWishlistUserId } = useAllGamesWishlist(userId);
     const { removeFromWishlist, actionDone, isLoading: isActionLoading } = useGamesWishlistActions();
+    
+    useEffect(() => {
+        setAllGamesWishlistUserId(userId);
+    }, [userId])
+    
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
@@ -56,8 +67,8 @@ export default function GameWishlistTable() {
                             visible={isActionLoading || isFetcherLoading} />
 
             {(!isFetcherLoading && allWishlists.length === 0) ?
-                <Center p={32}>
-                    <Text align={"center"}>You do not have wishlisted games.</Text>
+                <Center p={64}>
+                    <Text align={"center"}>There are no wishlisted games.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -66,13 +77,15 @@ export default function GameWishlistTable() {
                             <th></th>
                             <th>Title</th>
                             <th>Platform</th>
-                            <th>
-                                <Group align={"center"} spacing={"xs"}>
-                                    <Text>Price</Text>
-                                    <Badge size={"xs"} color={"red"}>Beta</Badge>
-                                </Group>
-                            </th>
-                            <th></th>
+                            {!readOnly && 
+                                <th>
+                                    <Group align={"center"} spacing={"xs"}>
+                                        <Text>Price</Text>
+                                        <Badge size={"xs"} color={"red"}>Beta</Badge>
+                                    </Group>
+                                </th>
+                            }
+                            {!readOnly && <th></th>}
                         </tr>
                         </thead>
                         <tbody>
@@ -95,22 +108,26 @@ export default function GameWishlistTable() {
                                     </Link>
                                 </td>
                                 <td>{gw.platform}</td>
-                                <td>
-                                    {gw.platform === "Switch" ? 
-                                        <SwitchGamePrice gameRemoteId={gw.gameRemoteId} /> :
-                                        <Text>N/A</Text>
-                                    }
-                                </td>
-                                <td>
-                                    <ActionIcon onClick={() => showGameWishlistRemoveConfirmModal(
-                                        modals,
-                                        { ...gw, remoteId: gw.gameRemoteId, platforms: [gw.platform] },
-                                        gw,
-                                        (formData) => removeFromWishlist(gw.gameRemoteId, formData)
-                                    )}>
-                                        <TrashX color={"red"}/>
-                                    </ActionIcon>
-                                </td>
+                                {!readOnly &&
+                                    <td>
+                                        {gw.platform === "Switch" ? 
+                                            <SwitchGamePrice gameRemoteId={gw.gameRemoteId} /> :
+                                            <Text>N/A</Text>
+                                        }
+                                    </td>
+                                }
+                                {!readOnly &&
+                                    <td>
+                                        <ActionIcon onClick={() => showGameWishlistRemoveConfirmModal(
+                                            modals,
+                                            { ...gw, remoteId: gw.gameRemoteId, platforms: [gw.platform] },
+                                            gw,
+                                            (formData) => removeFromWishlist(gw.gameRemoteId, formData)
+                                        )}>
+                                            <TrashX color={"red"}/>
+                                        </ActionIcon>
+                                    </td>
+                                }
                             </tr>))}
                         </tbody>
                     </Table>

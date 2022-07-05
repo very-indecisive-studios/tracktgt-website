@@ -18,8 +18,10 @@ interface LoaderData {
     totalPages: number;
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
 
     let url = new URL(request.url);
     let queryData = {
@@ -69,9 +71,12 @@ interface AllGameTrackingsStateAndFunc {
     totalPages: number;
     fetchPage: (page: number) => void;
     isLoading: boolean;
+    setUserId: (userId: string) => void;
 }
 
-export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: number): AllGameTrackingsStateAndFunc {
+export function useAllGamesTrackings(targetUserId: string, status: GameTrackingStatus, initialPage?: number): AllGameTrackingsStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -83,12 +88,12 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/games/track?index&status=${GameTrackingStatus[status]}&page=${currentPage}`,
+                action: `/home/games/track/all/${userId}?status=${GameTrackingStatus[status]}&page=${currentPage}`,
                 method: "get"
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
@@ -103,7 +108,7 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/games/track?index&status=${GameTrackingStatus[status]}&page=${page}`,
+                action: `/home/games/track/all/${userId}?status=${GameTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
@@ -115,7 +120,8 @@ export function useAllGamesTrackings(status: GameTrackingStatus, initialPage?: n
         currentPage,
         totalPages,
         fetchPage,
-        isLoading
+        isLoading,
+        setUserId
     }
 }
 

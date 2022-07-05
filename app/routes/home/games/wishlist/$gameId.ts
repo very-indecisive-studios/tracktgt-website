@@ -19,7 +19,7 @@ interface LoaderData {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
     const userId = await requireUserId(request);
-    const gameId: number = parseInt(params.id ?? "0");
+    const gameId: number = parseInt(params.gameId ?? "0");
 
     const backendAPIResponse = await backendAPIClientInstance.game_GetGameWishlists(userId, gameId);
 
@@ -79,7 +79,7 @@ const handlePost = async (gameId: number, request: Request) => {
 }
 
 export const action: ActionFunction = async ({ params, request }) => {
-    const gameId = parseInt(params.id ?? "0");
+    const gameId = parseInt(params.gameId ?? "0");
     
     if (request.method === "POST") {
         return handlePost(gameId, request);

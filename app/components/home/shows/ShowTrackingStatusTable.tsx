@@ -7,26 +7,35 @@ import { Edit, Pencil, TrashX } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
 import CoverImage from "~/components/home/CoverImage";
 import { showShowTrackingEditorModal } from "~/components/home/shows/ShowTrackingModals";
-import { useAllShowsTrackings } from "~/routes/home/shows/track";
-import { useShowTrackingActions } from "~/routes/home/shows/track/$id";
+import { useAllShowsTrackings } from "~/routes/home/shows/track/all/$userId";
+import { useShowTrackingActions } from "~/routes/home/shows/track/$showId";
 import { ShowTrackingStatus, ShowType } from "backend";
 
 interface ShowTrackingStatusTableProps {
+    userId: string;
     status: ShowTrackingStatus;
+    readOnly: boolean;
 }
 
-export function ShowTrackingStatusTable({ status }: ShowTrackingStatusTableProps) {
+export function ShowTrackingStatusTable({ userId, status, readOnly }: ShowTrackingStatusTableProps) {
     const theme = useMantineTheme();
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllShowsTrackings(status);
+    const { allTrackings, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading, setUserId: setAllShowsTrackingUserId } 
+        = useAllShowsTrackings(userId, status);
     const { updateTracking, removeTracking, isLoading: isActionLoading, actionDone } = useShowTrackingActions();
+    
+    useEffect(() => {
+        setAllShowsTrackingUserId(userId);
+    }, [userId]);
+
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+   
     useEffect(() => {
         if (actionDone == "update") {
             showNotification({
@@ -56,8 +65,8 @@ export function ShowTrackingStatusTable({ status }: ShowTrackingStatusTableProps
                             visible={isActionLoading || isFetcherLoading} />
 
             {(!isFetcherLoading && allTrackings.length === 0) ?
-                <Center p={32}>
-                    <Text align={"center"}>You do not have {ShowTrackingStatus[status].toLowerCase()} shows.</Text>
+                <Center p={64}>
+                    <Text align={"center"}>There are no {ShowTrackingStatus[status].toLowerCase()} shows.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -71,7 +80,7 @@ export function ShowTrackingStatusTable({ status }: ShowTrackingStatusTableProps
                                     <th>Status</th>
                                     <th>Show Type</th>
                                 </>)}
-                            <th></th>
+                            {!readOnly && <th></th>}
                         </tr>
                         </thead>
                         <tbody>
@@ -99,18 +108,20 @@ export function ShowTrackingStatusTable({ status }: ShowTrackingStatusTableProps
                                         <td>{ShowTrackingStatus[st.status]}</td>
                                         <td>{ShowType[st.showType]}</td>
                                     </>}
-                                <td>
-                                    <ActionIcon onClick={() => showShowTrackingEditorModal(
-                                        modals,
-                                        { ...st, remoteId: st.showRemoteId },
-                                        st,
-                                        () => { },
-                                        (formData) => updateTracking(st.showRemoteId, formData),
-                                        (formData) => removeTracking(st.showRemoteId, formData)
-                                    )}>
-                                        <Edit/>
-                                    </ActionIcon>
-                                </td>
+                                {!readOnly &&
+                                    <td>
+                                        <ActionIcon onClick={() => showShowTrackingEditorModal(
+                                            modals,
+                                            { ...st, remoteId: st.showRemoteId },
+                                            st,
+                                            () => { },
+                                            (formData) => updateTracking(st.showRemoteId, formData),
+                                            (formData) => removeTracking(st.showRemoteId, formData)
+                                        )}>
+                                            <Edit/>
+                                        </ActionIcon>
+                                    </td>
+                                }
                             </tr>))}
                         </tbody>
                     </Table>

@@ -18,8 +18,10 @@ interface LoaderData {
     totalPages: number
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params, request }) => {
+    await requireUserId(request);
+
+    const userId = params.userId ?? "";
 
     let url = new URL(request.url);
     let queryData = {
@@ -60,7 +62,18 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 //region Client
 
-export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
+interface AllShowTrackingsStateAndFunc {
+    allTrackings: GetAllShowTrackingsItemResult[];
+    currentPage: number;
+    totalPages: number;
+    fetchPage: (page: number) => void;
+    isLoading: boolean;
+    setUserId: (userId: string) => void;
+}
+
+export function useAllShowsTrackings(targetUserId: string, status: ShowTrackingStatus, initialPage?: number): AllShowTrackingsStateAndFunc {
+    const [userId, setUserId] = useState(targetUserId);
+
     const fetcherAllTrackingsLoader = useFetcher<LoaderData>();
 
     const [currentPage, setCurrentPage] = useState(initialPage ?? 1);
@@ -72,12 +85,12 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/shows/track?index&status=${ShowTrackingStatus[status]}&page=${currentPage}`,
+                action: `/home/shows/track/all/${userId}?status=${ShowTrackingStatus[status]}&page=${currentPage}`,
                 method: "get"
             }
         );
         setIsLoading(true);
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         if (fetcherAllTrackingsLoader.type === "done") {
@@ -92,7 +105,7 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
         fetcherAllTrackingsLoader.submit(
             null,
             {
-                action: `/home/shows/track?index&status=${ShowTrackingStatus[status]}&page=${page}`,
+                action: `/home/shows/track/all/${userId}?status=${ShowTrackingStatus[status]}&page=${page}`,
                 method: "get"
             }
         );
@@ -104,16 +117,9 @@ export function useAllShowsTrackings(status: ShowTrackingStatus, initialPage?: n
         currentPage,
         totalPages,
         fetchPage,
-        isLoading
+        isLoading,
+        setUserId
     }
-}
-
-interface AllShowTrackingsStateAndFunc {
-    allTrackings: GetAllShowTrackingsItemResult[];
-    currentPage: number;
-    totalPages: number;
-    fetchPage: (page: number) => void;
-    isLoading: boolean;
 }
 
 //endregion

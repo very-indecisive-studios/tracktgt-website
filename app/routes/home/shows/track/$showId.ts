@@ -20,7 +20,7 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-    const showId = params.id ?? "0";
+    const showId = params.showId ?? "0";
     const userId = await requireUserId(request);
 
     const getShowTrackingResponse = await backendAPIClientInstance.show_GetShowTracking(userId, showId);
@@ -100,7 +100,7 @@ const handlePut = async (showId: string, request: Request) => {
 }
 
 export const action: ActionFunction = async ({ params, request }) => {
-    const showId: string = params.id ?? "0";
+    const showId: string = params.showId ?? "0";
 
     if (request.method === "POST") {
         return handlePost(showId, request);

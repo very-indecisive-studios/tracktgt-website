@@ -6,22 +6,34 @@ import { showNotification } from "@mantine/notifications";
 import { useMobileQuery } from "~/utils/hooks";
 import CoverImage from "~/components/home/CoverImage";
 import { StarOff, TrashX } from "tabler-icons-react";
-import { useBookWishlistActions } from "~/routes/home/books/wishlist/$id";
-import { useAllBooksWishlist } from "~/routes/home/books/wishlist";
+import { useBookWishlistActions } from "~/routes/home/books/wishlist/$bookId";
+import { useAllBooksWishlist } from "~/routes/home/books/wishlist/all/$userId";
 import { showBookWishlistRemoveConfirmModal } from "~/components/home/books/BookWishlistModals";
 
-export default function BookWishlistTable() {
+interface BookWishlistTableProps {
+    userId: string;
+    readOnly: boolean;
+}
+
+export default function BookWishlistTable({ userId, readOnly }: BookWishlistTableProps) {
     const theme = useMantineTheme();
     const isMobile = useMobileQuery();
     const modals = useModals();
 
-    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading } = useAllBooksWishlist();
+    const { allWishlists, currentPage, totalPages, fetchPage, isLoading: isFetcherLoading, setUserId: setAllBooksWishlistUserId } 
+        = useAllBooksWishlist(userId);
     const { removeFromWishlist, actionDone, isLoading: isActionLoading } = useBookWishlistActions();
+   
+    useEffect(() => {
+        setAllBooksWishlistUserId(userId);
+    }, [userId]);
+   
     useEffect(() => {
         if (!isActionLoading) {
             fetchPage(currentPage);
         }
     }, [isActionLoading]);
+    
     // Action notifications
     useEffect(() => {
         if (actionDone == "remove") {
@@ -45,8 +57,8 @@ export default function BookWishlistTable() {
                             visible={isActionLoading || isFetcherLoading} />
 
             {(!isFetcherLoading && allWishlists.length === 0) ?
-                <Center p={32}>
-                    <Text align={"center"}>You do not have wishlisted books.</Text>
+                <Center p={64}>
+                    <Text align={"center"}>There are no wishlisted books.</Text>
                 </Center> :
                 <>
                     <Table striped highlightOnHover verticalSpacing={"md"} fontSize={"md"} width={"100%"}>
@@ -54,7 +66,7 @@ export default function BookWishlistTable() {
                         <tr>
                             <th></th>
                             <th>Title</th>
-                            <th></th>
+                            {!readOnly && <th></th>}
                         </tr>
                         </thead>
                         <tbody>
@@ -76,15 +88,17 @@ export default function BookWishlistTable() {
                                         </Text>
                                     </Link>
                                 </td>
-                                <td>
-                                    <ActionIcon onClick={() => showBookWishlistRemoveConfirmModal(
-                                        modals,
-                                        { ...bw, remoteId: bw.bookRemoteId },
-                                        (formData) => removeFromWishlist(bw.bookRemoteId, formData)
-                                    )}>
-                                        <TrashX color={"red"}/>
-                                    </ActionIcon>
-                                </td>
+                                {!readOnly &&                                
+                                    <td>
+                                        <ActionIcon onClick={() => showBookWishlistRemoveConfirmModal(
+                                            modals,
+                                            { ...bw, remoteId: bw.bookRemoteId },
+                                            (formData) => removeFromWishlist(bw.bookRemoteId, formData)
+                                        )}>
+                                            <TrashX color={"red"}/>
+                                        </ActionIcon>
+                                    </td>
+                                }
                             </tr>))}
                         </tbody>
                     </Table>

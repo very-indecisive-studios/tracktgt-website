@@ -11,7 +11,7 @@ import {
     UnstyledButton,
     useMantineTheme
 } from "@mantine/core";
-import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings } from "tabler-icons-react";
+import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings, Timeline, UserCircle, Users } from "tabler-icons-react";
 import { Link, useFetcher, useSubmit } from "@remix-run/react";
 import { UserLoaderData } from "~/routes/home/user";
 import { GetUserResult } from "backend";
@@ -120,12 +120,15 @@ function NavbarUser({ onNavigate }: NavbarUserProps) {
                 placement="end"
                 control={
                     <UserButton
-                        profileImageURL={""}
+                        profileImageURL={user?.profilePictureURL ?? "/default_user.svg"}
                         userName={user?.userName}
                     />
                 }
             >
                 <Menu.Label>Account</Menu.Label>
+                <Menu.Item component={Link} to={`/home/members/${user?.userName}`} onClick={onNavigate} icon={<UserCircle size={24} />}>
+                    Profile
+                </Menu.Item>
                 <Menu.Item component={Link} to={"/home/settings"} onClick={onNavigate} icon={<Settings size={24} />}>
                     Settings
                 </Menu.Item>
@@ -150,13 +153,17 @@ export default function HomeNavbar({ opened, onNavigate }: HomeNavbarProps) {
             <Navbar p="xs" width={{ md: 300 }}>
                 <Navbar.Section grow mt="xs">
                     <NavbarLink onClick={onNavigate} to={"/home"} icon={<LayoutBoard size={18}/>}
-                                label={"Dashboard"} color={"gray"}/>
+                                label={"Dashboard"} color={"gray"}/>                    
+                    <NavbarLink onClick={onNavigate} to={"/home/feed"} icon={<Timeline size={18}/>}
+                                label={"Feed"} color={"green"}/>
                     <NavbarLink onClick={onNavigate} to={"/home/games"} icon={<DeviceGamepad size={18}/>}
                                 label={"Games"} color={"blue"}/>
                     <NavbarLink onClick={onNavigate} to={"/home/shows"} icon={<DeviceTv size={18}/>} label={"Shows"}
                                 color={"red"}/>
                     <NavbarLink onClick={onNavigate} to={"/home/books"} icon={<Book2 size={18}/>} label={"Books"}
                                 color={"yellow"}/>
+                    <NavbarLink onClick={onNavigate} to={"/home/members"} icon={<Users size={18}/>} label={"Members"}
+                                color={"violet"}/>
                 </Navbar.Section>
                 <Divider my="sm"/>
                 <Navbar.Section>
