@@ -57,7 +57,7 @@ function humanizeDateTime(dateTimeString: string): string {
     
     const diffHours = today.diff(dateTime, "hours");
     if (diffHours >= 1) {
-        return `${diffDays} hours ago`;
+        return `${diffHours} hours ago`;
     }
     
     const diffMinutes = today.diff(dateTime, "minutes");

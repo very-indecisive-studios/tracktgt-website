@@ -1,19 +1,14 @@
-import { Button, Card, Center, Container, Group, Image, LoadingOverlay, Stack, Text, Title } from "@mantine/core";
+import { Card, Center, Container, Group, Image, Stack, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance, GetGlobalActivitiesItemResult, GetTopUsersItemResult } from "backend";
 import UserActivityCard from "~/components/home/members/UserActivityCard";
 import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
-import { useUserFollow } from "~/routes/home/members/follow/$targetUserId";
-import { UserMinus, UserPlus } from "tabler-icons-react";
-import { useEffect } from "react";
-import { showNotification } from "@mantine/notifications";
 
 //region Server
 
 interface LoaderData {
-    selfUserId: string;
     topMembers: GetTopUsersItemResult[];
     globalActivities: GetGlobalActivitiesItemResult[];
 }
@@ -26,7 +21,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     const globalActivitiesResponse = await backendAPIClientInstance.user_GetGlobalActivities();
 
     return json<LoaderData>({
-        selfUserId: userId,
         topMembers: topUsersResponse.result.items,
         globalActivities: globalActivitiesResponse.result.items
     });
@@ -37,7 +31,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 //region Client
 
 interface TopMembersCardProps {
-    selfUserId: string;
     remoteId: string;
     profilePictureURL: string;
     userName: string;
@@ -45,29 +38,7 @@ interface TopMembersCardProps {
     followersCount: number;
 }
 
-function TopMembersCard({ selfUserId, remoteId, profilePictureURL, userName, bio, followersCount }: TopMembersCardProps) {
-    const isMobile = useMobileQuery();
-
-    const { followUser, unfollowUser, isFollowing, actionDone: followActionDone, isLoading: isUserFollowLoading } = useUserFollow(remoteId);
-
-    useEffect(() => {
-        if (followActionDone == "add") {
-            showNotification({
-                title: 'Successfully followed user.',
-                message: `You are now following ${userName}.`,
-                icon: <UserPlus size={16}/>,
-                color: "green"
-            });
-        } else if (followActionDone == "remove") {
-            showNotification({
-                title: 'Successfully unfollowed user.',
-                message: `You are no longer following ${userName}.`,
-                icon: <UserMinus size={16}/>,
-                color: "red"
-            });
-        }
-    }, [followActionDone])
-
+function TopMembersCard({ remoteId, profilePictureURL, userName, bio, followersCount }: TopMembersCardProps) {
     return (
         <Card sx={() => ({
             minWidth: "325px"
@@ -99,24 +70,6 @@ function TopMembersCard({ selfUserId, remoteId, profilePictureURL, userName, bio
                     })}>
                     {bio ?? <i>{userName} has not provided any description yet.</i>}
                 </Text>
-
-                
-                {(selfUserId !== remoteId) && ((!isFollowing) ? 
-                    <Button size={"xs"} 
-                        loading={isUserFollowLoading} 
-                        leftIcon={<UserPlus size={20} />} 
-                        onClick={() => followUser()}>
-                        Follow
-                    </Button> :
-                    <Button size={"xs"} 
-                        loading={isUserFollowLoading} 
-                        leftIcon={<UserMinus size={20} />} 
-                        color={"red"}
-                        variant={"outline"}
-                        onClick={() => unfollowUser()}>
-                        Unfollow
-                    </Button>
-                )}
             </Stack>
         </Card>
     );
@@ -142,7 +95,6 @@ export default function Games() {
                 {loaderData.topMembers.map(m => (
                     <TopMembersCard 
                         key={m.remoteId}
-                        selfUserId={loaderData.selfUserId}
                         remoteId={m.remoteId} 
                         bio={m.bio} 
                         followersCount={m.followersCount}
@@ -151,7 +103,7 @@ export default function Games() {
                 ))}
             </Group>
 
-            <Title mt={64} order={2} sx={(theme) => ({
+            <Title mt={16} order={2} sx={(theme) => ({
                 color: theme.colors.gray[6]
             })}>
                 Global activities
@@ -162,7 +114,9 @@ export default function Games() {
                         <Text align={"center"}>There are no recent activities.</Text>
                     </Center> :
                     loaderData.globalActivities.map((activity) => (
-                        <UserActivityCard activity={activity} />
+                        <UserActivityCard 
+                            key={`${activity.userName}-${activity.mediaRemoteId}-${activity.action}-${activity.noOf}`} 
+                            activity={activity} />
                     ))}
             </Stack>
         </Container>
