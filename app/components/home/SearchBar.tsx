@@ -41,7 +41,7 @@ export default function SearchBar() {
         if (path.length > 1) {
             let newType = path[1];
             
-            if (newType == "settings") {
+            if (newType == "settings" || newType == "feed") {
                 newType = "";
             }
             

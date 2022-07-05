@@ -53,7 +53,7 @@ export default function UserActivityCard({ activity }: UserActivityCardProps) {
                 <Grid.Col span={isMobile ? 10 : 11}>
                     <Stack>
                         <Group align={"end"}>
-                            <Image radius={40} height={40} width={40} src={activity.profilePictureURL} />
+                            <Image radius={40} height={40} width={40} src={activity.profilePictureURL ?? "/default_user.svg"} />
                             
                             <Link to={`/home/members/${activity.userName}`} style={{ textDecoration: "none" }}>
                                 <Title order={5} sx={(theme) => ({

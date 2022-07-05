@@ -3077,6 +3077,66 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         }
         return Promise.resolve<BackendAPIResponse<GetGlobalActivitiesResult>>(new BackendAPIResponse(status, _headers, null as any));
     }
+
+    user_GetTimeline(userRemoteId: string | null): Promise<BackendAPIResponse<GetUserFollowingsActivitiesResult>> {
+        let url_ = this.baseUrl + "/api/user/activity/timeline/{userRemoteId}";
+        if (userRemoteId === undefined || userRemoteId === null)
+            throw new Error("The parameter 'userRemoteId' must be defined.");
+        url_ = url_.replace("{userRemoteId}", encodeURIComponent("" + userRemoteId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processUser_GetTimeline(_response);
+        });
+    }
+
+    protected processUser_GetTimeline(response: Response): Promise<BackendAPIResponse<GetUserFollowingsActivitiesResult>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetUserFollowingsActivitiesResult.fromJS(resultData200);
+            return new BackendAPIResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BackendAPIResponse<GetUserFollowingsActivitiesResult>>(new BackendAPIResponse(status, _headers, null as any));
+    }
 }
 
 export class Unit implements IUnit {
@@ -6490,6 +6550,125 @@ export interface IGetGlobalActivitiesItemResult {
     noOf: number;
     mediaType: ActivityMediaType;
     action: ActivityAction;
+}
+
+export class GetUserFollowingsActivitiesResult implements IGetUserFollowingsActivitiesResult {
+    items!: GetUserFollowingsActivitiesItemResult[];
+
+    constructor(data?: IGetUserFollowingsActivitiesResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.items = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GetUserFollowingsActivitiesItemResult.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GetUserFollowingsActivitiesResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserFollowingsActivitiesResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGetUserFollowingsActivitiesResult {
+    items: GetUserFollowingsActivitiesItemResult[];
+}
+
+export class GetUserFollowingsActivitiesItemResult implements IGetUserFollowingsActivitiesItemResult {
+    userName!: string;
+    profilePictureURL!: string;
+    mediaRemoteId!: string;
+    mediaTitle!: string;
+    mediaCoverImageURL!: string;
+    status!: string;
+    noOf!: number;
+    mediaType!: ActivityMediaType;
+    action!: ActivityAction;
+    dateTime!: dayjs.Dayjs;
+
+    constructor(data?: IGetUserFollowingsActivitiesItemResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.profilePictureURL = _data["profilePictureURL"];
+            this.mediaRemoteId = _data["mediaRemoteId"];
+            this.mediaTitle = _data["mediaTitle"];
+            this.mediaCoverImageURL = _data["mediaCoverImageURL"];
+            this.status = _data["status"];
+            this.noOf = _data["noOf"];
+            this.mediaType = _data["mediaType"];
+            this.action = _data["action"];
+            this.dateTime = _data["dateTime"] ? dayjs(_data["dateTime"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetUserFollowingsActivitiesItemResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserFollowingsActivitiesItemResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["profilePictureURL"] = this.profilePictureURL;
+        data["mediaRemoteId"] = this.mediaRemoteId;
+        data["mediaTitle"] = this.mediaTitle;
+        data["mediaCoverImageURL"] = this.mediaCoverImageURL;
+        data["status"] = this.status;
+        data["noOf"] = this.noOf;
+        data["mediaType"] = this.mediaType;
+        data["action"] = this.action;
+        data["dateTime"] = this.dateTime ? this.dateTime.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGetUserFollowingsActivitiesItemResult {
+    userName: string;
+    profilePictureURL: string;
+    mediaRemoteId: string;
+    mediaTitle: string;
+    mediaCoverImageURL: string;
+    status: string;
+    noOf: number;
+    mediaType: ActivityMediaType;
+    action: ActivityAction;
+    dateTime: dayjs.Dayjs;
 }
 
 export class BackendAPIResponse<TResult> {
