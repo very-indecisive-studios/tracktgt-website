@@ -1,4 +1,4 @@
-import { Center, Container, Text, Title } from "@mantine/core";
+import { Center, Container, Stack, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance, GetUserFollowingsActivitiesItemResult } from "backend";
@@ -36,9 +36,11 @@ export default function Feed() {
                 <Center p={64}>
                     <Text align={"center"}>There are no recent activities.</Text>
                 </Center> :
-                loaderData.timeline.map((activity) => (
-                    <UserActivityCard activity={activity} />
-                ))
+                <Stack>
+                    {loaderData.timeline.map((activity) => (
+                        <UserActivityCard activity={activity} />
+                    ))}
+                </Stack>
             }
         </Container>
     );
