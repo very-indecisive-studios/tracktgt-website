@@ -19,6 +19,7 @@ import { useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { badRequest } from "~/utils/response.server";
 import { LockOpen, Plus } from "tabler-icons-react";
+import { useMobileQuery } from "~/utils/hooks";
 
 interface LoaderData {
     captchaSitekey: string;
@@ -112,8 +113,6 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function SignUp() {
-    const theme = useMantineTheme();
-    
     const loaderData = useLoaderData<LoaderData>();
     const actionData = useActionData<ActionData>()
     const transition = useTransition()
@@ -125,13 +124,13 @@ export default function SignUp() {
 
     return (
         <Center sx={(theme) => ({
-            width: "100vw",
-            height: "100vh"
+            minWidth: "100vw",
+            minHeight: "100vh"
         })}>
-            <Container px={0} sx={() => ({
+            <Container py={24} sx={() => ({
                 width: 425
             })}>
-                <Title mb={24} order={1}>Create an account on TrackTogether</Title>
+                <Title order={1}>Create an account on TrackTogether</Title>
                 <Form method="post">
                     <TextInput name="captcha" hidden defaultValue={captchaToken}/>
 

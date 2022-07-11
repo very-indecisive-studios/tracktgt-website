@@ -79,8 +79,6 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function Login() {
-    const isMobile = useMobileQuery();
-    
     const loaderData = useLoaderData<LoaderData>()
     const actionData = useActionData<ActionData>()
     const transition = useTransition()
@@ -94,13 +92,13 @@ export default function Login() {
 
     return (
         <Center sx={(theme) => ({
-            width: "100vw",
-            height: "100vh"
+            minWidth: "100vw",
+            minHeight: "100vh"
         })}>
-            <Container px={0} sx={() => ({
+            <Container py={24} sx={() => ({
                 width: 425
             })}>
-                <Title mb={24} order={1}>Welcome back to TrackTogether</Title>
+                <Title order={1}>Welcome back to TrackTogether</Title>
                 <Form method="post">
                     <TextInput mt={16} name="email" label="Email address" type="email" error={actionData?.email}/>
 

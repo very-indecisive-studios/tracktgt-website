@@ -3,6 +3,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance, GetUserFollowingsActivitiesItemResult } from "backend";
 import UserActivityCard from "~/components/home/members/UserActivityCard";
+import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
 
 //#region Server
@@ -27,9 +28,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Feed() {
     const loaderData = useLoaderData<LoaderData>();
+    const isMobile = useMobileQuery();
 
     return (
-        <Container py={16}>
+        <Container px={isMobile ? 4 : 16} py={16}>
             <Title mb={32} order={1}>Feed</Title>
 
             {(loaderData.timeline.length === 0) ?                 
