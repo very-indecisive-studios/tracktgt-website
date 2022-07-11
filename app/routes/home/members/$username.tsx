@@ -74,7 +74,7 @@ interface UserActivityTimelineProps {
 
 export function UserActivityTimeline({ activities }: UserActivityTimelineProps) {
     return (
-        <Container>
+        <Container px={0}>
             <Stack>
                 {activities.map((activity) => (
                     <UserActivityCard 
@@ -86,23 +86,30 @@ export function UserActivityTimeline({ activities }: UserActivityTimelineProps) 
     );
 }
 
-export default function UserProfile() {
-    const loaderData = useLoaderData<LoaderData>();
+interface UserHeaderProps {
+    isSelf: boolean;
+    userId: string;
+    userName: string;
+    profilePictureURL: string;
+    bio: string;
+}
+
+export function UserHeader({ isSelf, userId, userName, profilePictureURL, bio }: UserHeaderProps) {
     const isMobile = useMobileQuery();
     const modals = useModals();
 
     const { isFollowing, followUser, unfollowUser, isLoading: isUserFollowLoading, 
-        actionDone: followActionDone, setUserId: setUserFollowUserId } = useUserFollow(loaderData.userId);
-    const { followers, refresh: refreshFollowers, setUserId: setUserFollowersListUserId  } 
-        = useUserFollowersList(loaderData.userId);
-    const { followings, setUserId: setUserFollowingsListUserId } 
-        = useUserFollowingsList(loaderData.userId);
+        actionDone: followActionDone, setUserId: setUserFollowUserId } = useUserFollow(userId);
+    const { followers, refresh: refreshFollowers, setUserId: setUserFollowersListUserId, isLoading: isUserFollowersLoading } 
+        = useUserFollowersList(userId);
+    const { followings, setUserId: setUserFollowingsListUserId, isLoading: isUserFollowingsLoading } 
+        = useUserFollowingsList(userId);
 
     useEffect(() => {
         if (followActionDone == "add") {
             showNotification({
                 title: 'Successfully followed user.',
-                message: `You are now following ${loaderData.userName}.`,
+                message: `You are now following ${userName}.`,
                 icon: <UserPlus size={16}/>,
                 color: "green"
             });
@@ -111,7 +118,7 @@ export default function UserProfile() {
         } else if (followActionDone == "remove") {
             showNotification({
                 title: 'Successfully unfollowed user.',
-                message: `You are no longer following ${loaderData.userName}.`,
+                message: `You are no longer following ${userName}.`,
                 icon: <UserMinus size={16}/>,
                 color: "red"
             });
@@ -121,29 +128,97 @@ export default function UserProfile() {
     }, [followActionDone])
 
     useEffect(() => {
-        setUserFollowUserId(loaderData.userId);
-        setUserFollowersListUserId(loaderData.userId);
-        setUserFollowingsListUserId(loaderData.userId);
-    }, [loaderData.userId]);
+        setUserFollowUserId(userId);
+        setUserFollowersListUserId(userId);
+        setUserFollowingsListUserId(userId);
+    }, [userId]);
 
     return (
-        <Container py={16}>
-            <Group mb={32}>
-                <Image radius={isMobile ? 100 : 200} height={isMobile ? 100 : 200} width={isMobile ? 100 : 200} src={loaderData.profilePictureURL ?? "/default_user.svg"} />
+        <>
+            {/* Desktop */}
+            <MediaQuery smallerThan={"sm"} styles={{ display: "none" }}>
+                <Group mb={32}>
+                    <Image radius={200} height={200} width={200} src={profilePictureURL ?? "/default_user.svg"} />
 
-                <Stack ml={isMobile ? 8 : 32} sx={() => ({
-                    flex: 1
-                })}>
-                    <Group grow>
-                        <Group position="left">
-                            <Title order={isMobile ? 3 : 1}>{loaderData.userName}</Title>
-                            {loaderData.isSelf && 
-                                <ActionIcon component={Link} to={"/home/settings"}> 
-                                    <Pencil size={20} />
-                                </ActionIcon>
+                    <Stack ml={32} sx={() => ({
+                        flex: 1
+                    })}>
+                        <Group grow>
+                            <Group position="left">
+                                <Title order={1}>{userName}</Title>
+                                {isSelf && 
+                                    <ActionIcon component={Link} to={"/home/settings"}> 
+                                        <Pencil size={20} />
+                                    </ActionIcon>
+                                }
+                            </Group>
+                            {!isSelf &&                        
+                                <Group position="right">
+                                    {!isFollowing ? 
+                                        <Button size={isMobile ? "xs" : "sm"} 
+                                            loading={isUserFollowLoading} 
+                                            leftIcon={<UserPlus size={20} />} 
+                                            onClick={() => followUser()}>
+                                            Follow
+                                        </Button> :
+                                        <Button size={isMobile ? "xs" : "sm"} 
+                                            loading={isUserFollowLoading} 
+                                            leftIcon={<UserMinus size={20} />} 
+                                            color={"red"}
+                                            variant={"outline"}
+                                            onClick={() => unfollowUser()}>
+                                            Unfollow
+                                        </Button>
+                                    }
+                                </Group>
                             }
                         </Group>
-                        {!loaderData.isSelf &&                        
+                        
+                        <Group spacing={"xs"}>
+                            <Button variant="light" 
+                                loading={isUserFollowersLoading}
+                                onClick={() => showUserFollowListModal(modals, followers, "Followers")}>
+                                <Group spacing={"xs"}>
+                                    <Text size={"md"}><b>{followers.length}</b></Text>
+                                    <Text size={"md"}>followers</Text>
+                                </Group>
+                            </Button>
+
+                            <Button variant="light"
+                                loading={isUserFollowingsLoading}
+                                onClick={() => showUserFollowListModal(modals, followings, "Followings")}>
+                                <Group spacing={"xs"}>
+                                    <Text size={"md"}><b>{followings.length}</b></Text>
+                                    <Text size={"md"}>followings</Text>
+                                </Group>
+                            </Button>
+                        </Group>
+
+                        <Text size={"md"}>
+                            {bio ?? <i>{userName} has not provided any description yet.</i>}
+                        </Text>
+                    </Stack>
+                </Group>
+            </MediaQuery>
+            
+            {/* Mobile */}
+            <MediaQuery largerThan={"sm"} styles={{ display: "none" }}>
+                <Stack mb={32} align={"center"}>
+                    <Image radius={150} height={150} width={150} src={profilePictureURL ?? "/default_user.svg"} />
+
+                    <Stack ml={isMobile ? 8 : 32} align={"center"}>
+                        <Group grow>
+                            <Group position="left">
+                                <Title order={isMobile ? 3 : 1}>{userName}</Title>
+                                {isSelf && 
+                                    <ActionIcon component={Link} to={"/home/settings"}> 
+                                        <Pencil size={20} />
+                                    </ActionIcon>
+                                }
+                            </Group>
+                        </Group>
+                        
+                        {!isSelf &&                        
                             <Group position="right">
                                 {!isFollowing ? 
                                     <Button size={isMobile ? "xs" : "sm"} 
@@ -163,29 +238,50 @@ export default function UserProfile() {
                                 }
                             </Group>
                         }
-                    </Group>
-                    
-                    <Group spacing={"xs"}>
-                        <Button variant="light" onClick={() => showUserFollowListModal(modals, followers, "Followers")}>
-                            <Group spacing={"xs"}>
-                                <Text size={isMobile ? "sm" : "md"}><b>{followers.length}</b></Text>
-                                <Text size={isMobile ? "sm" : "md"}>followers</Text>
-                            </Group>
-                        </Button>
 
-                        <Button variant="light" onClick={() => showUserFollowListModal(modals, followings, "Followings")}>
-                            <Group spacing={"xs"}>
-                                <Text size={isMobile ? "sm" : "md"}><b>{followings.length}</b></Text>
-                                <Text size={isMobile ? "sm" : "md"}>followings</Text>
-                            </Group>
-                        </Button>
-                    </Group>
+                        <Group spacing={"xs"}>
+                            <Button variant="light" 
+                                loading={isUserFollowersLoading}
+                                onClick={() => showUserFollowListModal(modals, followers, "Followers")}>
+                                <Group spacing={"xs"}>
+                                    <Text size={isMobile ? "sm" : "md"}><b>{followers.length}</b></Text>
+                                    <Text size={isMobile ? "sm" : "md"}>followers</Text>
+                                </Group>
+                            </Button>
 
-                    <Text size={isMobile ? "sm" : "md"}>
-                        {loaderData.bio ?? <i>{loaderData.userName} has not provided any description yet.</i>}
-                    </Text>
+                            <Button variant="light"
+                                loading={isUserFollowingsLoading}
+                                onClick={() => showUserFollowListModal(modals, followings, "Followings")}>
+                                <Group spacing={"xs"}>
+                                    <Text size={isMobile ? "sm" : "md"}><b>{followings.length}</b></Text>
+                                    <Text size={isMobile ? "sm" : "md"}>followings</Text>
+                                </Group>
+                            </Button>
+                        </Group>
+
+                        <Text mt={8} size={"sm"} align={"center"}>
+                            {bio ?? <i>{userName} has not provided any description yet.</i>}
+                        </Text>
+                    </Stack>
                 </Stack>
-            </Group>
+            </MediaQuery>
+        </>
+    );
+}
+
+export default function UserProfile() {
+    const loaderData = useLoaderData<LoaderData>();
+    const isMobile = useMobileQuery();
+
+    return (
+        <Container px={0} py={16}>
+
+            <UserHeader
+                isSelf={loaderData.isSelf}
+                userId={loaderData.userId}
+                userName={loaderData.userName}
+                profilePictureURL={loaderData.profilePictureURL}
+                bio={loaderData.bio} />
 
             <Stack my={isMobile ? 32 : 48}>
                 <Divider />
