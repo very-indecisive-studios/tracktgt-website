@@ -69,39 +69,35 @@ export default function UserActivityCard({ activity }: UserActivityCardProps) {
 
     return (
         <Card shadow="xs" p="lg">
-            <Grid>
-                <Grid.Col span={isMobile ? 10 : 11}>
-                    <Stack>
-                        <Group align={"start"}>
-                            <Image radius={50} height={50} width={50} src={activity.profilePictureURL ?? "/default_user.svg"} />
-                            
-                            <Stack spacing={0}>
-                                <Link to={`/home/members/${activity.userName}`} style={{ textDecoration: "none" }}>
-                                    <Title order={5} sx={(theme) => ({
-                                        color: theme.colors.gray[5]
-                                    })}>{activity.userName}</Title>
-                                </Link>
-                                <Text size={"sm"} sx={(theme) => ({
-                                    color: theme.colors.gray[6]
-                                })}>
-                                    {humanizeDateTime(activity.dateTime.toString())}
-                                </Text>
-                            </Stack>
-                        </Group>
+            <Group align={"start"}>
+                <Link to={`/home/${ActivityMediaType[activity.mediaType].toLowerCase()}s/${activity.mediaRemoteId}`}>
+                    <CoverImage src={activity.mediaCoverImageURL} width={100} height={150}/>
+                </Link>
+                <Stack ml={isMobile ? 0 : 16} mt={isMobile ? 16 : 0}>
+                    <Group align={"center"}>
+                        <Image radius={50} height={50} width={50} src={activity.profilePictureURL ?? "/default_user.svg"} />
                         
-                        <Text py={4} sx={(theme) => ({
-                            color: theme.colors.gray[5]
-                        })}>
-                            {humanizeActivity(activity)}
-                        </Text>
-                    </Stack>
-                </Grid.Col>
-                <Grid.Col span={isMobile ? 2 : 1}>                    
-                    <Link to={`/home/${ActivityMediaType[activity.mediaType].toLowerCase()}s/${activity.mediaRemoteId}`}>
-                        <CoverImage src={activity.mediaCoverImageURL} width={60} height={90}/>
-                    </Link>
-                </Grid.Col>
-            </Grid>
+                        <Stack spacing={0}>
+                            <Link to={`/home/members/${activity.userName}`} style={{ textDecoration: "none" }}>
+                                <Title order={5} sx={(theme) => ({
+                                    color: theme.colors.gray[5]
+                                })}>{activity.userName}</Title>
+                            </Link>
+                            <Text size={"sm"} sx={(theme) => ({
+                                color: theme.colors.gray[6]
+                            })}>
+                                {humanizeDateTime(activity.dateTime.toString())}
+                            </Text>
+                        </Stack>
+                    </Group>
+                    
+                    <Text py={4} sx={(theme) => ({
+                        color: theme.colors.gray[5]
+                    })}>
+                        {humanizeActivity(activity)}
+                    </Text>
+                </Stack>
+            </Group>
         </Card>
     );
 }
