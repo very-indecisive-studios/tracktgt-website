@@ -262,7 +262,7 @@ function GamePricing({ game }: GamePricingProps) {
                 <thead>
                 <tr>
                     <th></th>
-                    <th>
+                    <th style={{ minWidth: "15ch" }}>
                         <Group align={"center"} spacing={"xs"}>
                             <Text>Price</Text>
                             <Badge size={"xs"} color={"red"}>Beta</Badge>
@@ -276,7 +276,7 @@ function GamePricing({ game }: GamePricingProps) {
                         <td>
                             <Image px={16} src={"/eshop.svg"} width={100} />
                         </td>
-                        <td>
+                        <td style={{ minWidth: "15ch" }}>
                             <SwitchGamePrice gameRemoteId={game.remoteId} />
                         </td>
                     </tr>

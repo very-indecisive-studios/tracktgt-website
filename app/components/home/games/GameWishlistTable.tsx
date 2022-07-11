@@ -20,6 +20,7 @@ import { useGamesWishlistActions } from "~/routes/home/games/wishlist/$gameId";
 import CoverImage from "~/components/home/CoverImage";
 import { showGameWishlistRemoveConfirmModal } from "~/components/home/games/GameWishlistModals";
 import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
+import PlatformIcon from "./PlatformIcon";
 
 interface GameWishlistTableProps {
     userId: string;
@@ -78,7 +79,7 @@ export default function GameWishlistTable({ userId, readOnly }: GameWishlistTabl
                             <th>Title</th>
                             <th>Platform</th>
                             {!readOnly && 
-                                <th>
+                                <th style={{ minWidth: "15ch"}}>
                                     <Group align={"center"} spacing={"xs"}>
                                         <Text>Price</Text>
                                         <Badge size={"xs"} color={"red"}>Beta</Badge>
@@ -107,9 +108,14 @@ export default function GameWishlistTable({ userId, readOnly }: GameWishlistTabl
                                         </Text>
                                     </Link>
                                 </td>
-                                <td>{gw.platform}</td>
+                                <td>
+                                    <Group spacing={"sm"}>
+                                        <PlatformIcon platform={gw.platform} />
+                                        {gw.platform}
+                                    </Group>
+                                </td>
                                 {!readOnly &&
-                                    <td>
+                                    <td style={{ minWidth: "15ch"}}>
                                         {gw.platform === "Switch" ? 
                                             <SwitchGamePrice gameRemoteId={gw.gameRemoteId} /> :
                                             <Text>N/A</Text>

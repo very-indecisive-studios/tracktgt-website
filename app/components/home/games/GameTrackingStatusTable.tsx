@@ -1,4 +1,4 @@
-import { ActionIcon, Center, LoadingOverlay, Pagination, Stack, Table, Text, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Center, Group, LoadingOverlay, Pagination, Stack, Table, Text, useMantineTheme } from "@mantine/core";
 import { useMobileQuery } from "~/utils/hooks";
 import { useModals } from "@mantine/modals";
 import React, { useEffect } from "react";
@@ -14,6 +14,7 @@ import { useAllGamesTrackings } from "~/routes/home/games/track/all/$userId";
 import { useGameTrackingsActions } from "~/routes/home/games/track/$gameId";
 import { showGameTrackingEditorModal } from "~/components/home/games/GameTrackingModals";
 import { showNotification } from "@mantine/notifications";
+import PlatformIcon from "./PlatformIcon";
 
 interface GameTrackingStatusTableProps {
     userId: string;
@@ -109,7 +110,12 @@ export default function GameTrackingStatusTable({ userId, status, readOnly }: Ga
                                         </Text>
                                     </Link>
                                 </td>
-                                <td>{gt.platform}</td>
+                                <td>
+                                    <Group spacing={"sm"}>
+                                        <PlatformIcon platform={gt.platform} />
+                                        {gt.platform}
+                                    </Group>
+                                </td>
                                 {!isMobile &&
                                     <>
                                         <td>{gt.hoursPlayed}</td>
