@@ -10,9 +10,19 @@ export default function PlatformIcon({ platform }: PlatformIconProps) {
         case "Switch": 
             icon = "/platform/switch.svg";
             break;
+        case "NDS": 
+            icon = "/platform/ds.svg";
+            break;
+        case "3DS": 
+            icon = "/platform/3ds.svg";
+            break;
         case "Wii": 
             icon = "/platform/wii.svg";
             break;
+        case "WiiU":
+            icon = "/platform/wiiu.svg";
+            break;
+        case "XBOX":
         case "XONE":
         case "Series X":
         case "X360":
@@ -33,6 +43,7 @@ export default function PlatformIcon({ platform }: PlatformIconProps) {
             break;
         case "Vita":
         case "PSP":
+        case "PS1":
         case "PS2":
         case "PS3":
         case "PS4":
