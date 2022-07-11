@@ -2,6 +2,7 @@
 import { Form, useLocation } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { Search } from "tabler-icons-react";
+import { useMobileQuery } from "~/utils/hooks";
 
 interface SearchBarTypeProps {
     type: string;
@@ -34,6 +35,7 @@ function SearchBarType({ type }: SearchBarTypeProps) {
 
 export default function SearchBar() {
     const location = useLocation();
+    const isMobile = useMobileQuery();
 
     const [type, setType] = useState("");
     useEffect(() => {
@@ -54,7 +56,7 @@ export default function SearchBar() {
     return (
         <Form hidden={!type} action={`/home/${type}/search`}>
             <Grid columns={12} gutter={0}>
-                <Grid.Col span={9}>
+                <Grid.Col span={isMobile ? 7 : 9}>
                     <TextInput
                         name="title"
                         placeholder={"Search"}
@@ -62,7 +64,7 @@ export default function SearchBar() {
                         radius={0} 
                         required />
                 </Grid.Col>
-                <Grid.Col span={2}>
+                <Grid.Col span={isMobile ? 4 : 2}>
                     <SearchBarType type={type} />
                 </Grid.Col>
                 <Grid.Col span={1}>

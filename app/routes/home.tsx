@@ -130,7 +130,7 @@ const Shell = ({ children }: ShellProps) => {
                         </Group>
                     </MediaQuery>
                     <MediaQuery largerThan="md" styles={{ display: 'none' }}>
-                        <Grid columns={12} align={"center"}>
+                        <Grid columns={8} align={"center"}>
                             <Grid.Col span={1}>
                                 <Burger
                                     opened={opened}
@@ -140,10 +140,8 @@ const Shell = ({ children }: ShellProps) => {
                                     mr="xl"
                                 />
                             </Grid.Col>
-                            <Grid.Col span={2}>
-                                <Image fit={"contain"} height={32} width={64} src="/logo.svg">tracktgt</Image>
-                            </Grid.Col>
-                            <Grid.Col span={4}>
+                            <Grid.Col span={7}>
+                                <SearchBar />
                             </Grid.Col>
                         </Grid>
                     </MediaQuery>
