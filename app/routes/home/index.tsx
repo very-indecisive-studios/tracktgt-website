@@ -10,6 +10,8 @@ import {
 import { requireUserId } from "~/utils/session.server";
 import { Link, useLoaderData } from "@remix-run/react";
 import { MoodSad } from "tabler-icons-react";
+import { useMobileQuery } from "~/utils/hooks";
+import PlatformIcon from "~/components/home/games/PlatformIcon";
 
 interface LoaderData {
     games: GetAllGameTrackingsItemResult[];
@@ -59,14 +61,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
 }
 
-interface MediaTrackingCardProps {
+interface GameTrackingCardProps {
     link: string;
     coverImageURL: string;
     title: string;
-    tag?: string | undefined;
+    platform: string;
 }
 
-function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCardProps) {
+function GameTrackingCard({ link, coverImageURL, title, platform }: GameTrackingCardProps) {
     return (
         <Link to={link} style={{ textDecoration: "none" }}>
             <Card shadow="sm" p="lg" sx={() => ({
@@ -74,7 +76,7 @@ function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCar
                 width: 200
             })}>
                 <Card.Section>
-                    <Image src={coverImageURL} height={tag ? 220 : 250} fit={"cover"}/>
+                    <Image src={coverImageURL} height={220} fit={"cover"}/>
                 </Card.Section>
 
                 <Text mt={12} size={"md"} sx={() => ({
@@ -86,7 +88,41 @@ function MediaTrackingCard({ link, coverImageURL, title, tag }: MediaTrackingCar
                     {title}
                 </Text>
 
-                {tag && <Badge color={"gray"} size={"sm"}>{tag}</Badge>}
+                <Group mt={4}>
+                    <Badge radius={"sm"} leftSection={<PlatformIcon platform={platform} />} py={4} color={"gray"} size={"md"} key={platform}>
+                        {platform}
+                    </Badge>
+                </Group>
+            </Card>
+        </Link>
+    );
+}
+
+interface MediaTrackingCardProps {
+    link: string;
+    coverImageURL: string;
+    title: string;
+}
+
+function MediaTrackingCard({ link, coverImageURL, title }: MediaTrackingCardProps) {
+    return (
+        <Link to={link} style={{ textDecoration: "none" }}>
+            <Card shadow="sm" p="lg" sx={() => ({
+                height: 300,
+                width: 200
+            })}>
+                <Card.Section>
+                    <Image src={coverImageURL} height={250} fit={"cover"}/>
+                </Card.Section>
+
+                <Text mt={12} size={"md"} sx={() => ({
+                    width: "14ch",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                })}>
+                    {title}
+                </Text>
             </Card>
         </Link>
     );
@@ -111,9 +147,10 @@ function Empty({ type }: EmptyProps) {
 
 export default function Home() {
     const loaderData = useLoaderData<LoaderData>();
+    const isMobile = useMobileQuery();
 
     return (
-        <Container py={16}>
+        <Container px={isMobile ? 4 : 16} py={16}>
             <Title mb={32} order={1}>Dashboard</Title>
 
             <Title order={2} sx={(theme) => ({
@@ -128,11 +165,11 @@ export default function Home() {
                 {loaderData.games.length === 0 && <Empty type={"games"} />}
 
                 {loaderData.games.map((gt) => (
-                    <MediaTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
+                    <GameTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
                                        link={`/home/games/${gt.gameRemoteId}`}
                                        title={gt.title}
                                        coverImageURL={gt.coverImageURL}
-                                       tag={gt.platform} />
+                                       platform={gt.platform} />
                 ))}
             </Group>
 
