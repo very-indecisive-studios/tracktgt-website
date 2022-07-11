@@ -6358,6 +6358,7 @@ export interface IGetUserActivitiesResult {
 }
 
 export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult {
+    id!: string;
     userName!: string;
     profilePictureURL!: string;
     mediaRemoteId!: string;
@@ -6380,6 +6381,7 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.userName = _data["userName"];
             this.profilePictureURL = _data["profilePictureURL"];
             this.mediaRemoteId = _data["mediaRemoteId"];
@@ -6402,6 +6404,7 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["userName"] = this.userName;
         data["profilePictureURL"] = this.profilePictureURL;
         data["mediaRemoteId"] = this.mediaRemoteId;
@@ -6417,6 +6420,7 @@ export class GetUserActivitiesItemResult implements IGetUserActivitiesItemResult
 }
 
 export interface IGetUserActivitiesItemResult {
+    id: string;
     userName: string;
     profilePictureURL: string;
     mediaRemoteId: string;
@@ -6489,6 +6493,7 @@ export interface IGetGlobalActivitiesResult {
 }
 
 export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemResult {
+    id!: string;
     userName!: string;
     profilePictureURL!: string;
     mediaRemoteId!: string;
@@ -6511,6 +6516,7 @@ export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemRe
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.userName = _data["userName"];
             this.profilePictureURL = _data["profilePictureURL"];
             this.mediaRemoteId = _data["mediaRemoteId"];
@@ -6533,6 +6539,7 @@ export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemRe
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["userName"] = this.userName;
         data["profilePictureURL"] = this.profilePictureURL;
         data["mediaRemoteId"] = this.mediaRemoteId;
@@ -6548,6 +6555,7 @@ export class GetGlobalActivitiesItemResult implements IGetGlobalActivitiesItemRe
 }
 
 export interface IGetGlobalActivitiesItemResult {
+    id: string;
     userName: string;
     profilePictureURL: string;
     mediaRemoteId: string;
@@ -6608,6 +6616,7 @@ export interface IGetUserFollowingsActivitiesResult {
 }
 
 export class GetUserFollowingsActivitiesItemResult implements IGetUserFollowingsActivitiesItemResult {
+    id!: string;
     userName!: string;
     profilePictureURL!: string;
     mediaRemoteId!: string;
@@ -6630,6 +6639,7 @@ export class GetUserFollowingsActivitiesItemResult implements IGetUserFollowings
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.userName = _data["userName"];
             this.profilePictureURL = _data["profilePictureURL"];
             this.mediaRemoteId = _data["mediaRemoteId"];
@@ -6652,6 +6662,7 @@ export class GetUserFollowingsActivitiesItemResult implements IGetUserFollowings
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["userName"] = this.userName;
         data["profilePictureURL"] = this.profilePictureURL;
         data["mediaRemoteId"] = this.mediaRemoteId;
@@ -6667,6 +6678,7 @@ export class GetUserFollowingsActivitiesItemResult implements IGetUserFollowings
 }
 
 export interface IGetUserFollowingsActivitiesItemResult {
+    id: string;
     userName: string;
     profilePictureURL: string;
     mediaRemoteId: string;
