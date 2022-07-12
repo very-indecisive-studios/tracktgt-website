@@ -26,6 +26,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     
     const backendAPIResponse = await backendAPIClientInstance.book_GetAllBookWishlists(
         userId,
+        true,
         page,
         5
     );

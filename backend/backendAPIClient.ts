@@ -153,10 +153,14 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    book_GetAllBookWishlists(userRemoteId: string | null | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllBookWishlistsItemResult>> {
+    book_GetAllBookWishlists(userRemoteId: string | null | undefined, sortByRecentlyModified: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllBookWishlistsItemResult>> {
         let url_ = this.baseUrl + "/api/book/wishlist?";
         if (userRemoteId !== undefined && userRemoteId !== null)
             url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (sortByRecentlyModified === null)
+            throw new Error("The parameter 'sortByRecentlyModified' cannot be null.");
+        else if (sortByRecentlyModified !== undefined)
+            url_ += "SortByRecentlyModified=" + encodeURIComponent("" + sortByRecentlyModified) + "&";
         if (page === null)
             throw new Error("The parameter 'page' cannot be null.");
         else if (page !== undefined)
@@ -856,10 +860,14 @@ export class BackendAPIClient extends ExtBackendAPIClient {
         return Promise.resolve<BackendAPIResponse<Unit>>(new BackendAPIResponse(status, _headers, null as any));
     }
 
-    game_GetAllGameWishlists(userRemoteId: string | null | undefined, sortByPlatform: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllGameWishlistsItemResult>> {
+    game_GetAllGameWishlists(userRemoteId: string | null | undefined, sortByRecentlyModified: boolean | undefined, sortByPlatform: boolean | undefined, page: number | undefined, pageSize: number | undefined): Promise<BackendAPIResponse<PagedListResultOfGetAllGameWishlistsItemResult>> {
         let url_ = this.baseUrl + "/api/game/wishlist?";
         if (userRemoteId !== undefined && userRemoteId !== null)
             url_ += "UserRemoteId=" + encodeURIComponent("" + userRemoteId) + "&";
+        if (sortByRecentlyModified === null)
+            throw new Error("The parameter 'sortByRecentlyModified' cannot be null.");
+        else if (sortByRecentlyModified !== undefined)
+            url_ += "SortByRecentlyModified=" + encodeURIComponent("" + sortByRecentlyModified) + "&";
         if (sortByPlatform === null)
             throw new Error("The parameter 'sortByPlatform' cannot be null.");
         else if (sortByPlatform !== undefined)
