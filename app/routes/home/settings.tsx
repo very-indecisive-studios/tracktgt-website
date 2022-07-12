@@ -3,8 +3,10 @@ import { requireUserId } from "~/utils/session.server";
 import { useMobileQuery } from "~/utils/hooks";
 import { Box, Container, Grid, Group, Text, ThemeIcon, Title, UnstyledButton } from "@mantine/core";
 import React from "react";
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useOutlet } from "@remix-run/react";
 import { CurrencyDollar, User } from "tabler-icons-react";
+import Motion from "~/components/home/Motion";
+import { AnimatePresence } from "framer-motion";
 
 //region Server
 
@@ -57,33 +59,38 @@ function NavbarLink({ icon, label, to, onClick }: NavbarLinkProps) {
 
 export default function Settings() {
     const isMobile = useMobileQuery();
+    const outlet = useOutlet();
 
     return (
-        <Container py={16} px={isMobile ? 4 : 16}>
-            <Title mb={32} order={1}>Settings</Title>
-            
-            <Grid columns={isMobile ? 1 : 4}>
-                <Grid.Col span={1}>
-                    <Box px={4} py={8} sx={(theme) => ({
-                        border: "solid 2px",
-                        borderRadius: "4px",
-                        borderColor: theme.colors.gray[8]
-                    })}>
-                        <NavbarLink onClick={() => {}}
-                                    to={"/home/settings"}
-                                    icon={<User size={18}/>}
-                                    label={"Account"} />
-                        <NavbarLink onClick={() => {}} 
-                                    to={"/home/settings/pricing"} 
-                                    icon={<CurrencyDollar size={18}/>} 
-                                    label={"Pricing"} />
-                    </Box>
-                </Grid.Col>
-                <Grid.Col span={isMobile ? 1 : 3}>
-                    <Outlet />
-                </Grid.Col>
-            </Grid>
-        </Container>
+        <Motion>
+            <Container py={16} px={isMobile ? 4 : 16}>
+                <Title mb={32} order={1}>Settings</Title>
+                
+                <Grid columns={isMobile ? 1 : 4}>
+                    <Grid.Col span={1}>
+                        <Box px={4} py={8} sx={(theme) => ({
+                            border: "solid 2px",
+                            borderRadius: "4px",
+                            borderColor: theme.colors.gray[8]
+                        })}>
+                            <NavbarLink onClick={() => {}}
+                                        to={"/home/settings"}
+                                        icon={<User size={18}/>}
+                                        label={"Account"} />
+                            <NavbarLink onClick={() => {}} 
+                                        to={"/home/settings/pricing"} 
+                                        icon={<CurrencyDollar size={18}/>} 
+                                        label={"Pricing"} />
+                        </Box>
+                    </Grid.Col>
+                    <Grid.Col span={isMobile ? 1 : 3}>
+                        <AnimatePresence exitBeforeEnter initial={false}>
+                            {outlet}
+                        </AnimatePresence>
+                    </Grid.Col>
+                </Grid>
+            </Container>
+        </Motion>
     );
 }
 

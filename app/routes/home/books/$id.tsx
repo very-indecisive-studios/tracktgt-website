@@ -15,6 +15,7 @@ import {
     backendAPIClientInstance,
     GetBookResult,
 } from "backend";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -197,39 +198,41 @@ export default function Book() {
     const bookHeader = <BookHeader book={loaderData.book} />
 
     return (
-        <Container py={16} sx={() => ({
-            position: "relative"
-        })}>
-            <Box sx={() => ({
-                position: "absolute",
-                top: "0",
-                left: "0",
-                height: "300px",
-                width: "100%",
+        <Motion>
+            <Container py={16} sx={() => ({
+                position: "relative"
             })}>
-                <Image radius={"sm"} src={loaderData.book.coverImageURL} height={300} sx={() => ({
-                    filter: "brightness(0.4)"
-                })} />
-            </Box>
+                <Box sx={() => ({
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    height: "300px",
+                    width: "100%",
+                })}>
+                    <Image radius={"sm"} src={loaderData.book.coverImageURL} height={300} sx={() => ({
+                        filter: "brightness(0.4)"
+                    })} />
+                </Box>
 
-            <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
-                <Stack mt={128}>
-                    {bookHeader}
+                <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
+                    <Stack mt={128}>
+                        {bookHeader}
+                    </Stack>
+                </MediaQuery>
+
+                <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
+                    <Group mt={128} align={"end"} noWrap>
+                        {bookHeader}
+                    </Group>
+                </MediaQuery>
+
+                <Stack mt={48}>
+                    <Title order={2}>Summary</Title>
+                    <Text
+                        sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.book.summary.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
                 </Stack>
-            </MediaQuery>
-
-            <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
-                <Group mt={128} align={"end"} noWrap>
-                    {bookHeader}
-                </Group>
-            </MediaQuery>
-
-            <Stack mt={48}>
-                <Title order={2}>Summary</Title>
-                <Text
-                    sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.book.summary.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
-            </Stack>
-        </Container>
+            </Container>
+        </Motion>
     );
 }
 

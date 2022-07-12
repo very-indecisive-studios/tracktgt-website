@@ -20,6 +20,7 @@ import { useUserFollowingsList } from "./followings/$userId";
 import { showUserFollowListModal } from "~/components/home/members/UserFollowListModal";
 import { useModals } from "@mantine/modals";
 import UserActivityCard from "~/components/home/members/UserActivityCard";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -274,105 +275,107 @@ export default function UserProfile() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container px={0} py={16}>
+        <Motion>
+            <Container px={0} py={16}>
 
-            <UserHeader
-                isSelf={loaderData.isSelf}
-                userId={loaderData.userId}
-                userName={loaderData.userName}
-                profilePictureURL={loaderData.profilePictureURL}
-                bio={loaderData.bio} />
+                <UserHeader
+                    isSelf={loaderData.isSelf}
+                    userId={loaderData.userId}
+                    userName={loaderData.userName}
+                    profilePictureURL={loaderData.profilePictureURL}
+                    bio={loaderData.bio} />
 
-            <Stack my={isMobile ? 32 : 48}>
-                <Divider />
+                <Stack my={isMobile ? 32 : 48}>
+                    <Divider />
 
-                <MediaQuery smallerThan={"sm"} styles={{
-                    display: "none"
-                }}>
-                    <Group spacing={"xl"} position="center">
-                        <Group spacing={"xs"}>
-                            <Text size={"xl"}><b>{loaderData.gamingHours}</b></Text>
-                            <Text size={"md"}>gaming hours</Text>
+                    <MediaQuery smallerThan={"sm"} styles={{
+                        display: "none"
+                    }}>
+                        <Group spacing={"xl"} position="center">
+                            <Group spacing={"xs"}>
+                                <Text size={"xl"}><b>{loaderData.gamingHours}</b></Text>
+                                <Text size={"md"}>gaming hours</Text>
+                            </Group>
+                            <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
+                            <Group spacing={"xs"}>
+                                <Text size={"xl"}><b>{loaderData.episodesWatched}</b></Text>
+                                <Text size={"md"}>episodes watched</Text>
+                            </Group>
+                            <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
+                            <Group spacing={"xs"}>
+                                <Text size={"xl"}><b>{loaderData.chaptersRead}</b></Text>
+                                <Text size={"md"}>chapters read</Text>
+                            </Group>
                         </Group>
-                        <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
-                        <Group spacing={"xs"}>
-                            <Text size={"xl"}><b>{loaderData.episodesWatched}</b></Text>
-                            <Text size={"md"}>episodes watched</Text>
-                        </Group>
-                        <Divider sx={{ height: '32px' }} size="sm" orientation={"vertical"} />
-                        <Group spacing={"xs"}>
-                            <Text size={"xl"}><b>{loaderData.chaptersRead}</b></Text>
-                            <Text size={"md"}>chapters read</Text>
-                        </Group>
-                    </Group>
-                </MediaQuery>
+                    </MediaQuery>
 
+                    
+                    <MediaQuery largerThan={"sm"} styles={{
+                        display: "none"
+                    }}>
+                        <Stack spacing={"xs"} align="center">
+                            <Group spacing={"xs"}>
+                                <Text size={"sm"}><b>{loaderData.gamingHours}</b></Text>
+                                <Text size={"sm"}>gaming hours</Text>
+                            </Group>
+                            <Group spacing={"xs"}>
+                                <Text size={"sm"}><b>{loaderData.episodesWatched}</b></Text>
+                                <Text size={"sm"}>episodes watched</Text>
+                            </Group>
+                            <Group spacing={"xs"}>
+                                <Text size={"sm"}><b>{loaderData.chaptersRead}</b></Text>
+                                <Text size={"sm"}>chapters read</Text>
+                            </Group>
+                        </Stack>
+                    </MediaQuery>    
+
+                    <Divider />
+                </Stack>
                 
-                <MediaQuery largerThan={"sm"} styles={{
-                    display: "none"
-                }}>
-                    <Stack spacing={"xs"} align="center">
-                        <Group spacing={"xs"}>
-                            <Text size={"sm"}><b>{loaderData.gamingHours}</b></Text>
-                            <Text size={"sm"}>gaming hours</Text>
-                        </Group>
-                        <Group spacing={"xs"}>
-                            <Text size={"sm"}><b>{loaderData.episodesWatched}</b></Text>
-                            <Text size={"sm"}>episodes watched</Text>
-                        </Group>
-                        <Group spacing={"xs"}>
-                            <Text size={"sm"}><b>{loaderData.chaptersRead}</b></Text>
-                            <Text size={"sm"}>chapters read</Text>
-                        </Group>
-                    </Stack>
-                </MediaQuery>    
+                <Tabs grow mb={16} tabPadding={32}>
+                    <Tabs.Tab label={isMobile ? "" : "Activities"}
+                            icon={<Activity size={18}/>}>
+                        <UserActivityTimeline activities={loaderData.activities} />
+                    </Tabs.Tab>
 
-                <Divider />
-            </Stack>
-            
-            <Tabs grow mb={16} tabPadding={32}>
-                <Tabs.Tab label={isMobile ? "" : "Activities"}
-                          icon={<Activity size={18}/>}>
-                    <UserActivityTimeline activities={loaderData.activities} />
-                </Tabs.Tab>
-
-                <Tabs.Tab label={isMobile ? "" : "Trackings"}
-                          icon={<Eye size={18}/>}>
-                    <Tabs grow
-                        variant={"unstyled"}
-                        styles={(theme) => trackingMediaTabStyles(theme)}>
-                        <Tabs.Tab label={isMobile ? "" : "Games"}
-                                icon={<DeviceGamepad size={18}/>}>
-                            <GameTrackingTabs readOnly={true} userId={loaderData.userId} />
-                        </Tabs.Tab>
-                        <Tabs.Tab label={isMobile ? "" : "Shows"}
-                                icon={<DeviceTv size={18}/>}>
-                            <ShowTrackingStatusTabs readOnly={true} userId={loaderData.userId}  />
-                        </Tabs.Tab>
-                        <Tabs.Tab label={isMobile ? "" : "Books"}
-                                icon={<Book2 size={18}/>}>
-                            <BooksTrackingTabs readOnly={true} userId={loaderData.userId} />
-                        </Tabs.Tab>
-                    </Tabs>
-                </Tabs.Tab>
-                
-                <Tabs.Tab label={isMobile ? "" : "Wishlists"}
-                          icon={<Star size={18}/>}>
-                    <Tabs grow
-                        variant={"unstyled"}
-                        styles={(theme) => wishlistMediaTabStyles(theme)}>
-                        <Tabs.Tab label={isMobile ? "" : "Games"}
-                                icon={<DeviceGamepad size={18}/>}>
-                            <GameWishlistTable readOnly={true} userId={loaderData.userId} />
-                        </Tabs.Tab>
-                        <Tabs.Tab label={isMobile ? "" : "Books"}
-                                icon={<Book2 size={18}/>}>
-                            <BookWishlistTable readOnly={true} userId={loaderData.userId} />
-                        </Tabs.Tab>
-                    </Tabs>
-                </Tabs.Tab>
-            </Tabs>
-        </Container>
+                    <Tabs.Tab label={isMobile ? "" : "Trackings"}
+                            icon={<Eye size={18}/>}>
+                        <Tabs grow
+                            variant={"unstyled"}
+                            styles={(theme) => trackingMediaTabStyles(theme)}>
+                            <Tabs.Tab label={isMobile ? "" : "Games"}
+                                    icon={<DeviceGamepad size={18}/>}>
+                                <GameTrackingTabs readOnly={true} userId={loaderData.userId} />
+                            </Tabs.Tab>
+                            <Tabs.Tab label={isMobile ? "" : "Shows"}
+                                    icon={<DeviceTv size={18}/>}>
+                                <ShowTrackingStatusTabs readOnly={true} userId={loaderData.userId}  />
+                            </Tabs.Tab>
+                            <Tabs.Tab label={isMobile ? "" : "Books"}
+                                    icon={<Book2 size={18}/>}>
+                                <BooksTrackingTabs readOnly={true} userId={loaderData.userId} />
+                            </Tabs.Tab>
+                        </Tabs>
+                    </Tabs.Tab>
+                    
+                    <Tabs.Tab label={isMobile ? "" : "Wishlists"}
+                            icon={<Star size={18}/>}>
+                        <Tabs grow
+                            variant={"unstyled"}
+                            styles={(theme) => wishlistMediaTabStyles(theme)}>
+                            <Tabs.Tab label={isMobile ? "" : "Games"}
+                                    icon={<DeviceGamepad size={18}/>}>
+                                <GameWishlistTable readOnly={true} userId={loaderData.userId} />
+                            </Tabs.Tab>
+                            <Tabs.Tab label={isMobile ? "" : "Books"}
+                                    icon={<Book2 size={18}/>}>
+                                <BookWishlistTable readOnly={true} userId={loaderData.userId} />
+                            </Tabs.Tab>
+                        </Tabs>
+                    </Tabs.Tab>
+                </Tabs>
+            </Container>
+        </Motion>
     );
 }
 

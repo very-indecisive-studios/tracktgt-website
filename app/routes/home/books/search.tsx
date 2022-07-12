@@ -3,6 +3,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { backendAPIClientInstance, SearchBooksItemResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -59,19 +60,21 @@ export default function Search() {
     const title = searchParams.get("title");
 
     return (
-        <Container py={16}>
-            <Title mb={32} order={2}>Search results for "{title}"</Title>
-            <Stack>
-                {loaderData.items.map(b => (
-                    <SearchResultItem key={b.remoteId}
-                                      id={b.remoteId}
-                                      title={b.title}
-                                      coverImageURL={b.coverImageURL}
-                                      authors={b.authors}
-                    />
-                ))}
-            </Stack>
-        </Container>
+        <Motion>
+            <Container py={16}>
+                <Title mb={32} order={2}>Search results for "{title}"</Title>
+                <Stack>
+                    {loaderData.items.map(b => (
+                        <SearchResultItem key={b.remoteId}
+                                        id={b.remoteId}
+                                        title={b.title}
+                                        coverImageURL={b.coverImageURL}
+                                        authors={b.authors}
+                        />
+                    ))}
+                </Stack>
+            </Container>
+        </Motion>
     );
 }
 

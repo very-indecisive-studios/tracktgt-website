@@ -9,6 +9,7 @@ import { badRequest } from "~/utils/response.server";
 import { showNotification } from "@mantine/notifications";
 import { Check } from "tabler-icons-react";
 import { backendAPIClientInstance, UpdatePricingUserPreferenceCommand } from "backend";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -67,41 +68,43 @@ export default function SettingsPricing() {
     const loaderData = useLoaderData<LoaderData>();
 
     return (
-        <Container px={isMobile ? 4 : 16}>
-            <Title mt={isMobile ? 16 : 0} mb={16} order={2} sx={(theme) => ({
-                color: theme.colors.gray[5]
-            })}>
-                Pricing
-            </Title>
-
-            <Form method={"post"} replace>
-                <Title order={3} sx={(theme) => ({
-                    color: theme.colors.gray[6]
+        <Motion>
+            <Container px={isMobile ? 4 : 16}>
+                <Title mt={isMobile ? 16 : 0} mb={16} order={2} sx={(theme) => ({
+                    color: theme.colors.gray[5]
                 })}>
-                    Nintendo Switch
+                    Pricing
                 </Title>
-                <NativeSelect
-                    name={"eShopRegion"}
-                    mt={8}
-                    label={"EShop Region"}
-                    description={"The EShop region that will be used to fetch prices for your wishlists and when you're viewing pricing for a game."}
-                    defaultValue={loaderData.eShopRegion}
-                    data={loaderData.supportedEShopRegions}
-                />
-                <Group mt={16} position={"right"}>
-                    <Button onClick={()=> {
-                        showNotification({
-                            title: 'Successfully saved your settings.',
-                            message: `Your changes have been saved.`,
-                            icon: <Check size={16}/>,
-                            color: "green"
-                        });
-                    }} type={"submit"}>
-                        Save Changes
-                    </Button>
-                </Group>
-            </Form>
-        </Container>
+
+                <Form method={"post"} replace>
+                    <Title order={3} sx={(theme) => ({
+                        color: theme.colors.gray[6]
+                    })}>
+                        Nintendo Switch
+                    </Title>
+                    <NativeSelect
+                        name={"eShopRegion"}
+                        mt={8}
+                        label={"EShop Region"}
+                        description={"The EShop region that will be used to fetch prices for your wishlists and when you're viewing pricing for a game."}
+                        defaultValue={loaderData.eShopRegion}
+                        data={loaderData.supportedEShopRegions}
+                    />
+                    <Group mt={16} position={"right"}>
+                        <Button onClick={()=> {
+                            showNotification({
+                                title: 'Successfully saved your settings.',
+                                message: `Your changes have been saved.`,
+                                icon: <Check size={16}/>,
+                                color: "green"
+                            });
+                        }} type={"submit"}>
+                            Save Changes
+                        </Button>
+                    </Group>
+                </Form>
+            </Container>
+        </Motion>
     );
 }
 

@@ -4,6 +4,7 @@ import { backendAPIClientInstance, SearchGamesResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import CoverImage from "~/components/home/CoverImage";
 import PlatformIcon from "~/components/home/games/PlatformIcon";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -60,19 +61,21 @@ export default function Search() {
     const title = searchParams.get("title");
 
     return (
-        <Container py={16}>
-            <Title mb={32} order={2}>Search results for "{title}"</Title>
-            <Stack>
-                {searchResults.items.map(g => (
-                    <SearchResultItem key={g.remoteId}
-                                      id={g.remoteId}
-                                      title={g.title}
-                                      coverImageURL={g.coverImageURL}
-                                      platforms={g.platforms}
-                    />
-                ))}
-            </Stack>
-        </Container>
+        <Motion>
+            <Container py={16}>
+                <Title mb={32} order={2}>Search results for "{title}"</Title>
+                <Stack>
+                    {searchResults.items.map(g => (
+                        <SearchResultItem key={g.remoteId}
+                                        id={g.remoteId}
+                                        title={g.title}
+                                        coverImageURL={g.coverImageURL}
+                                        platforms={g.platforms}
+                        />
+                    ))}
+                </Stack>
+            </Container>
+        </Motion>
     );
 }
 

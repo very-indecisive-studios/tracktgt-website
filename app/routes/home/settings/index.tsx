@@ -10,6 +10,7 @@ import { badRequest } from "~/utils/response.server";
 import { z } from "zod";
 import { backendAPIClientInstance, minioClientInstance, UpdateBioCommand, UpdateProfilePicCommand } from "backend";
 import dayjs from "dayjs";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -129,120 +130,122 @@ export default function SettingsPricing() {
     const fileButtonSumbitRef = useRef<HTMLButtonElement>(null);
 
     return (
-        <Container px={isMobile ? 4 : 16}>
-            <Title mt={isMobile ? 16 : 0} mb={16} order={2} sx={(theme) => ({
-                color: theme.colors.gray[5]
-            })}>
-                Account
-            </Title>
-
-            <Form 
-                replace
-                encType="multipart/form-data" 
-                method="post" 
-                onSubmit={()=> {
-                    showNotification({
-                        title: 'Successfully saved your settings.',
-                        message: `Changes may take a while to be reflected. Refresh the page to view changes made.`,
-                        icon: <Check size={16}/>,
-                        color: "green"
-                    });
-                }}>
-                <Title my={8} order={3} sx={(theme) => ({
-                    color: theme.colors.gray[6]
+        <Motion>
+            <Container px={isMobile ? 4 : 16}>
+                <Title mt={isMobile ? 16 : 0} mb={16} order={2} sx={(theme) => ({
+                    color: theme.colors.gray[5]
                 })}>
-                    Profile picture
+                    Account
                 </Title>
-                <Group my={32}>
-                    <Stack>
-                        <TextInput hidden defaultValue={loaderData.profilePictureURL} name="oldProfilePictureURL" />
 
-                        <Image radius={isMobile ? 100 : 150} height={isMobile ? 100 : 150} width={isMobile ? 100 : 150} src={imageURL} />
+                <Form 
+                    replace
+                    encType="multipart/form-data" 
+                    method="post" 
+                    onSubmit={()=> {
+                        showNotification({
+                            title: 'Successfully saved your settings.',
+                            message: `Changes may take a while to be reflected. Refresh the page to view changes made.`,
+                            icon: <Check size={16}/>,
+                            color: "green"
+                        });
+                    }}>
+                    <Title my={8} order={3} sx={(theme) => ({
+                        color: theme.colors.gray[6]
+                    })}>
+                        Profile picture
+                    </Title>
+                    <Group my={32}>
+                        <Stack>
+                            <TextInput hidden defaultValue={loaderData.profilePictureURL} name="oldProfilePictureURL" />
 
-                        <Group>
-                            <Button leftIcon={<Refresh size={20} />} onClick={() => {
-                                fileInputRef.current?.click();
-                            }}>
-                                Change picture
-                            </Button>
+                            <Image radius={isMobile ? 100 : 150} height={isMobile ? 100 : 150} width={isMobile ? 100 : 150} src={imageURL} />
 
-                            <button
-                                ref={fileButtonSumbitRef}
-                                hidden
-                                type="submit">
-                            </button>
-                        </Group>
-                    </Stack>
+                            <Group>
+                                <Button leftIcon={<Refresh size={20} />} onClick={() => {
+                                    fileInputRef.current?.click();
+                                }}>
+                                    Change picture
+                                </Button>
 
-                    <input ref={fileInputRef} hidden type="file" name="profilePicture" accept="image/jpeg" onChange={(e) => {
-                        const fileList = e.target.files;
-                        if (fileList && fileList.length > 0) {
-                            const file = fileList[0];
-                            if (file.size > 2_097_152) {
-                                showNotification({
-                                    title: 'File size too big.',
-                                    message: `Please upload files less than 2MB in size.`,
-                                    icon: <FileAlert size={16}/>,
-                                    color: "red"
-                                });
+                                <button
+                                    ref={fileButtonSumbitRef}
+                                    hidden
+                                    type="submit">
+                                </button>
+                            </Group>
+                        </Stack>
 
-                                return;
+                        <input ref={fileInputRef} hidden type="file" name="profilePicture" accept="image/jpeg" onChange={(e) => {
+                            const fileList = e.target.files;
+                            if (fileList && fileList.length > 0) {
+                                const file = fileList[0];
+                                if (file.size > 2_097_152) {
+                                    showNotification({
+                                        title: 'File size too big.',
+                                        message: `Please upload files less than 2MB in size.`,
+                                        icon: <FileAlert size={16}/>,
+                                        color: "red"
+                                    });
+
+                                    return;
+                                }
+                                
+                                setImageURL(URL.createObjectURL(fileList[0]));
+
+                                fileButtonSumbitRef.current?.click();
                             }
-                            
-                            setImageURL(URL.createObjectURL(fileList[0]));
+                        }} />
+                    </Group>
+                </Form>
+                
+                <Form 
+                    replace 
+                    method="put" 
+                    onSubmit={()=> {
+                        showNotification({
+                            title: 'Successfully saved your settings.',
+                            message: `Changes may take a while to be reflected. Refresh the page to view changes made.`,
+                            icon: <Check size={16}/>,
+                            color: "green"
+                        });
+                    }}>
+                    <Title my={8} order={3} sx={(theme) => ({
+                            color: theme.colors.gray[6]
+                    })}>
+                        Username
+                    </Title>
+                    <TextInput mb={32} disabled value={loaderData.userName} />
 
-                            fileButtonSumbitRef.current?.click();
-                        }
-                    }} />
-                </Group>
-            </Form>
-            
-            <Form 
-                replace 
-                method="put" 
-                onSubmit={()=> {
-                    showNotification({
-                        title: 'Successfully saved your settings.',
-                        message: `Changes may take a while to be reflected. Refresh the page to view changes made.`,
-                        icon: <Check size={16}/>,
-                        color: "green"
-                    });
-                }}>
-                <Title my={8} order={3} sx={(theme) => ({
+                    <Title my={8} order={3} sx={(theme) => ({
+                            color: theme.colors.gray[6]
+                    })}>
+                        Email
+                    </Title>
+                    <TextInput mb={32} disabled value={loaderData.email} />
+
+                    <Title my={8} order={3} sx={(theme) => ({
                         color: theme.colors.gray[6]
-                })}>
-                    Username
-                </Title>
-                <TextInput mb={32} disabled value={loaderData.userName} />
+                    })}>
+                        Bio
+                    </Title>
+                    <Textarea
+                        mb={32}
+                        maxLength={256} 
+                        autosize 
+                        defaultValue={loaderData.bio}
+                        placeholder="Tell others about yourself" 
+                        minRows={3} 
+                        name="bio" />
 
-                <Title my={8} order={3} sx={(theme) => ({
-                        color: theme.colors.gray[6]
-                })}>
-                    Email
-                </Title>
-                <TextInput mb={32} disabled value={loaderData.email} />
-
-                <Title my={8} order={3} sx={(theme) => ({
-                    color: theme.colors.gray[6]
-                })}>
-                    Bio
-                </Title>
-                <Textarea
-                    mb={32}
-                    maxLength={256} 
-                    autosize 
-                    defaultValue={loaderData.bio}
-                    placeholder="Tell others about yourself" 
-                    minRows={3} 
-                    name="bio" />
-
-                <Group position={"right"}>
-                    <Button type="submit">
-                        Save Changes
-                    </Button>
-                </Group>
-            </Form>
-        </Container>
+                    <Group position={"right"}>
+                        <Button type="submit">
+                            Save Changes
+                        </Button>
+                    </Group>
+                </Form>
+            </Container>
+        </Motion>
     );
 }
 

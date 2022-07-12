@@ -14,6 +14,7 @@ import {
     GetShowResult,
     ShowType,
 } from "backend";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -148,39 +149,41 @@ export default function Show() {
     const showHeader = <ShowHeader show={loaderData.show}/>
 
     return (
-        <Container py={16} sx={() => ({
-            position: "relative"
-        })}>
-            <Box sx={() => ({
-                position: "absolute",
-                top: "0",
-                left: "0",
-                height: "300px",
-                width: "100%",
+        <Motion>
+            <Container py={16} sx={() => ({
+                position: "relative"
             })}>
-                <Image radius={"sm"} src={loaderData.show.coverImageURL} height={300} sx={() => ({
-                    filter: "brightness(0.4)"
-                })} />
-            </Box>
-            
-            <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
-                <Stack mt={128}>
-                    {showHeader}
+                <Box sx={() => ({
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    height: "300px",
+                    width: "100%",
+                })}>
+                    <Image radius={"sm"} src={loaderData.show.coverImageURL} height={300} sx={() => ({
+                        filter: "brightness(0.4)"
+                    })} />
+                </Box>
+                
+                <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
+                    <Stack mt={128}>
+                        {showHeader}
+                    </Stack>
+                </MediaQuery>
+
+                <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
+                    <Group mt={128} align={"end"} noWrap>
+                        {showHeader}
+                    </Group>
+                </MediaQuery>
+
+                <Stack mt={48}>
+                    <Title order={2}>Summary</Title>
+                    <Text
+                        sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.show.summary.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
                 </Stack>
-            </MediaQuery>
-
-            <MediaQuery styles={{ display: "none" }} smallerThan={"sm"}>
-                <Group mt={128} align={"end"} noWrap>
-                    {showHeader}
-                </Group>
-            </MediaQuery>
-
-            <Stack mt={48}>
-                <Title order={2}>Summary</Title>
-                <Text
-                    sx={(theme) => ({ color: theme.colors.gray[6] })}>{loaderData.show.summary.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
-            </Stack>
-        </Container>
+            </Container>
+        </Motion>
     );
 }
 

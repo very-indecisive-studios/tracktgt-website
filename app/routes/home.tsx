@@ -17,11 +17,12 @@ import {
     useMantineTheme,
 } from '@mantine/core';
 import HomeNavbar from "~/components/home/HomeNavbar";
-import { Link, Outlet, useCatch, useFetcher, useTransition } from "@remix-run/react";
+import { Link, Outlet, useCatch, useFetcher, useLocation, useOutlet, useTransition } from "@remix-run/react";
 import SearchBar from "~/components/home/SearchBar";
 import { hasValidAuthInfo, okWithUserSession, removeUserSession, requireAuthInfo } from "~/utils/session.server";
 import { refresh } from "auth";
 import { MoodConfuzed, QuestionMark } from "tabler-icons-react";
+import { AnimatePresence } from "framer-motion";
 
 export const loader: LoaderFunction = async ({ request }) => {
     // Redirect to login if user is not signed in.
@@ -164,11 +165,15 @@ export default function Home() {
         return () => window.clearInterval(id);
     }, []);
 
+    const outlet = useOutlet();
+
     return (
         <>
             <LoadingIndicator/>
             <Shell>
-                <Outlet/>
+                <AnimatePresence exitBeforeEnter initial={false}>
+                    {outlet}
+                </AnimatePresence>
             </Shell>
         </>
     );

@@ -45,6 +45,7 @@ import SwitchGamePrice from "~/components/home/games/SwitchGamePrice";
 import { useMobileQuery } from "~/utils/hooks";
 import PlatformIcon from "~/components/home/games/PlatformIcon";
 import { mediaTabStyles } from "~/styles/tabStyles";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -294,49 +295,51 @@ export default function Game() {
     const gameHeader = <GameHeader game={data.game} />
 
     return (
-        <Container py={16} sx={() => ({
-            position: "relative"
-        })}>
-            <Box sx={() => ({
-                position: "absolute",
-                top: "0",
-                left: "0",
-                height: "300px",
-                width: "100%",
+        <Motion>
+            <Container py={16} sx={() => ({
+                position: "relative"
             })}>
-                <Image radius={"sm"} src={data.game.coverImageURL} height={300} sx={() => ({
-                    filter: "brightness(0.4)"
-                })} />
-            </Box>
+                <Box sx={() => ({
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    height: "300px",
+                    width: "100%",
+                })}>
+                    <Image radius={"sm"} src={data.game.coverImageURL} height={300} sx={() => ({
+                        filter: "brightness(0.4)"
+                    })} />
+                </Box>
 
-            <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
-                <Stack mt={128}>
-                    {gameHeader}
-                </Stack>
-            </MediaQuery>
+                <MediaQuery styles={{ display: "none" }} largerThan={"sm"}>
+                    <Stack mt={128}>
+                        {gameHeader}
+                    </Stack>
+                </MediaQuery>
 
-            <MediaQuery  styles={{ display: "none" }} smallerThan={"sm"}>
-                <Group mt={128} align={"end"} noWrap>
-                    {gameHeader}
-                </Group>
-            </MediaQuery>
+                <MediaQuery  styles={{ display: "none" }} smallerThan={"sm"}>
+                    <Group mt={128} align={"end"} noWrap>
+                        {gameHeader}
+                    </Group>
+                </MediaQuery>
 
-            <Tabs grow
-                  mt={48}
-                  variant={"unstyled"}
-                  styles={(theme) => mediaTabStyles(theme, theme.colors.blue[8])}>
-                <Tabs.Tab label={isMobile ? "" : "Info"}
-                          icon={<InfoCircle size={18}/>}>
-                    <Title order={2} mt={16}>Summary</Title>
-                    <Text mt={8} sx={(theme) => ({ color: theme.colors.gray[6] })}>{data.game.summary}</Text>
-                </Tabs.Tab>
-                
-                <Tabs.Tab label={isMobile ? "" : "Pricing"}
-                          icon={<CurrencyDollar size={18}/>}>
-                    <GamePricing game={data.game} />
-                </Tabs.Tab>
-            </Tabs>
-        </Container>
+                <Tabs grow
+                    mt={48}
+                    variant={"unstyled"}
+                    styles={(theme) => mediaTabStyles(theme, theme.colors.blue[8])}>
+                    <Tabs.Tab label={isMobile ? "" : "Info"}
+                            icon={<InfoCircle size={18}/>}>
+                        <Title order={2} mt={16}>Summary</Title>
+                        <Text mt={8} sx={(theme) => ({ color: theme.colors.gray[6] })}>{data.game.summary}</Text>
+                    </Tabs.Tab>
+                    
+                    <Tabs.Tab label={isMobile ? "" : "Pricing"}
+                            icon={<CurrencyDollar size={18}/>}>
+                        <GamePricing game={data.game} />
+                    </Tabs.Tab>
+                </Tabs>
+            </Container>
+        </Motion>
     );
 }
 

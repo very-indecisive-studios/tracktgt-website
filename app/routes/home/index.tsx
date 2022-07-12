@@ -8,10 +8,11 @@ import {
     GetAllShowTrackingsItemResult
 } from "backend";
 import { requireUserId } from "~/utils/session.server";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "@remix-run/react";
 import { MoodSad } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
 import PlatformIcon from "~/components/home/games/PlatformIcon";
+import Motion from "~/components/home/Motion";
 
 interface LoaderData {
     games: GetAllGameTrackingsItemResult[];
@@ -150,66 +151,68 @@ export default function Home() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container px={isMobile ? 4 : 16} py={16}>
-            <Title mb={32} order={1}>Dashboard</Title>
+        <Motion>
+            <Container px={isMobile ? 4 : 16} py={16}>
+                <Title mb={32} order={1}>Dashboard</Title>
 
-            <Title order={2} sx={(theme) => ({
-                color: theme.colors.gray[6]
-            })}>
-                Recent games
-            </Title>
-            <Group py={16} mt={16} sx={() => ({
-                flexWrap: "nowrap",
-                overflowX: "auto"
-            })}>
-                {loaderData.games.length === 0 && <Empty type={"games"} />}
+                <Title order={2} sx={(theme) => ({
+                    color: theme.colors.gray[6]
+                })}>
+                    Recent games
+                </Title>
+                <Group py={16} mt={16} sx={() => ({
+                    flexWrap: "nowrap",
+                    overflowX: "auto"
+                })}>
+                    {loaderData.games.length === 0 && <Empty type={"games"} />}
 
-                {loaderData.games.map((gt) => (
-                    <GameTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
-                                       link={`/home/games/${gt.gameRemoteId}`}
-                                       title={gt.title}
-                                       coverImageURL={gt.coverImageURL}
-                                       platform={gt.platform} />
-                ))}
-            </Group>
+                    {loaderData.games.map((gt) => (
+                        <GameTrackingCard key={`${gt.gameRemoteId}${gt.platform}`}
+                                        link={`/home/games/${gt.gameRemoteId}`}
+                                        title={gt.title}
+                                        coverImageURL={gt.coverImageURL}
+                                        platform={gt.platform} />
+                    ))}
+                </Group>
 
-            <Title mt={48} order={2} sx={(theme) => ({
-                color: theme.colors.gray[6]
-            })}>
-                Recent shows
-            </Title>
-            <Group py={16} mt={16} sx={() => ({
-                flexWrap: "nowrap",
-                overflowX: "auto"
-            })}>
-                {loaderData.shows.length === 0 && <Empty type={"shows"} />}
+                <Title mt={48} order={2} sx={(theme) => ({
+                    color: theme.colors.gray[6]
+                })}>
+                    Recent shows
+                </Title>
+                <Group py={16} mt={16} sx={() => ({
+                    flexWrap: "nowrap",
+                    overflowX: "auto"
+                })}>
+                    {loaderData.shows.length === 0 && <Empty type={"shows"} />}
 
-                {loaderData.shows.map((st) => (
-                    <MediaTrackingCard key={`${st.showRemoteId}`}
-                                       link={`/home/shows/${st.showRemoteId}`}
-                                       title={st.title}
-                                       coverImageURL={st.coverImageURL} />
-                ))}
-            </Group>
+                    {loaderData.shows.map((st) => (
+                        <MediaTrackingCard key={`${st.showRemoteId}`}
+                                        link={`/home/shows/${st.showRemoteId}`}
+                                        title={st.title}
+                                        coverImageURL={st.coverImageURL} />
+                    ))}
+                </Group>
 
-            <Title mt={48} order={2} sx={(theme) => ({
-                color: theme.colors.gray[6]
-            })}>
-                Recent books
-            </Title>
-            <Group py={16} mt={16} sx={() => ({
-                flexWrap: "nowrap",
-                overflowX: "auto"
-            })}>
-                {loaderData.books.length === 0 && <Empty type={"books"} />}
-                
-                {loaderData.books.map((bt) => (
-                    <MediaTrackingCard key={`${bt.bookRemoteId}`}
-                                       link={`/home/books/${bt.bookRemoteId}`}
-                                       title={bt.title}
-                                       coverImageURL={bt.coverImageURL} />
-                ))}
-            </Group>
-        </Container>
+                <Title mt={48} order={2} sx={(theme) => ({
+                    color: theme.colors.gray[6]
+                })}>
+                    Recent books
+                </Title>
+                <Group py={16} mt={16} sx={() => ({
+                    flexWrap: "nowrap",
+                    overflowX: "auto"
+                })}>
+                    {loaderData.books.length === 0 && <Empty type={"books"} />}
+                    
+                    {loaderData.books.map((bt) => (
+                        <MediaTrackingCard key={`${bt.bookRemoteId}`}
+                                        link={`/home/books/${bt.bookRemoteId}`}
+                                        title={bt.title}
+                                        coverImageURL={bt.coverImageURL} />
+                    ))}
+                </Group>
+            </Container>
+        </Motion>
     );
 }

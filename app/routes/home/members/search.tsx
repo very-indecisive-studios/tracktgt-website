@@ -2,6 +2,7 @@ import { Card, Container, Group, Image, Stack, Text, Title } from "@mantine/core
 import { json, LoaderFunction } from "@remix-run/node";
 import { backendAPIClientInstance, SearchUsersItemResult } from "backend";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -55,18 +56,20 @@ export default function Search() {
     const title = searchParams.get("title");
 
     return (
-        <Container py={16}>
-            <Title mb={32} order={2}>Search results for "{title}"</Title>
-            <Stack>
-                {loaderData.items.map(s => (
-                    <SearchResultItem key={s.userName}
-                                      userName={s.userName}
-                                      profilePictureURL={s.profilePictureURL}
-                                      bio={s.bio}
-                    />
-                ))}
-            </Stack>
-        </Container>
+        <Motion>
+            <Container py={16}>
+                <Title mb={32} order={2}>Search results for "{title}"</Title>
+                <Stack>
+                    {loaderData.items.map(s => (
+                        <SearchResultItem key={s.userName}
+                                        userName={s.userName}
+                                        profilePictureURL={s.profilePictureURL}
+                                        bio={s.bio}
+                        />
+                    ))}
+                </Stack>
+            </Container>
+        </Motion>
     );
 }
 

@@ -3,6 +3,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { backendAPIClientInstance, GetGlobalActivitiesItemResult, GetTopUsersItemResult } from "backend";
 import UserActivityCard from "~/components/home/members/UserActivityCard";
+import Motion from "~/components/home/Motion";
 import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
 
@@ -81,45 +82,47 @@ export default function Games() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container py={16} px={isMobile ? 4 : 16}>
-            <Title mb={32} order={1}>Members</Title>
+        <Motion>
+            <Container py={16} px={isMobile ? 4 : 16}>
+                <Title mb={32} order={1}>Members</Title>
 
-            <Title order={2} sx={(theme) => ({
-                color: theme.colors.gray[6]
-            })}>
-                Top members
-            </Title>
-            <Group align={"start"} py={32} grow noWrap sx={() => ({
-                overflowX: "auto"
-            })}>
-                {loaderData.topMembers.map(m => (
-                    <TopMembersCard 
-                        key={m.remoteId}
-                        remoteId={m.remoteId} 
-                        bio={m.bio} 
-                        followersCount={m.followersCount}
-                        userName={m.userName}
-                        profilePictureURL={m.profilePictureURL} />
-                ))}
-            </Group>
-
-            <Title mt={16} order={2} sx={(theme) => ({
-                color: theme.colors.gray[6]
-            })}>
-                Global activities
-            </Title>
-            <Stack py={32}>
-                {(loaderData.globalActivities.length === 0) ?                 
-                    <Center p={64}>
-                        <Text align={"center"}>There are no recent activities.</Text>
-                    </Center> :
-                    loaderData.globalActivities.map((activity) => (
-                        <UserActivityCard 
-                            key={`${activity.id}`} 
-                            activity={activity} />
+                <Title order={2} sx={(theme) => ({
+                    color: theme.colors.gray[6]
+                })}>
+                    Top members
+                </Title>
+                <Group align={"start"} py={32} grow noWrap sx={() => ({
+                    overflowX: "auto"
+                })}>
+                    {loaderData.topMembers.map(m => (
+                        <TopMembersCard 
+                            key={m.remoteId}
+                            remoteId={m.remoteId} 
+                            bio={m.bio} 
+                            followersCount={m.followersCount}
+                            userName={m.userName}
+                            profilePictureURL={m.profilePictureURL} />
                     ))}
-            </Stack>
-        </Container>
+                </Group>
+
+                <Title mt={16} order={2} sx={(theme) => ({
+                    color: theme.colors.gray[6]
+                })}>
+                    Global activities
+                </Title>
+                <Stack py={32}>
+                    {(loaderData.globalActivities.length === 0) ?                 
+                        <Center p={64}>
+                            <Text align={"center"}>There are no recent activities.</Text>
+                        </Center> :
+                        loaderData.globalActivities.map((activity) => (
+                            <UserActivityCard 
+                                key={`${activity.id}`} 
+                                activity={activity} />
+                        ))}
+                </Stack>
+            </Container>
+        </Motion>
     );
 }
 //endregion

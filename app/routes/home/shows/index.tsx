@@ -7,6 +7,7 @@ import { useMobileQuery } from "~/utils/hooks";
 import { mediaTabStyles } from "~/styles/tabStyles";
 import ShowTrackingStatusTabs from "~/components/home/shows/ShowTrackingStatusTabs";
 import { useLoaderData } from "@remix-run/react";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -31,18 +32,20 @@ export default function Shows() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container py={16} px={isMobile ? 4 : 16}>
-            <Title mb={32} order={1}>Shows</Title>
+        <Motion>
+            <Container py={16} px={isMobile ? 4 : 16}>
+                <Title mb={32} order={1}>Shows</Title>
 
-            <Tabs grow
-                  variant={"unstyled"}
-                  styles={(theme) => mediaTabStyles(theme, theme.colors.red[8])}>
-                <Tabs.Tab label={isMobile ? "" : "Tracking"}
-                          icon={<Eye size={18}/>}>
-                    <ShowTrackingStatusTabs readOnly={false} userId={loaderData.userId} />
-                </Tabs.Tab>
-            </Tabs>
-        </Container>
+                <Tabs grow
+                    variant={"unstyled"}
+                    styles={(theme) => mediaTabStyles(theme, theme.colors.red[8])}>
+                    <Tabs.Tab label={isMobile ? "" : "Tracking"}
+                            icon={<Eye size={18}/>}>
+                        <ShowTrackingStatusTabs readOnly={false} userId={loaderData.userId} />
+                    </Tabs.Tab>
+                </Tabs>
+            </Container>
+        </Motion>
     );
 }
 

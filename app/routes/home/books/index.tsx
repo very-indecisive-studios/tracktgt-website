@@ -8,6 +8,7 @@ import { mediaTabStyles } from "~/styles/tabStyles";
 import BookWishlistTable from "~/components/home/books/BookWishlistTable";
 import BooksTrackingTabs from "~/components/home/books/BookTrackingStatusTabs";
 import { useLoaderData } from "@remix-run/react";
+import Motion from "~/components/home/Motion";
 
 //region Server
 
@@ -32,23 +33,25 @@ export default function Books() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container py={16} px={isMobile ? 4 : 16}>
-            <Title mb={32} order={1}>Books</Title>
+        <Motion>
+            <Container py={16} px={isMobile ? 4 : 16}>
+                <Title mb={32} order={1}>Books</Title>
 
-            <Tabs grow
-                  variant={"unstyled"}
-                  styles={(theme) => mediaTabStyles(theme, theme.colors.yellow[8])}>
-                <Tabs.Tab label={isMobile ? "" : "Tracking"}
-                          icon={<Eye size={18}/>}>
-                    <BooksTrackingTabs readOnly={false} userId={loaderData.userId} />
-                </Tabs.Tab>
+                <Tabs grow
+                    variant={"unstyled"}
+                    styles={(theme) => mediaTabStyles(theme, theme.colors.yellow[8])}>
+                    <Tabs.Tab label={isMobile ? "" : "Tracking"}
+                            icon={<Eye size={18}/>}>
+                        <BooksTrackingTabs readOnly={false} userId={loaderData.userId} />
+                    </Tabs.Tab>
 
-                <Tabs.Tab label={isMobile ? "" : "Wishlist"}
-                          icon={<Star size={18}/>}>
-                    <BookWishlistTable readOnly={false} userId={loaderData.userId} />
-                </Tabs.Tab>
-            </Tabs>
-        </Container>
+                    <Tabs.Tab label={isMobile ? "" : "Wishlist"}
+                            icon={<Star size={18}/>}>
+                        <BookWishlistTable readOnly={false} userId={loaderData.userId} />
+                    </Tabs.Tab>
+                </Tabs>
+            </Container>
+        </Motion>
     );
 }
 

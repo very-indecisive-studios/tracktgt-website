@@ -1,8 +1,9 @@
 import { Center, Container, Stack, Text, Title } from "@mantine/core";
 import { json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useLocation } from "@remix-run/react";
 import { backendAPIClientInstance, GetUserFollowingsActivitiesItemResult } from "backend";
 import UserActivityCard from "~/components/home/members/UserActivityCard";
+import Motion from "~/components/home/Motion";
 import { useMobileQuery } from "~/utils/hooks";
 import { requireUserId } from "~/utils/session.server";
 
@@ -31,22 +32,24 @@ export default function Feed() {
     const isMobile = useMobileQuery();
 
     return (
-        <Container px={isMobile ? 4 : 16} py={16}>
-            <Title mb={32} order={1}>Feed</Title>
+        <Motion>
+            <Container px={isMobile ? 4 : 16} py={16}>
+                <Title mb={32} order={1}>Feed</Title>
 
-            {(loaderData.timeline.length === 0) ?                 
-                <Center p={64}>
-                    <Text align={"center"}>There are no recent activities.</Text>
-                </Center> :
-                <Stack>
-                    {loaderData.timeline.map((activity) => (
-                        <UserActivityCard 
-                            key={`${activity.id}`} 
-                            activity={activity} />
-                    ))}
-                </Stack>
-            }
-        </Container>
+                {(loaderData.timeline.length === 0) ?                 
+                    <Center p={64}>
+                        <Text align={"center"}>There are no recent activities.</Text>
+                    </Center> :
+                    <Stack>
+                        {loaderData.timeline.map((activity) => (
+                            <UserActivityCard 
+                                key={`${activity.id}`} 
+                                activity={activity} />
+                        ))}
+                    </Stack>
+                }
+            </Container>
+        </Motion>
     );
 }
 
