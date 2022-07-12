@@ -11,12 +11,13 @@ import {
     UnstyledButton,
     useMantineTheme
 } from "@mantine/core";
-import { Book2, ChevronRight, DeviceGamepad, DeviceTv, LayoutBoard, Logout, Settings, Timeline, UserCircle, Users } from "tabler-icons-react";
-import { Link, useFetcher, useSubmit } from "@remix-run/react";
+import { Book2, ChevronRight, DeviceGamepad, DeviceTv, Home, Logout, Settings, Timeline, UserCircle, Users } from "tabler-icons-react";
+import { Link, useFetcher, useLocation, useSubmit } from "@remix-run/react";
 import { UserLoaderData } from "~/routes/home/user";
 import { GetUserResult } from "backend";
 
 interface NavbarLinkProps {
+    isSelected: boolean;
     icon: React.ReactElement;
     label: string;
     color: string;
@@ -24,7 +25,7 @@ interface NavbarLinkProps {
     onClick: () => void;
 }
 
-function NavbarLink({ icon, label, color, to, onClick }: NavbarLinkProps) {
+function NavbarLink({ isSelected, icon, label, color, to, onClick }: NavbarLinkProps) {
     return (
         <UnstyledButton
             onClick={onClick}
@@ -35,11 +36,11 @@ function NavbarLink({ icon, label, color, to, onClick }: NavbarLinkProps) {
                 width: '100%',
                 padding: theme.spacing.xs,
                 borderRadius: theme.radius.sm,
-                color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+                color: theme.colors.dark[0],
+                backgroundColor: isSelected ? theme.colors.dark[6] : "",
 
                 '&:hover': {
-                    backgroundColor:
-                        theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+                    backgroundColor: theme.colors.dark[6]
                 },
             })}
         >
@@ -148,21 +149,47 @@ interface HomeNavbarProps {
 }
 
 export default function HomeNavbar({ opened, onNavigate }: HomeNavbarProps) {
+    const location = useLocation();
+
     return (
         <Navbar p="xs" hiddenBreakpoint="md" hidden={!opened} width={{ md: 300 }}>
             <Navbar.Section grow mt="xs">
-                <NavbarLink onClick={onNavigate} to={"/home"} icon={<LayoutBoard size={18}/>}
-                            label={"Dashboard"} color={"gray"}/>                    
-                <NavbarLink onClick={onNavigate} to={"/home/feed"} icon={<Timeline size={18}/>}
-                            label={"Feed"} color={"green"}/>
-                <NavbarLink onClick={onNavigate} to={"/home/games"} icon={<DeviceGamepad size={18}/>}
-                            label={"Games"} color={"blue"}/>
-                <NavbarLink onClick={onNavigate} to={"/home/shows"} icon={<DeviceTv size={18}/>} label={"Shows"}
-                            color={"red"}/>
-                <NavbarLink onClick={onNavigate} to={"/home/books"} icon={<Book2 size={18}/>} label={"Books"}
-                            color={"yellow"}/>
-                <NavbarLink onClick={onNavigate} to={"/home/members"} icon={<Users size={18}/>} label={"Members"}
-                            color={"violet"}/>
+                <NavbarLink onClick={onNavigate} 
+                            to={"/home"} 
+                            icon={<Home size={18}/>}
+                            label={"Dashboard"} 
+                            color={"gray"}
+                            isSelected={location.pathname === "/home"}/>                    
+                <NavbarLink onClick={onNavigate} 
+                            to={"/home/feed"} 
+                            icon={<Timeline size={18}/>}
+                            label={"Feed"} 
+                            color={"green"}
+                            isSelected={location.pathname.startsWith("/home/feed")}/>
+                <NavbarLink onClick={onNavigate} 
+                            to={"/home/games"} 
+                            icon={<DeviceGamepad size={18}/>}
+                            label={"Games"} 
+                            color={"blue"}
+                            isSelected={location.pathname.startsWith("/home/games")}/>
+                <NavbarLink onClick={onNavigate} 
+                            to={"/home/shows"} 
+                            icon={<DeviceTv size={18}/>} 
+                            label={"Shows"}
+                            color={"red"}
+                            isSelected={location.pathname.startsWith("/home/shows")}/>
+                <NavbarLink onClick={onNavigate} 
+                            to={"/home/books"} 
+                            icon={<Book2 size={18}/>} 
+                            label={"Books"}
+                            color={"yellow"}
+                            isSelected={location.pathname.startsWith("/home/books")}/>
+                <NavbarLink onClick={onNavigate} 
+                            to={"/home/members"} 
+                            icon={<Users size={18}/>} 
+                            label={"Members"}
+                            color={"violet"}
+                            isSelected={location.pathname.startsWith("/home/members")}/>
             </Navbar.Section>
             <Divider my="sm"/>
             <Navbar.Section>
