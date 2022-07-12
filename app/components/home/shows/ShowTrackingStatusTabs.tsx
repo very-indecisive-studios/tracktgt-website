@@ -18,10 +18,6 @@ export default function ShowTrackingStatusTab({ userId, readOnly }: ShowTracking
         <Tabs grow
               variant={"unstyled"}
               styles={theme => mediaTabStyles(theme, theme.colors.red[8])}>
-            <Tabs.Tab label={isMobile ? "" : "Completed"}
-                      icon={<Check size={18}/>}>
-                <ShowTrackingStatusTable readOnly={readOnly} userId={userId} status={ShowTrackingStatus.Completed}/>
-            </Tabs.Tab>
             <Tabs.Tab label={isMobile ? "" : "Watching"}
                       icon={<PlayerPlay size={18}/>}>
                 <ShowTrackingStatusTable readOnly={readOnly} userId={userId} status={ShowTrackingStatus.Watching}/>
@@ -33,6 +29,10 @@ export default function ShowTrackingStatusTab({ userId, readOnly }: ShowTracking
             <Tabs.Tab label={isMobile ? "" : "Planning"}
                       icon={<Clock size={18}/>}>
                 <ShowTrackingStatusTable readOnly={readOnly} userId={userId} status={ShowTrackingStatus.Planning}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Completed"}
+                      icon={<Check size={18}/>}>
+                <ShowTrackingStatusTable readOnly={readOnly} userId={userId} status={ShowTrackingStatus.Completed}/>
             </Tabs.Tab>
         </Tabs>
     );

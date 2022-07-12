@@ -18,10 +18,6 @@ export default function BooksTrackingTabs({ userId, readOnly }: BooksTrackingTab
         <Tabs grow
               variant={"unstyled"}
               styles={(theme) => mediaTabStyles(theme, theme.colors.yellow[8])}>
-            <Tabs.Tab label={isMobile ? "" : "Completed"}
-                      icon={<Check size={18}/>}>
-                <BookTrackingStatusTable readOnly={readOnly} userId={userId} status={BookTrackingStatus.Completed}/>
-            </Tabs.Tab>
             <Tabs.Tab label={isMobile ? "" : "Reading"}
                       icon={<PlayerPlay size={18}/>}>
                 <BookTrackingStatusTable readOnly={readOnly} userId={userId} status={BookTrackingStatus.Reading}/>
@@ -33,6 +29,10 @@ export default function BooksTrackingTabs({ userId, readOnly }: BooksTrackingTab
             <Tabs.Tab label={isMobile ? "" : "Planning"}
                       icon={<Clock size={18}/>}>
                 <BookTrackingStatusTable readOnly={readOnly} userId={userId} status={BookTrackingStatus.Planning}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Completed"}
+                      icon={<Check size={18}/>}>
+                <BookTrackingStatusTable readOnly={readOnly} userId={userId} status={BookTrackingStatus.Completed}/>
             </Tabs.Tab>
         </Tabs>
     );

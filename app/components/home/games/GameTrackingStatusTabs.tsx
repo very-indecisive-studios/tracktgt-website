@@ -18,10 +18,6 @@ export default function GameTrackingTabs({ userId, readOnly }: GameTrackingTabsP
         <Tabs grow
               variant={"unstyled"}
               styles={(theme) => mediaTabStyles(theme, theme.colors.blue[8])}>
-            <Tabs.Tab label={isMobile ? "" : "Completed"}
-                      icon={<Check size={18}/>}>
-                <GameTrackingStatusTable readOnly={readOnly} userId={userId} status={GameTrackingStatus.Completed}/>
-            </Tabs.Tab>
             <Tabs.Tab label={isMobile ? "" : "Playing"}
                       icon={<PlayerPlay size={18}/>}>
                 <GameTrackingStatusTable readOnly={readOnly} userId={userId} status={GameTrackingStatus.Playing}/>
@@ -33,6 +29,10 @@ export default function GameTrackingTabs({ userId, readOnly }: GameTrackingTabsP
             <Tabs.Tab label={isMobile ? "" : "Planning"}
                       icon={<Clock size={18}/>}>
                 <GameTrackingStatusTable readOnly={readOnly} userId={userId} status={GameTrackingStatus.Planning}/>
+            </Tabs.Tab>
+            <Tabs.Tab label={isMobile ? "" : "Completed"}
+                      icon={<Check size={18}/>}>
+                <GameTrackingStatusTable readOnly={readOnly} userId={userId} status={GameTrackingStatus.Completed}/>
             </Tabs.Tab>
         </Tabs>
     );
