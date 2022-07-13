@@ -91,6 +91,12 @@ export function ErrorBoundary({ error }: ErrorBoundaryProps) {
             }}>
                 <MoodConfuzed size={96}/>
                 <h1>Something went wrong!</h1>
+                <p>
+                    Try refreshing the page. If the issue still persists, please report it via the button below.
+                </p>
+                <a href={"https://forms.gle/GfCAhv2HeUWjS7Ug6"}>
+                    Report issue
+                </a>
             </div>
         </div>
         <Scripts/>

@@ -4,6 +4,7 @@ import {
     AppShell,
     Box,
     Burger,
+    Button,
     Center,
     Container,
     Grid,
@@ -13,6 +14,7 @@ import {
     MediaQuery,
     Progress,
     Stack,
+    Text,
     Title,
     useMantineTheme,
 } from '@mantine/core';
@@ -21,7 +23,7 @@ import { Link, Outlet, useCatch, useFetcher, useLocation, useOutlet, useTransiti
 import SearchBar from "~/components/home/SearchBar";
 import { hasValidAuthInfo, okWithUserSession, removeUserSession, requireAuthInfo } from "~/utils/session.server";
 import { refresh } from "auth";
-import { MoodConfuzed, QuestionMark } from "tabler-icons-react";
+import { AlertTriangle, MoodConfuzed, QuestionMark } from "tabler-icons-react";
 import { AnimatePresence } from "framer-motion";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -195,7 +197,19 @@ export function ErrorBoundary({ error }: ErrorBoundaryProps) {
                 <Container size={"xs"}>
                     <Stack align={"center"}>
                         <MoodConfuzed size={96}/>
-                        <Title mt={24} order={1}>Something went wrong!</Title>
+                        <Title mt={24} order={1} align="center">Something went wrong!</Title>
+                        <Text mt={2} align="center">
+                            Try refreshing the page. If the issue still persists, please report it via the button below.
+                        </Text>
+                        <Button
+                            component={"a"}
+                            href={"https://forms.gle/GfCAhv2HeUWjS7Ug6"}
+                            mt={16}
+                            variant={"outline"} 
+                            color={"orange"} 
+                            leftIcon={<AlertTriangle size={18}/>}>
+                            Report issue
+                        </Button>
                     </Stack>
                 </Container>
             </Center>
