@@ -103,7 +103,7 @@ const LandingFeature = ({ src, title, content, addMargin }: LandingFeatureProps)
         <Container mt={addMargin ? 128 : 0}>
             <Center>
                 <Stack align={"center"}>
-                    <Image src={src}/>
+                    <Image src={src} />
                     <Title mt={32} order={1} align={"center"} sx={(theme) => ({
                         color: theme.colors.gray[4]
                     })}>{title}</Title>
@@ -158,17 +158,17 @@ export function Content() {
             </Box>
 
             <Stack py={128} id="features">
-                <LandingFeature src={"/landing_tabs.png"}
+                <LandingFeature src={"/landing_tabs.webp"}
                                 title={"One browser tab is all you need"}
                                 content={"Say goodbye to Ctrl+Tab, tracktgt tracks your books, shows and games."}
                                 addMargin={false}/>
 
-                <LandingFeature src={"/landing_organize.png"}
+                <LandingFeature src={"/landing_organize.webp"}
                                 title={"Never lose track and focus on what's next"}
                                 content={"Organize your queues, backlog, 'watch-later-more-like never' list intuitively"}
                                 addMargin={true}/>
 
-                <LandingFeature src={"/landing_progress.png"}
+                <LandingFeature src={"/landing_progress.webp"}
                                 title={"Track your progress"}
                                 content={"Update your books, shows and games progress so you will never have to rewind"}
                                 addMargin={true}/>
