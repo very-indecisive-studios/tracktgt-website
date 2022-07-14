@@ -15,7 +15,7 @@ import { z } from "zod";
 import { getUserId, redirectWithUserSession } from "~/utils/session.server";
 import { login, verifyHuman } from "auth";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { badRequest } from "~/utils/response.server";
 import { LockOpen, Plus } from "tabler-icons-react";
 import { useMobileQuery } from "~/utils/hooks";
@@ -86,9 +86,16 @@ export default function Login() {
     const theme = useMantineTheme();
 
     const [captchaToken, setCaptchaToken] = useState("");
+    const captchaRef = useRef<HCaptcha>(null);
     const handleVerificationSuccess = (token: string, ekey: string) => {
         setCaptchaToken(token);
     };
+    useEffect(() => {
+        if (actionData) {
+            captchaRef?.current?.resetCaptcha();
+            setCaptchaToken("");
+        }
+    }, [actionData])
 
     return (
         <Center sx={(theme) => ({
@@ -116,6 +123,7 @@ export default function Login() {
 
                     <Stack mt={16} align={"center"}>
                         <HCaptcha
+                            ref={captchaRef}
                             theme={"dark"}
                             sitekey={loaderData.captchaSitekey}
                             onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}

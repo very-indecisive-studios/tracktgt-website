@@ -15,7 +15,7 @@ import { getUserId, redirectWithUserSession } from "~/utils/session.server";
 import { register, sendUserVerificationEmail, verifyHuman } from "auth";
 import { z } from "zod";
 import { backendAPIClientInstance, RegisterUserCommand } from "backend";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { badRequest } from "~/utils/response.server";
 import { LockOpen, Plus } from "tabler-icons-react";
@@ -118,9 +118,16 @@ export default function SignUp() {
     const transition = useTransition()
 
     const [captchaToken, setCaptchaToken] = useState("");
+    const captchaRef = useRef<HCaptcha>(null);
     const handleVerificationSuccess = (token: string, ekey: string) => {
         setCaptchaToken(token);
     };
+    useEffect(() => {
+        if (actionData) {
+            captchaRef?.current?.resetCaptcha();
+            setCaptchaToken("");
+        }
+    }, [actionData])
 
     return (
         <Center sx={(theme) => ({
@@ -142,6 +149,7 @@ export default function SignUp() {
                     
                     <Stack mt={16} align={"center"}>
                         <HCaptcha
+                            ref={captchaRef}
                             theme={"dark"}
                             sitekey={loaderData.captchaSitekey}
                             onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}
